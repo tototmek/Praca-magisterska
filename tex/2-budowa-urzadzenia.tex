@@ -1,0 +1,246 @@
+\clearpage
+\section{Budowa urządzenia}
+\subsection{Założenia projektu}
+Aby możliwe było wykorzystanie urządzenia zliczającego pszczoły do diagnostyki ula, musi ono spełniać szereg kryteriów.
+Po pierwsze, naturalne funkcjonowanie kolonii nie może zostać w znaczącym stopniu zakłócone. Należy zadbać, by ruch pszczół został zaburzony w minimalnym stopniu, a~wentylacja gniazda nie była zbytnio ograniczona.
+Ponadto, istotna jest odporność systemu na warunki atmosferyczne i~aktywność pszczół: m.in. na zmiany nasłonecznienia, wilgotności, zbieranie się pyłku.
+
+Urządzenie ma dostarczać informację o chwilach wejścia/wyjścia, a także kierunku poruszania się pszczoły.
+Wyprodukowanie czujnika nie może mimo to wymagać trudno dostępnych lub drogich komponentów, aby możliwe było intensywne iteracyjne prototypowanie i~ewentualne szerokie wykorzystanie stworzonego systemu.
+
+\subsection{Prototypowy czujnik pojemnościowy}
+By spełnić wszystkie wymienione w poprzedniej sekcji założenia, stworzono autorski układ wykrywający pszczoły oparty o~czujnik pojemnościowy.
+  \subsubsection{Zasada działania}
+Pojemność elektryczna kondensatora zależy od przenikalności elektrycznej ośrodka między jego okładkami. W przypadku kondensatora płaskiego, pojemność opisywana jest wzorem:
+\[
+C = \frac{\varepsilon_r\,\varepsilon_0\,S}{d}
+\]
+gdzie $C$~--~pojemność kondensatora, $\varepsilon_r$~--~względna przenikalność elektryczna ośrodka, $\varepsilon_0$~--~przenikalność elektryczna próżni, $S$~--~pole powierzchni okładki, $d$~--~odległość między okładkami \cite{efizyka-kondensator}.
+
+Przenikalność elektryczna powietrza wynosi $\varepsilon_r = 1.00$ \cite{Hector1936}. Pszczoła nie jest jednorodnym ośrodkiem i jej parametry elektryczne nie były nigdy mierzone, jednak w znacznej części składa się ona z wody – substancji o wysokim $\varepsilon_r = 80.2$ (przy $20^\circ$C) \cite{Archer1990}.
+W literaturze proponowana jest arbitralna wartość przenikalności elektrycznej pszczoły równa $\varepsilon_r = 50$, która znajduje pośrednie potwierdzenie w eksperymentach \cite{Campbell2005}.
+
+Wprowadzenie pszczoły pomiędzy okładki kondensatora spowoduje zatem wzrost średniej przenikalności elektrycznej ośrodka, zwiększając tym samym pojemność układu. Na rysunku \ref{fig:bee-in-capacitor} przedstawiony został układ kondensatora oraz teoretyczny wykres pojemności elektrycznej w zależności od położenia przemieszczającej się pszczoły. Na podstawie kształtu przebiegu pojemności określić można momenty wejścia i opuszczenia kondensatora (odpowiednio $t_{\mathrm{enter}}$ i $t_{\mathrm{leave}}$ na rysunku).
+
+\begin{figure}
+    \centering
+    \includegraphics{tex//img/bee-in-capacitor.pdf}
+    \caption{Schemat układu kondensatora z poruszającą się ruchem jednostajnym pszczołą oraz odpowiadający przebieg pojemności elektrycznej $C_1$.}
+    \label{fig:bee-in-capacitor}
+\end{figure}
+
+Przedstawiony układ nie umożliwia natomiast określenia kierunku poruszania się pszczoły w czujniku. Aby zapewnić tę funkcję układ rozszerzony jest o drugi kondensator. Schemat takiego układu został przedstawiony na rysunku \ref{fig:bee-in-c2}. Wyjście czujnika stanowi sygnał $C_1 - C_2$. Założono, że kondensatory są identyczne, a więc gdy nie znajduje się w nich pszczoła, to $C_1 - C_2 = 0$. Ruch pszczoły między okładkami generuje na wyjściu bipolarny, środkowosymetryczny impuls, który  daje się zidentyfikować na podstawie kształtu, pozwalając na wykrycie pszczół w czujniku, oraz pozwala określić kierunek ruchu pszczoły na podstawie kolejności występowania piku dodatniego i ujemnego. Na rysunku \ref{fig:bee-in-minus-c2} przedstawiono sytuację, w której pszczoła porusza się w odwrotnym kierunku.
+
+\begin{figure}
+    \centering
+    \includegraphics{tex//img/bee-in-c2.pdf}
+    \caption{Schemat i przebieg $C_1 - C_2$ dla układu dwóch kondensatorów.}
+    \label{fig:bee-in-c2}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics{tex//img/bee-in-minus-c2.pdf}
+    \caption{Schemat i przebieg $C_1 - C_2$ dla układu dwóch kondensatorów -- pszczoła porusza się w odwrotnym kierunku.}
+    \label{fig:bee-in-minus-c2}
+\end{figure}
+
+Przedstawione ilustracje mają na celu wyłącznie prezentację podstawowej zasady działania czujnika pojemnościowego, a podczas ich tworzenia pominięte zostało wiele zjawisk fizycznych.
+W praktyce, kondensatory o płaskich okładkach nie sprawdzają się takim zastosowaniu -- są podatne na zewnętrzne zakłócenia, a także muszą być znacznie oddalone od siebie by uniknąć wzajemnego zakłócania \cite{Campbell2005}.
+Mimo to, rozwiązania znalazły wykorzystanie w pracach naukowych, na przykład urządzenie \textit{BeeCheck} \cite{Bermig2020}, kompensujące wady płaskich okładek wykorzystaniem 7 kondensatorów w czujniku.
+
+Znacznie skuteczniejszym podejściem jest wykorzystanie okładek pierścieniowych. Na rysunku \ref{fig:tunnel-concept} przedstawiona została ogólna idea tego rozwiązania. Na czujnik składa się rurka z izolatora, przez którą przechodzi owad, oraz trzy pierścienie z przewodnika.
+Konstrukcja ta realizuje taki sam układ elektryczny jak analizowano poprzednio, przy czym kondensatory $C_1$ i $C_2$ mają wspólną okładkę (środkowy pierścień – wyprowadzenie $C$). Kondensator $C_1$ znajduje się między wyprowadzeniami $L$ i $C$, natomiast kondensator $C_2$ między $R$ i $C$.
+Ułożenie to, pozwalając na równoczesne ładowanie obu kondensatorów, umożliwi pomiar różnicy pojemności $C_1 - C_2$.
+
+\begin{figure}
+    \centering
+    \includegraphics{tex//img/tunnel-concept.pdf}
+    \caption{Konstrukcja czujnika opartego na elektrodach pierścieniowych.}
+    \label{fig:tunnel-concept}
+\end{figure}
+
+Działanie czujnika tego typu zostało zasymulowane numerycznie przez Campbell wraz z zespołem \cite{Campbell2005}. Przyjęto: średnicę wewnętrzną tunelu 15 mm, okładki kondensatora wykonane z drutu o średnicy 1.7 mm, odległość między okładkami 7 mm. Pszczołę zamodelowano jako cylinder o długości 12 mm i średnicy 6mm. Wyniki tej symulacji przedstawione zostały na rysunkach \ref{fig:campbell-symulacja-model} i \ref{fig:campbell-symulacja-wynik}.
+Model czujnika zakładał dodatkowe obudowanie całości stalowym ekranem i zastosowanie polistyrenowych zaślepek. Na rysunku \ref{fig:campbell-symulacja-model} widać, że pszczoła (symulowana jako cylinder o~$\varepsilon_r=50$) wchodząca do tunelu powoduje niesymetryczne rozłożenie pól elektrycznych w kondensatorach.
+Przejście pszczoły skutkuje pojawieniem się na wyjściu czujnika asymetrycznych, bipolarnych impulsów (rysunek \ref{fig:campbell-symulacja-wynik}), podobnych do tych na przebiegach z rozważań teoretycznych (rysunki \ref{fig:bee-in-c2}, \ref{fig:bee-in-minus-c2}). W symulacji przetestowano dodatkowo odpowiedź układu na pszczoły różnych rozmiarów (impulsy $a$, $b$ na rysunku \ref{fig:campbell-symulacja-wynik}). Zaobserwować można pewną różnicę w wyglądzie wygenerowanych przebiegów, jednak ogólny kształt nadal pozwala na rozpoznanie momentu oraz kierunku przejścia pszczoły.
+
+\begin{figure}
+    \centering
+    \includegraphics{tex//img/campbell-symulacja-model.pdf}
+    \caption{Przekrój poprzeczny czujnika oraz linie ekwipotencjalne -- symulacja przeprowadzona przez Campbell wraz z zespołem. \cite{Campbell2005}}
+    \label{fig:campbell-symulacja-model}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics{tex//img/campbell-symulacja-wynik.pdf}
+    \caption{Impulsy wygenerowane przez pszczołę przechodzącą przez czujnik. Wyniki symulacji. Różnica pojemności kondensatorów była przetwarzana na napięcie przez liniowy przetwornik. (a)~--~duża pszczoła opuszczająca ul; (b)~--~mała pszczoła wchodząca do ula. \cite{Campbell2005}}
+    \label{fig:campbell-symulacja-wynik}
+\end{figure}
+
+  \subsubsection{Układ pomiarowy}
+Sygnał wyjściowy omawianego czujnika pojemnościowego jest trudny do zmierzenia. Pojemności kondensatorów $C_1$, $C_2$ wynoszą zaledwie ok. 0,5 pF \cite{Campbell2005}, a przy pojawieniu się pszczoły zwiększają się tylko o kilka--kilkanaście procent.
+Pomiar tak małych pojemności wymaga specjalistycznego sprzętu oraz niezwykłej dbałości podczas projektowania układu.
+Pojemności pasożytnicze ścieżek na płytce drukowanej mogą być przy słabym projekcie nawet o rząd wielkości wyższe niż pojemność badanego kondensatora.
+Szczegółowe założenia, którymi kierowano się przy projekcie PCB by zminimalizować ich wpływ, zostały szczegółowo opisane w sekcji \ref{pcb}.
+
+W literaturze znaleźć można przykładowe układy pomiarowe, które działają na zasadzie różnicy przesunięcia fazowego. Wspólna okładka kondensatorów ekscytowana jest sygnałem okresowym (generowanym z pomocą układu Intersil ICL8038 \cite{Campbell2005} lub NE555P \cite{mathematastic}). Kondensatory czujnika połączone są z masą układu przez rezystory, tworząc razem filtr górnoprzepustowy przesuwający fazę sygnału w zależności od pojemności. Przesunięte sygnały są następnie odejmowane z pomocą precyzyjnego wzmacniacza różnicowego.
+Następnie następuje demodulacja i wzmocnienie sygnału. W efekcie, wyjście układu stanowi sygnał o napięciu proporcjonalnym do różnicy pojemności obu kondensatorów. 
+
+Taki sposób pomiaru został z powodzeniem zastosowany w urządzeniach zliczających pszczoły, jednak jest bardzo kosztowny. Konieczne jest użycie układów scalonych o wysokiej precyzji – szacunkowy koszt układów scalonych potrzebnych do obsłużenia jednej pary kondensatorów to 231 zł\footnote{Ceny na dzień 09.10.2025 za: ICL8038, AD620, AD630, LF411.}. Całe urządzenie ma się składać z ośmiu równoległych tuneli, łączna cena układów scalonych wyniosłaby 1848 zł znacznie przekraczając limit kosztu całego urządzenia.
+
+Alternatywnym podejściem jest zastosowanie dedykowanego scalonego układu przetwornika pojemnościowo-napięciowego.
+Przykładem takiego układu odpowiedniego do małych pojemności jest AD7746, zastosowany w pracy Paula Perraulta \cite{Perrault2016}.
+Jest on przetwornikiem dwukanałowym, wystarczy zatem jeden na oba kondensatory w pojedynczym czujniku \cite{ad7746}. Koszt zakupu jednego układu scalonego to 67 zł (sumarycznie 536 zł na 8~tuneli), co jednak wciąż przekracza zakładany budżet.\newline
+
+W ramach niniejszej pracy opracowany został prosty i niezwykle tani sposób akwizycji sygnału z czujnika pojemnościowego. Jakość pomiaru jest znacznie niższa niż w opisanych wcześniej rozwiązaniach, lecz uzyskane przebiegi czasowe pozwalają skutecznie wykrywać ruch pszczół i określać jego kierunek.
+Schemat proponowanego układu przedstawiony jest na rysunku \ref{fig:uklad-pomiarowy}.
+Jego działanie opiera się na różnicy czasu ładowania kondensatorów o różnych pojemnościach.
+
+\begin{figure}
+    \centering
+    \includegraphics{tex//img/ladowanie-kondensatora.pdf}
+    \caption{Ładowanie kondensatora: schemat układu i przebiegi napięć.}
+    \label{fig:ladowanie kondensatora}
+\end{figure}
+
+
+Rozważmy układ pojedynczego kondensatora (rysunek \ref{fig:ladowanie kondensatora}). Odpowiedź $u_C(t)$ na skok napięcia $u$ od 0 do $U$ dana jest jako:
+\[
+u_C(t) = U\,\left(1-e^{-\frac{t}{\tau}}\right)
+\]
+
+gdzie $\tau = R\,C$ --- stała czasowa układu \cite{ladowanie-kondensatora}. Przykładowe przebiegi odpowiedzi skokowej przedstawione zostały na rysunku \ref{fig:ladowanie kondensatora}. Większa stała czasowa wiąże się z wolniejszym narastaniem napięcia na kondensatorze. 
+Przyjmując pewne napięcie progowe $U_{\mathrm{prog}}$, możemy określić czas ładowania kondensatora jako czas od skoku $u$ do przekroczenia $U_{\mathrm{prog}}$ przez $u_C$.
+Ponieważ $u_C(t)$ jest funkcją rosnącą, to dla stałych czasowych $\tau_1<\tau_2$ odpowiadające im czasy ładowania spełniają zależność $t_1 < t_2$.
+Odpowiedni dobór $U_\mathrm{prog}$ ma wpływ na jakość działania systemu: przy niskim progu $t_1$ oraz $t_2$ będą niewielkie i bardzo zbliżone do siebie. Wysoki próg zwiększa podatność na szumy w pomiarze $u_C$. Wybór konkretnej wartości $U_\mathrm{prog}$ został szerzej opisany dalej.
+
+W układzie czujnika każdy z kondensatorów ładowany jest przez taką samą rezystancję –-stałe czasowe podukładów zależą wyłącznie od pojemności elektrycznej samych kondensatorów. Metoda wykrywania pszczół stworzona w ramach niniejszej pracy nie została zatem oparta bezpośrednio na różnicy pojemności kondensatorów, tylko na różnicy w czasie ich ładowania.
+
+Wyzwaniem technicznym jest sam pomiar czasu ładowania kondensatora o tak niewielkiej pojemności. Przyjmując, jak wcześniej, orientacyjną pojemność kondensatora równą 0,5 pF, wyznaczyć można szacowaną stałą czasową układu (z rezystorem 1M$\Omega$):
+\[
+\tau = R\cdot C = 1\mathrm{M}\Omega\cdot0.5\mathrm{pF}
+ =  
+10^6\Omega\cdot0.5\cdot10^{-12}\mathrm{F}
+ = 
+2\cdot10^{-6}\mathrm{s}
+ = 
+2 \mu\mathrm{s}
+\]
+\begin{figure}
+    \centering
+    \includegraphics{tex//img/uklad-pomiarowy.pdf}
+    \caption{Schemat układu pomiarowego.}
+    \label{fig:uklad-pomiarowy}
+\end{figure}
+Jak widać, stała czasowa układu przyjmuje wartości rzędu pojedynczych mikrosekund. Precyzyjny pomiar takich czasów jest zasadniczo niemożliwy z wykorzystaniem sprzętu o niskim koszcie.
+Z tego powodu, w niniejszej pracy zastosowana została pewna sztuczka: ładowanie kondensatora mierzone jest nie w jednostkach czasu, ale w liczbie wykonań pojedynczych instrukcji mikrokontrolera monitorującego stan wyjść czujnika. Działanie to formalnie nie daje faktycznego pomiaru czasu, jednak wynik pozwala się jako taki pomiar zastosować – co zostanie udowodnione w dalszych częściach pracy.
+Na rysunku \ref{fig:uklad-pomiarowy} przedstawione zostało połączenie czujnika z mikrokontrolerem, natomiast pseudokod \ref{alg:akwizycja} pokazuje działanie algorytmu akwizycji danych.
+
+\begin{algorithm}
+\caption{Algorytm akwizycji pomiaru}
+\label{alg:akwizycja}
+\begin{algorithmic}
+\State $n_L \gets 0$\
+\State $n_R \gets 0$\
+\State $s_L \gets 0$\
+\State $s_R \gets 0$\
+\State \texttt{write\_gpio(}Charge\texttt{, 1)}\
+\While{$s_L = 0$ \textbf{or} $s_R = 0$ }
+    \State $s_L \gets $\texttt{read\_gpio(}$L$\texttt{)}\
+    \State $s_R \gets $\texttt{read\_gpio(}$R$\texttt{)}\
+    \If{$s_L$ = 0}
+        \State $n_L \gets n_L + 1$
+    \EndIf
+    \If{$s_R$ = 0}
+        \State $n_R \gets n_R + 1$
+    \EndIf
+\EndWhile
+\State \texttt{write\_gpio(}Charge\texttt{, 0)}\
+\State \texttt{return} $n_L - n_R$
+\end{algorithmic}
+\end{algorithm}
+
+Algorytm inicjalizuje dwa liczniki iteracji odpowiadające dwóm kondensatorom: $n_l$ oraz $n_r$. Następnie na pin \textit{Charge} wystawiany jest stan wysoki, co rozpoczyna ładowanie kondensatorów.
+Program iteracyjnie inkrementuje liczniki dopóki piny GPIO $L$ oraz $R$ nie zostaną podniesione do stanu wysokiego.
+Stan wysoki występuje po przekroczeniu przez napięcie kondensatora progu jedynki logicznej mikrokontrolera – stanowi on w tym przypadku $U_\mathrm{prog}$ układu.
+Wartości progowe są dobierane tak, by minimalizować czas odpowiedzi pinu, ale również podatność na szumy. Optymalizowane przez projektantów mikrokontrolerów kryteria są podobne do tych, które musi spełniać odpowiednio dobrany próg $U_\mathrm{prog}$, można się zatem spodziewać, że system wykorzystujący cyfrowe piny GPIO będzie działał prawidłowo.
+Po naładowaniu kondensatorów i ustaleniu $n_L$ oraz $n_R$ pin \textit{Charge} ponownie ustawiany jest do stanu niskiego. Przed wykonaniem kolejnego pomiaru kondensatory muszą zostać rozładowane, nie wymaga to jednak rozbudowywania układu, ponieważ zastosowany rodzaj kondensatora szybko rozładowuje się samoistnie.
+Należy jednak pamiętać, aby na kolejnych etapach projektu wprowadzić ograniczenie częstotliwości próbkowania, aby dać ładunkom elektrycznym czas na rozproszenie.
+
+Zaprezentowany algorytm akwizycji oferuje rozdzielczość pomiaru zależną od czasu wykonania instrukcji znajdujących się wewnątrz pętli \textit{while}.
+Najdłuższą operacją jest odczyt stanu pinu (\texttt{read\_gpio}) – dla zastosowanego mikrokontrolera ESP32-C3 może on trwać $0.05 - 0.17\,\mu\mathrm{s}$ (w zależności od implementacji) \cite{ESP32C3Datasheet}\cite{microcontroller-benchmarks}. Nawet przy konieczności dwukrotnego wykonania instrukcji, rozdzielczość taka jest wystarczająca na potrzeby tworzonego urządzenia.
+
+Alternatywnym podejściem, niewykorzystanym w niniejszej pracy z braku wyraźnej potrzeby, jednak zapewniającym znacznie wyższą rozdzielczość byłoby wykorzystanie zewnętrznych przerwań mikrokontrolera. Modyfikacja przedstawionego algorytmu polega na usunięciu odczytu GPIO z pętli \textit{while}, zamiast czego $s_L$ oraz $s_R$ ustawiane są na wartość 1 w ramach obsługi przerwań EXTI wynikających z wykrycia zboczy narastających na pinach $L$ i $R$.
+
+  
+  \subsubsection{Realizacja sprzętowa}
+
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{tex/img/prototyp.png}
+    \caption{Prototypowy czujnik pojemnościowy.}
+    \label{fig:prototyp}
+\end{figure}
+
+W celu przetestowania działania opisanego systemu zbudowana została prototypowa konstrukcja czujnika (rysunek \ref{fig:prototyp}).
+Tunel czujnika wykonany został z rurki z przezroczystego tworzywa sztucznego, natomiast okładki wykonano z obręczy wygiętych z drutu miedzianego i zlutowanych w miejscu łączenia.
+Wyprowadzenia okładek kondensatora zostały wykonane z izolowanych przewodów o długości ok. 15 cm.
+W tabeli \ref{tab:prototyp} zawarte zostały parametry opracowanej konstrukcji.
+Obrane wymiary oparte zostały na wynikach optymalizacji podobnego czujnika w pracy Campbell wraz z zespołem, w której przeprowadzono symulację elektrostatyczną, by następnie dobrać średnice $s$ i rozstaw okładek $d$, tak by maksymalizować amplitudę sygnału generowanego przez pszczołę w czujniku \cite{Campbell2005}.
+Wypracowane w tej pracy kryteria to:
+\begin{enumerate}
+    \item \(\frac{1}{2}\,s+t < d <s + 2\,t\) -- rozstaw okładek powinien być większy od promienia okładki, ale nie większy od średnicy;
+    \item $g$ -- średnica drutu, z którego wykonane są okładki powinna być jak największa -- na ile pozwolą inne ograniczenia konstrukcyjne.
+\end{enumerate}
+\begin{figure}
+    \centering
+    \includegraphics{tex/img/prototyp-tech.pdf}
+    \vspace{2em}
+    \centering
+    \begin{tblr}{cl|r}
+        \textbf{Oznaczenie} & \textbf{Opis} & \textbf{Wartość} [mm] \\
+        \hline
+       $\textbf{\textit{l}}$ & Długość tunelu & 120  \\
+       $\textbf{\textit{D}}$ & Odległość do 1. okładki & 8 \\
+       $\textbf{\textit{d}}$ & Rozstaw okładek & 9 \\
+       $\textbf{\textit{g}}$ & Średnica drutu okładki & 1.5 \\
+       $\textbf{\textit{t}}$ & Grubość ścianki tunelu & 0.85 \\
+       $\textbf{\textit{s}}$ & Średnica wewn. tunelu & 14.3 \\
+    \end{tblr}
+    \captionof{table}{Wymiary prototypowego tunelu}
+    \label{tab:prototyp}
+\end{figure}
+
+W ramach niniejszej pracy założono, że wewnętrzna średnica tunelu musi wynosić około 14 mm, aby zapewnić swobodny ruch pszczół, a przy tym uniemożliwić równoległe poruszanie się kilku osobników obok siebie.
+Średnica zewnętrzna zastosowanej rurki z tworzywa sztucznego to 16 mm, co daje promień okładki wynoszący 8 mm. Dla spełnienia wyżej wymienionego kryterium obrano rozstaw okładek $d=9$ mm.
+Do wykonania okładek wybrano drut miedziany o średnicy 1.5 mm.
+
+\begin{figure}
+    \centering
+    \includegraphics{tex/img/uklad-prototyp.pdf}
+    \caption{Schemat układu elektronicznego prototypowego tunelu.}
+    \label{fig:uklad-prototyp}
+\end{figure}
+
+
+Na uniwersalnej płytce prototypowej stworzono układ elektroniczny zgodny tym przedstawionym na rysunku \ref{fig:uklad-pomiarowy}. Na potrzeby przetestowania prototypu pominięto jeden z kondensatorów w tunelu i do mikrokontrolera podłączono jedynie okładkę lewego kondensatora. Zastosowany został wspominany wcześniej mikrokontroler ESP32-C3 na płytce deweloperskiej ESP32-C3 Super Mini \cite{ESP32C3Datasheet}. Moduł ten wyposażony jest w konwerter USB-UART umożliwiający komunikację urządzenia z komputerem z wykorzystaniem złącza USB. Na mikrokontroler zaimmplementowana została uproszczona (mierząca tylko jedną z bramek) wersja algorytmu \ref{alg:akwizycja}:
+
+
+\inputminted[label={prototype/main.cpp}, linenos, frame=single, framesep=2em]{cpp}{code/prototype-main.cpp}
+
+
+
+  \subsubsection{Testy}
+  
+\subsection{Układ elektroniczny}
+  \subsubsection{Dobór komponentów}
+  \subsubsection{Realizacja płytki PCB} \label{pcb}
+\subsection{Oprogramowanie mikrokontrolerów}
+  \subsubsection{Algorytm akwizycji}
+  \subsubsection{Komunikacja między mikrokontrolerami}
+  \subsubsection{Komunikacja ze światem zewnętrznym}
+\subsection{Testy}
+\subsection{Modyfikacja układu}
+\subsection{Realizacja obudowy}
