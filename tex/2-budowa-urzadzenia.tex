@@ -112,7 +112,7 @@ u_C(t) = U\,\left(1-e^{-\frac{t}{\tau}}\right)
 
 gdzie $\tau = R\,C$ --- stała czasowa układu \cite{ladowanie-kondensatora}. Przykładowe przebiegi odpowiedzi skokowej przedstawione zostały na rysunku \ref{fig:ladowanie kondensatora}. Większa stała czasowa wiąże się z wolniejszym narastaniem napięcia na kondensatorze. 
 Przyjmując pewne napięcie progowe $U_{\mathrm{prog}}$, możemy określić czas ładowania kondensatora jako czas od skoku $u$ do przekroczenia $U_{\mathrm{prog}}$ przez $u_C$.
-Ponieważ $u_C(t)$ jest funkcją rosnącą, to dla stałych czasowych $\tau_1<\tau_2$ odpowiadające im czasy ładowania spełniają zależność $t_1 < t_2$.
+Ponieważ $u_C(t)$ jest funkcją rosnącą, to dla stałych czasowych $\tau_1<\tau_2$ odpowiadające im czasy ładowania spełniają zależność $t_1 < t_2$
 Odpowiedni dobór $U_\mathrm{prog}$ ma wpływ na jakość działania systemu: przy niskim progu $t_1$ oraz $t_2$ będą niewielkie i bardzo zbliżone do siebie. Wysoki próg zwiększa podatność na szumy w pomiarze $u_C$. Wybór konkretnej wartości $U_\mathrm{prog}$ został szerzej opisany dalej.
 
 W układzie czujnika każdy z kondensatorów ładowany jest przez taką samą rezystancję –-stałe czasowe podukładów zależą wyłącznie od pojemności elektrycznej samych kondensatorów. Metoda wykrywania pszczół stworzona w ramach niniejszej pracy nie została zatem oparta bezpośrednio na różnicy pojemności kondensatorów, tylko na różnicy w czasie ich ładowania.
@@ -179,7 +179,7 @@ Alternatywnym podejściem, niewykorzystanym w niniejszej pracy z braku wyraźnej
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.8\textwidth]{tex/img/prototyp.png}
+    \includegraphics[width=0.8\textwidth]{tex/img/prototyp.pdf}
     \caption{Prototypowy czujnik pojemnościowy.}
     \label{fig:prototyp}
 \end{figure}
@@ -225,15 +225,90 @@ Do wykonania okładek wybrano drut miedziany o średnicy 1.5 mm.
 \end{figure}
 
 
-Na uniwersalnej płytce prototypowej stworzono układ elektroniczny zgodny tym przedstawionym na rysunku \ref{fig:uklad-pomiarowy}. Na potrzeby przetestowania prototypu pominięto jeden z kondensatorów w tunelu i do mikrokontrolera podłączono jedynie okładkę lewego kondensatora. Zastosowany został wspominany wcześniej mikrokontroler ESP32-C3 na płytce deweloperskiej ESP32-C3 Super Mini \cite{ESP32C3Datasheet}. Moduł ten wyposażony jest w konwerter USB-UART umożliwiający komunikację urządzenia z komputerem z wykorzystaniem złącza USB. Na mikrokontroler zaimmplementowana została uproszczona (mierząca tylko jedną z bramek) wersja algorytmu \ref{alg:akwizycja}:
+Na uniwersalnej płytce prototypowej stworzono układ elektroniczny zgodny tym przedstawionym na rysunku \ref{fig:uklad-pomiarowy}. Na potrzeby przetestowania prototypu pominięto jeden z kondensatorów w tunelu i do mikrokontrolera podłączono jedynie okładkę lewego kondensatora. Zastosowany został wspominany wcześniej mikrokontroler ESP32-C3 na płytce deweloperskiej ESP32-C3 Super Mini \cite{ESP32C3Datasheet}. Moduł ten wyposażony jest w konwerter USB-UART umożliwiający komunikację urządzenia z komputerem z wykorzystaniem złącza USB.
+Na mikrokontroler zaimplementowana została uproszczona (mierząca tylko jedną z bramek) wersja algorytmu \ref{alg:akwizycja} -- program w zamieszczonym poniżej pliku \texttt{prototype/main.cpp}.
+
+\vspace{2em}
+\vbox{
+\inputminted[label={prototype/main.cpp}, linenos, frame=single, framesep=0.5em, fontsize=\small]{cpp}{code/prototype-main.cpp}
+}
+\vspace{2em}
+
+Do programowania ESP32-C3 wykorzystano popularny framework \textit{Arduino}, udostępniający warstwę abstrakcji sprzętowej umożliwiającą szybkie i łatwe tworzenie oprogramowania dla mikrokontrolerów \cite{Arduino}.
+Framework Arduino pozwala pisać kod programu w języku C++, a także udostępnia wiele wysokopoziomowych funkcji obsługujących układy peryferialne mikrokontrolera.
+W utworzonym programie, w funkcji \texttt{setup()} inicjalizowana jest komunikacja z komputerem, a następnie ustawiane są tryby pracy odpowiednich pinów GPIO. Pin \texttt{CHARGE} ustawiany jest na stan niski, by rozładować bramkę czujnika przygotowując system do pierwszego pomiaru.
+Kolejne pomiary wykonywane są cyklicznie co ok. 100 ms (funkcja \texttt{loop()}).
+W funkcji \texttt{measureChargeTime()} zaimplementowany jest proponowany w niniejszej pracy algorytm akwizycji sygnału.
+Zmienna \texttt{counter} stanowi licznik iteracji algorytmu. Po ustawieniu pinu \texttt{CHARGE} na stan wysoki (rozpoczęciu ładowania bramki) rozpoczyna się pętla kolejnych odczytów pinu \texttt{MEASURE}. Zliczane są iteracje pętli. Pętla zostaje przerwana po odnotowaniu stanu wysokiego na pinie \texttt{MEASURE}.
+Na tym etapie w zmiennej \texttt{counter} jest już przechowywany wynik działania algorytmu, jednak w celu umożliwienia kolejnego pomiaru konieczne jest ponowne rozładowanie bramki czujnika. W tym celu pin \texttt{CHARGE} ustawiany jest do stanu niskiego, a następnie w kolejnej pętli oczekuje się rozproszenia ładunku kondensatora -- wykrywanego jako stan niski na pinie \texttt{MEASURE}.
+Pętla aktywnego oczekiwania na rozładowanie kondensatora nie jest koniecznym elementem programu o ile w ramach programu zachowana zostanie wystarczająco długa przerwa między kolejnymi odczytami.
 
 
-\inputminted[label={prototype/main.cpp}, linenos, frame=single, framesep=2em]{cpp}{code/prototype-main.cpp}
+Narzędziem kompilacji i wgrywania programów zalecanym przy pracy we frameworku Arduino jest \textit{Arduino IDE} -- zintegrowane środowisko programistyczne łączące edytor kodu, kompilator, menadżer zewnętrznych bibliotek \cite{Arduino}.
+W niniejszej pracy wykorzystano jednak nowszą alternatywę -- \textit{PlatformIO}, zbiór narzędzi deweloperskich umożliwiający realizację tych samych zadań, a także zapewniający dodatkowe funkcjonalności \cite{PlatformIO}.
+Jest on dostępny nie jako osobny program, ale jako wtyczka do najpopularniejszych środowisk deweloperskich, co umożliwia użytkownikowi korzystanie z innych zaawansowanych funkcji dzisiejszych edytorów, jak np. zaawansowane dopełnianie składni w \textit{Visual Studio Code}.
+Opcje kompilacji i wgrywania programu ustawiane są w jednym pliku konfiguracyjnym projektu -- \texttt{platformio.ini}. Poniżej przedstawiona została konfiguracja stworzona na potrzeby realizowanego prototypu.
 
+\vspace{2em}
+\vbox{
+\inputminted[label={prototype/platformio.ini}, linenos, frame=single, framesep=0.5em, fontsize=\small]{text}{code/prototype-platformio.ini}
+}
+\vspace{2em}
+
+Ustawienie platformy \texttt{espressif32} oraz frameworku \texttt{arduino} sprawia, że do kompilacji projektu wykorzystane zostaną dedykowane ESP32 narzędzia oraz dołączone będą wymagane pliki nagłówkowe.
+Dodatkowo, ustawione flagi \texttt{build\_flags} umożliwiają programowanie mikrokontrolera bez wciskania przycisków \textit{Boot} i \textit{Reset}, co zwiększa wygodę prototypowania.
+Ustawiono również prędkość komunikacji monitora portu szeregowego (jednego z dostępnych w PlatformIO narzędzi) na wartość zgodną z wcześniej przedstawionym programem. Po odpowiednim skonfigurowaniu projektu możliwe było wgranie utworzonego oprogramowania na mikrokontroler i przetestowanie proponowanego rozwiązania.
 
 
   \subsubsection{Testy}
   
+\begin{figure}
+    \centering
+    \includegraphics{tex/img/prototyp-eksperyment-schemat.pdf}
+    \caption{Schemat przeprowadzonego eksperymentu.}
+    \label{fig:prototyp-eksperyment-schemat}
+\end{figure}
+
+\begin{figure}[htb]
+    \centering
+    \caption{Przebiegi wyjściowe czujnika uzyskane podczas przeprowadzonych testów.}
+    % Subfigure A
+    \begin{subfigure}[b]{\textwidth}
+        \centering
+        \caption{Sygnał wyjściowy czujnika podczas eksperymentu z żelkiem misiem}
+        \includegraphics{tex/img/test-prototypu-żelek.pdf}
+        \label{fig:test-prototypu-zelek}
+        \vspace{2em}
+    \end{subfigure}
+    % Subfigure B
+    \begin{subfigure}[b]{\textwidth}
+        \centering
+        \caption{Sygnał wyjściowy czujnika podczas eksperymentu z wilgotną gąbką}
+        \includegraphics{tex/img/test-prototypu.pdf}
+        \label{fig:test-prototypu-gabka}
+    \end{subfigure}
+    
+    \label{fig:test-prototypu}
+\end{figure}
+
+Po zakończeniu budowy prototypu przeprowadzony został test mający na celu weryfikację opracowanej metody wykrywania pszczoły w tunelu czujnika.
+Względy praktyczne wykluczyły wykorzystanie żywych pszczół podczas tego eksperymentu, konieczne było zatem znalezienie ciała, które będzie w stanie je odpowiednio zasymulować.
+Kluczowe było, by odpowiadało pszczole rozmiarem i kształtem, a także przenikalnością elektryczną (przez zawartość wody).
+Wybrane zostały dwa potencjalne odpowiedniki pszczoły:
+\begin{enumerate}[label=\textbf{(\alph*)}]
+    \item \textbf{Żelek miś} -- posiada odpowiedni kształt i rozmiar, oraz zawiera wodę. Zastosowanie go do symulowania pszczoły jest polecane w literaturze \cite{mathematastic};
+    \item \textbf{Wilgotna gąbka} -- została wprowadzona jako dodatkowy eksperyment w razie, gdyby żelek posiadał nieodpowiednie właściwości elektryczne. Z gąbki kuchennej wycięta została bryła o wymiarach zbliżonych do pszczoły, którą przed samym eksperymentem zanurzono w naczyniu z wodą. Właściwości elektryczne ciała powinny być zbliżone do pszczoły, której większość masy stanowi woda.
+\end{enumerate}
+Każde z ciał zostało nawleczone na cienką żyłkę.
+W ramach każdego z dwóch przeprowadzonych eksperymentów żyłkę przeprowadzano przez tunel czujnika, po czym w ciągu kilkudziesięciu sekund kilkukrotnie przeciągano nią ciało.
+Schemat doświadczenia przedstawiono na rysunku \ref{fig:prototyp-eksperyment-schemat}.
+Żelek został przeciągnięty przez bramkę czterokrotnie (dwa razy w każdym kierunku), natomiast gąbka jedenastokrotnie (po pięć razy w każdym kierunku i szósty raz tylko w jednym).
+Pomiary generowane przez czujnik były wysyłane do komputera i zapisywane do pliku.
+
+Uzyskane wyniki przedstawione zostały na rysunku \ref{fig:test-prototypu}.
+Przebieg zebrany podczas eksperymentu z wilgotną gąbką (rysunek \ref{fig:test-prototypu-gabka}) zawiera wyraźne skoki sygnału wyjściowego w liczbie odpowiadającej przejściom ciała przez bramkę czujnika.
+
+
 \subsection{Układ elektroniczny}
   \subsubsection{Dobór komponentów}
   \subsubsection{Realizacja płytki PCB} \label{pcb}

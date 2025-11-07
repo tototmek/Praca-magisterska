@@ -6,7 +6,7 @@
 uint32_t measureChargeTime();
 
 void setup() {
-    Serial.begin(9600);
+    Serial.begin(115200);
     pinMode(MEASURE_PIN, INPUT);
     pinMode(CHARGE_PIN, OUTPUT);
     digitalWrite(CHARGE_PIN, LOW);
