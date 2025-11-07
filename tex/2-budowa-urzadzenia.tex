@@ -307,10 +307,76 @@ Pomiary generowane przez czujnik były wysyłane do komputera i zapisywane do pl
 
 Uzyskane wyniki przedstawione zostały na rysunku \ref{fig:test-prototypu}.
 Przebieg zebrany podczas eksperymentu z wilgotną gąbką (rysunek \ref{fig:test-prototypu-gabka}) zawiera wyraźne skoki sygnału wyjściowego w liczbie odpowiadającej przejściom ciała przez bramkę czujnika.
+Obserwacja przebiegu sygnału na żywo w trakcie prowadzenia doświadczenia pozwoliła dodatkowo potwierdzić, że zmiany widoczne na wyjściu czujnika są spowodowane wprowadzaniem do bramki wilgotnej gąbki.
+Same wartości skoków są niewielkie w porównaniu do wielkości sygnału -- zmierzono ok. 435 iteracji przy pustej bramce, a podczas wykrycia skok o ok. 20 iteracji.
+Mimo to, zmiany te są wyraźnie widoczne na wykresie przebiegu.
 
+W przypadku doświadczenia z żelkiem misiem (rysunek \ref{fig:test-prototypu-zelek}) czujnik również wygenerował skoki sygnału wyjściowego odpowiadające przejściom ciała przez bramkę.
+Na tym przebiegu można jednak zaobserwować, że amplituda powstałych szpilek jest znacząco mniejsza niż w przypadku mokrej gąbki (skok o niecałe 10 iteracji).
+Najprawdopodobniej wynika to z niższej zawartości wody w żelku.
+
+Na podstawie przeprowadzonych eksperymentów można stwierdzić, że stworzony według przedstawionej metody czujnik może skutecznie wykrywać ciała pojawiające się w tunelu.
+Możliwe będzie wykorzystanie go do wykrywania pszczół wchodzących i wychodzących z ula.
+Obydwa ciała modelujące pszczołę w eksperymentach, pomimo wyraźnych różnic, dały zadowalające wyniki.
+Ponieważ nie można na tym etapie stwierdzić, które z nich stanowi lepszą symulację prawdziwego owada, w dalszych rozważaniach będą wykorzystywane oba z nich.
+
+\subsection{Konstrukcja urządzenia}
+
+Pozytywny wynik testu prototypowego czujnika pojemnościowego pozwala kontynuować pracę.
+W następnym kroku zaprojektowany została konstrukcja pełnego systemu.
+Budowane urządzenie z założenia musi przechwycić cały ruch pszczół wchodzących i wychodzących z ula.
+Zadanie to jest dość proste w realizacji, ponieważ standardowo ule posiadają tylko jeden otwór, przez który mogą przedostawać się pszczoły: wąską szczelinę zwaną wylotkiem \cite{Skubida2007}. Jej wymiary typowo wynoszą 15 cm szerokości i 1.8 cm wysokości.
+\begin{figure}
+    \centering
+    \includegraphics{tex/img/montaz.pdf}
+    \caption{Wizualizacja konstrukcji i sposobu mocowania urządzenia do ula.}
+    \label{fig:montaz}
+\end{figure}
+Pełne zasłonięcie wylotka wymaga zastosowania szeregu tuneli z bramkami pojemnościowymi.
+Ustalono, że przy średnicy tunelu równej 15 mm i zachowaniu odstępów konieczne będzie 8 tuneli.
+Na rysunku \ref{fig:montaz} przedstawiona została wizualizacja urządzenia oraz miejsca jego montażu na ulu.
+Długość samych tuneli jest również ograniczona – powinny być krótkie by jak najmniej utrudniać wentylację ula oraz nie wpływać nadmiernie na ruch pszczół. 
+
+\begin{figure}
+    \centering
+    \includegraphics{tex/img/tunele-tech.pdf}
+    \centering
+    \begin{tblr}{cl|r}
+        \textbf{Oznaczenie} & \textbf{Opis} & \textbf{Wartość} [mm] \\
+        \hline
+       $\textbf{\textit{r}}$ & Rozstaw tuneli & 18 \\
+       $\textbf{\textit{D}}$ & Odległość do 1. okładki & 8 \\
+       $\textbf{\textit{d}}$ & Rozstaw okładek & 8.45 \\
+       $\textbf{\textit{g}}$ & Średnica drutu okładki & 1.5 \\
+       $\textbf{\textit{S}}$ & Średnica zewn. tunelu & 13 \\
+       $\textbf{\textit{l}}$ & Długość tunelu & 70  \\
+    \end{tblr}
+    \captionof{table}{Rozmieszczenie tuneli w czujniku}
+    \label{tab:tunele}
+\end{figure}
+
+W tabeli \ref{tab:tunele} przedstawione zostały opracowane wymiary konstrukcji, obrane na podstawie parametrów prototypu z następującymi modyfikacjami:
+\begin{enumerate}
+    \item Tunele wykonane zostaną z rurki o średnicy mniejszej niż w prototypie -- prototyp bazował na urządzeniu stworzonym do zliczania owadów z rodzaju \textit{Bombus} \cite{Campbell2005}.
+    Konkretny gatunek nie został podany, ale najprawdopodobniej chodzi o któryś z gatunków trzmieli występujących także w Polsce.
+    Owady te są większe od pszczoły miodnej (\textit{Apis mellifera}), której populacje monitorowane mają być projektowanym urządzeniem. W literaturze traktującej o tym gatunku pojawiają się otwory o rozmiarze od 6 mm \cite{Jiang2016} do 10 mm \cite{Pesovic2017}.
+    W niniejszej pracy zastosowane zostały tunele z rurki o średnicy wewnętrznej 9 mm, a zewnętrznej 13 mm.
+    Zwężenie tunelu względem prototypu teoretycznie powinno również zapewnić większą aplitudę odpowiedzi, ponieważ zmaleje średnica okładek, powodując wzrost pojemności elektrycznej bramek.
+    \item Długość tunelu została skrócona do 70 mm, by pszczoły mogły swobodniej się przemieszczać.
+    \item Tunele zostały ułożone końcami naprzemiennie, w celu zminimalizowania możliwości wzajemnego zakłócania bramek na sąsiadujących tunelach. Dzięki takiemu ustawieniu wymagany dystans pomiędzy sąsiadującymi tunelami jest nieduży (rozstaw tuneli $r=18$ mm).
+\end{enumerate}
 
 \subsection{Układ elektroniczny}
+W niniejszej sekcji opisana została realizacja układu elektronicznego pozwalającego na obsługę wymaganej liczby czujników pojemnościowych oraz komunikacji ze światem zewnętrznym.
+\begin{figure}
+    \centering
+    \includegraphics{tex/img/system-schemat.pdf}
+    \caption{Schemat systemu z dwoma mikrokontrolerami i ośmioma bramkami.}
+    \label{fig:system-schemat}
+\end{figure}
   \subsubsection{Dobór komponentów}
+Przedstawiony w poprzedniej części pracy sposób akwizycji sygnału z czujnika pojemnościowego nie wymaga wiele komponentów układu.
+Poza samym 
   \subsubsection{Realizacja płytki PCB} \label{pcb}
 \subsection{Oprogramowanie mikrokontrolerów}
   \subsubsection{Algorytm akwizycji}
