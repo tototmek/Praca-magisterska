@@ -368,15 +368,63 @@ W tabeli \ref{tab:tunele} przedstawione zostały opracowane wymiary konstrukcji,
 
 \subsection{Układ elektroniczny}
 W niniejszej sekcji opisana została realizacja układu elektronicznego pozwalającego na obsługę wymaganej liczby czujników pojemnościowych oraz komunikacji ze światem zewnętrznym.
+  \subsubsection{Dobór komponentów}
+Przedstawiony w poprzedniej części pracy układ akwizycji sygnału nie wymaga wielu elementów (rysunek \ref{fig:uklad-pomiarowy}).
+Serce urządzenia stanowi mikrokontroler, i to jego dobór ma kluczowe znaczenie dla działania systemu.
+W niniejszej pracy rozważono 3 popularne mikrokontrolery:
+ATmega32U4 (Arduino Micro Pro), STM32F401 (STM32 Blackpill), oraz ESP32-C3 (ESP32 Super Mini).
+Kryteria ich oceny oraz parametry poszczególnych propozycji przedstawione zostały w tabeli \ref{tab:wybor-mikrokontrolera}.
+\begin{table}[H]
+    \centering
+    \caption{Porównanie mikrokontrolerów}
+    \label{tab:wybor-mikrokontrolera}
+    \begin{tabular}{|l|lll|}
+        \hline
+        \textbf{Mikrokontroler} & \textbf{ATmega32U4} \cite{ArduinoDatasheet} & \textbf{STM32F401} \cite{STM32Datasheet} & \textbf{ESP32-C3} \cite{ESP32C3Datasheet} \\
+        \small (Płytka rozwojowa) & \small (Arduino Micro Pro) & \small (STM32 Blackpill) & \small (ESP32 Super Mini) \\
+        \hline
+        \hline
+        \makecell{\textbf{Taktowanie}} & 16 MHz & Do 84 MHz & Do 160 MHz \\
+        \makecell{\textbf{Pamięć Flash}} & 32 KB & 256 KB & 4 MB \\
+        \makecell{\textbf{Pamięć SRAM}} & 2.5 KB & 64 KB & 400 KB \\
+        \makecell{\textbf{Napięcie pracy}} & 5 V & 3.3 V & 3.3 V \\
+        \makecell{\textbf{Liczba GPIO}} & 18 & 34 & 13  \\
+        \makecell{\textbf{Łączność} \\ \textbf{bezprzewodowa}} & --- & --- & Wi-Fi, Bluetooth 5 \\
+        \hline
+    \end{tabular}
+\end{table}
+Najważniejszymi kryteriami oceny są:
+\begin{itemize}
+    \item \textbf{Taktowanie} --- od szybkości pracy mikrokontrolera bezpośrednio zależy rozdzielczość, z jaką możliwy jest pomiar sygnału bramki. W tej kategorii najlepszym mikrokontrolerem jest ESP32-C3.
+    \item \textbf{Liczba pinów GPIO} --- do obsługi ośmiu bramek potrzebne są 24 wyprowadzenia mikrokontrolera. Płytki rozwojowe Arduino Micro Pro oraz ESP32 Super Mini posiadają znacznie mniej pinów, zatem jedynym mikrokontrolerem pozwalającym w pełni zrealizować założenie liczby tuneli jest STM32F401.
+    \item \textbf{Łączność bezprzewodowa} --- wymagana jest do wydajnej komunikacji ze światem zewnętrznym w praktycznym zastosowaniu urządzenia w pasiece. Jedynym mikrokontrolerem wyposażonym w tę funkcjonalność jest ESP32-C3.
+\end{itemize}
+Na podstawie przeprowadzonego porównania wybrano do projektu mikrokontroler ESP32-C3 Super Mini. Znacząco przewyższa on pozostałe propozycje pod wszystkimi względami poza liczbą wyprowadzeń. Niewielka liczba pinów GPIO wynika bezpośrednio z bardzo małych wymiarów płytki rozwojowej, które również stanowią zaletę tego urządzenia w niniejszym projekcie, jako że jest on ograniczony wymiarami.
+
+Niewystarczająca liczba wyprowadzeń mikrokontrolera nie uniemożliwia realizacji założeń projektu. W celu obsługi pełnej liczby bramek stworzono rozwiązanie wykorzystujące dwa ESP32-C3 współpracujące ze sobą. Schemat tego rozwiązania został przedstawiony na rysunku \ref{fig:system-schemat}. 
 \begin{figure}
     \centering
     \includegraphics{tex/img/system-schemat.pdf}
-    \caption{Schemat systemu z dwoma mikrokontrolerami i ośmioma bramkami.}
+    \caption{Schemat systemu z dwoma mikrokontrolerami do obsługi ośmiu bramek.}
     \label{fig:system-schemat}
 \end{figure}
-  \subsubsection{Dobór komponentów}
-Przedstawiony w poprzedniej części pracy sposób akwizycji sygnału z czujnika pojemnościowego nie wymaga wiele komponentów układu.
-Poza samym 
+W jego skład wchodzą dwa układy, z których każdy obsługuje połowę tuneli dla pszczół -- wymagane jest po 12 pinów każdego z mikrokontrolerów.
+Pozostałe pojedyncze piny na płytkach rozwojowych wykorzystane są do zapewnienia komunikacji pomiędzy układami.
+Wyróżnione zostały:
+\begin{enumerate}
+    \item Mikrokontroler główny, którego zadaniem jest akwizycja sygnału z 4 bramek, integracja z danymi odebranymi od mikrokontrolera pomocniczego, a także komunikacja ze światem zewnętrznym (np. PC);
+    \item Mikrokontroler poboczny, którego zadaniem jest akwizycja sygnału z 4 bramek oraz przesłanie danych do mikrokontrolera głównego.
+\end{enumerate}
+Układy obu mikrokontrolerów mogą być identyczne, wymagane jest wyłącznie odpowiednie dostosowanie oprogramowania obu z nich -- zapewnia to systemowi modularność i uprości dalsze prototypowanie.
+Takie rozwiązanie posiada dodatkową zaletę: zastosowanie dwóch mikrokontrolerów pozwala na umieszczenie ich bliżej czujników pojemnościowych, dzięki czemu wyprowadzenia okładek kondensatorów będą mogły być krótsze, co zmniejszy podatność systemu na zakłócenia i pojemności pasożytnicze.
+
+Dzięki prostocie opracowanego czujnika pojemnościowego, oprócz doboru mikrokontrolera pozostaje tylko wybrać odpowiednie rezystory.
+Aby sygnał różnicowy z bramek czujnika był zbalansowany, należy zadbać, by tory ładowania oby kondensatorów miały równą rezystancję.
+W niniejszej pracy zastosowane zostały rezystory o rezystancji 10 M$\Omega$ z rozrzutem produkcyjnym 1\%.
+
+  \subsubsection{Projekt układu}
+
+
   \subsubsection{Realizacja płytki PCB} \label{pcb}
 \subsection{Oprogramowanie mikrokontrolerów}
   \subsubsection{Algorytm akwizycji}
