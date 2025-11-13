@@ -422,14 +422,70 @@ Dzięki prostocie opracowanego czujnika pojemnościowego, oprócz doboru mikroko
 Aby sygnał różnicowy z bramek czujnika był zbalansowany, należy zadbać, by tory ładowania oby kondensatorów miały równą rezystancję.
 W niniejszej pracy zastosowane zostały rezystory o rezystancji 10 M$\Omega$ z rozrzutem produkcyjnym 1\%.
 
-  \subsubsection{Projekt układu}
-
-
   \subsubsection{Realizacja płytki PCB} \label{pcb}
+Układ elektroniczny zrealizowany został w formie płytki PCB, co zapewnia powtarzalność wytwarzania modułów urządzenia, ułatwia montaż układu, a także przy odpowiednim projektowaniu zmniejsza podatność systemu na pojemności pasożytnicze.
+
+\begin{figure}
+    \centering
+    \includegraphics{tex/img/pcb-schematic.pdf}
+    \caption{Schemat układu elektronicznego.}
+    \label{fig:schemat}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics{tex/img/pcb.pdf}
+    \caption{Projekt płytki PCB.}
+    \label{fig:pcb}
+\end{figure}
+
+W pierwszym kroku realizacji PCB zaprojektowany został schemat układu elektronicznego zgodny z omówionym dotychczas projektem.
+W jego skład weszły cztery podukłady bramek wykrywających pszczoły, połączone z odpowiednimi wyprowadzeniami mikrokontrolera ESP32-C3.
+Odpowiednie przypisanie pinów okładkom bramek okazało się mieć kluczowe znaczenie.
+Prezentowany na rysunku schemat stanowi drugą wersję -- w pierwszym podejściu w wyniku nieprawidłowego doboru pinów prawidłowo działały wyłącznie dwie bramki z czterech.
+Dogłębna analiza schematu płytki\cite{ESP32-C3-Schematic} ujawniła źródło problemów: niektóre piny GPIO mikrokontrolera mają w podule ESP32-C3 SuperMini podłączone rezystory podciągające (o wartościach tysiąckrotnie niższych od rezystancji w torze ładowania -- 10 K$\Omega$).
+Elektrody \textit{L} lub \textit{R} podłączone do tych pinów były utrzymywane stale w stanie wysokim, a przez to mierzony czas ładowania wynosił zawsze zero.
+Konieczne było stworzenie zaktualizowanej wersji układu, w której piny z rezystorami podciągającymi wykorzystywane były wyłącznie do ładowania kondensatorów, nigdy do pomiaru.
+Piny z podciągnięciami to: GPIO2, GPIO8, GPIO9 \cite{ESP32-C3-Schematic}. Ostateczny sposób połączenia wyprowadzeń przedstawiony został w schemacie na rysunku \ref{fig:schemat}.
+Pin GPIO8 wybrany został do realizacji połączenia pomiędzy mikrokontrolerem głównym i pomocniczym.
+
+Zaprojektowany układ został przełożony na projekt płytki PCB, przedstawiony na rysunku \ref{fig:pcb}. Podstawowym elementem PCB są footprinty tuneli dla pszczół.
+Tunele montuje się w wyznaczonym miejscu poprzez przylutowanie pierścieni do odsłoniętych miedzianych padów znajdujących się na płytce (rysunek \ref{fig:montaz-tunelu}).
+\begin{figure}
+    \centering
+    \includegraphics{tex/img/montaz-tunelu.pdf}
+    \caption{Montaż tunelu dla pszczół do płytki PCB.}
+    \label{fig:montaz-tunelu}
+\end{figure}
+Rozmieszczenie footprintów tuneli dobrano tak, by zachować rozmieszczenie zdefiniowane w tabeli \ref{tab:tunele}. 
+W układach pomiarowych zastosowano rezystory w rozmiarze 0805, aby zapewnić względną łatwość lutowania przy zachowaniu małych wymiarów urządzenia.
+Po prawej stronie płytki znajduje się footprint modułu ESP32-C3 SuperMini, pozwalający wlutować bezpośrednio mikokontroler, a także, alternatywnie, szynę goldpin pozwalającą na wygodne wpinanie i wypinanie modułu w razie potrzeby.
+Podczas projektu PCB najwięcej uwagi przyłożono planowaniu rozmieszczenia ścieżek. Mają one znaczenie, ponieważ ich parametry wpływają znacząco na pojemności pasożytnicze zakłócające działanie czujnika.
+Dla minimalizacji ich negatywnego wpływu zastosowano następujące reguły:
+\begin{enumerate}
+    \item Unikano równoległych ścieżek, a w przypadku ich wystąpienia zapewniono jak największą odległość między nimi;
+    \item Nie dodano płaszczyzny uziemienia na odwrocie płytki -- jej zastosowanie jest w ogólności zalecane, jednak w przypadku niniejszego projektu mogłyby wystąpić stosunkowo duże pojemności między nią a ścieżkami;
+    \item Minimalizowano liczbę przelotek (\textit{via}) na płytce -- możliwe okazała się realizacja układu bez zastosowania ani jednej;
+    \item Zastosowano najmniejszą możliwość szerokość ścieżki, co oprócz zmniejszenia pojemności pasożytniczej wpłynęło również na zwiększenie dystansu między ścieżkami względem ich szerokości, poprawiając kryterium 1. oraz zmniejszając sprzężenie krzyżowe w układzie \cite{OurPCB_Kapacytancje_pasozytnicze}. Została dobrana szerokość ścieżki równa 0.1 mm -- minimum oferowane przez producenta płytek drukowanych JLCPCB \cite{JLCPCB_PCBCapabilities}.
+\end{enumerate}
+Ostateczny projekt PCB przedstawiony został na rysunku \ref{fig:pcb}.
+Oprócz wymienionych elementów zawiera on również styki zasilania oraz otwory montażowe.
+Wykonanie płytek zostało zamówione u producenta JLCPCB\footnote{https://jlcpcb.com/}.
+Do skonstruowania całego urządzenia konieczne było złożenie dwóch egzemplarzy -- w pierwszej kolejności wlutowano rezystory ładowania bramek, a następnie przymocowane zostały tunele.
+W celu zapewnienia precyzji ich rozmieszczenia, w technologii druku 3D zaprojektowany został specjalny wzornik utrzymujący płytki i tunele w odpowiedniej pozycji na czas lutowania.
+Na samym końcu przymocowane zostały moduły mikrokontrolerów. Stworzone układy były gotowe do programowania (rysunek \ref{fig:2pcb}.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{tex/img/2pcb.JPG}
+    \caption{Gotowe płytki PCB.}
+    \label{fig:2pcb}
+\end{figure}
+
+
+
 \subsection{Oprogramowanie mikrokontrolerów}
   \subsubsection{Algorytm akwizycji}
   \subsubsection{Komunikacja między mikrokontrolerami}
   \subsubsection{Komunikacja ze światem zewnętrznym}
 \subsection{Testy}
-\subsection{Modyfikacja układu}
-\subsection{Realizacja obudowy}
+\subsection{Montaż urządzenia}
