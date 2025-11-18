@@ -137,6 +137,8 @@ Jak widać, stała czasowa układu przyjmuje wartości rzędu pojedynczych mikro
 Z tego powodu, w niniejszej pracy zastosowana została pewna sztuczka: ładowanie kondensatora mierzone jest nie w jednostkach czasu, ale w liczbie wykonań pojedynczych instrukcji mikrokontrolera monitorującego stan wyjść czujnika. Działanie to formalnie nie daje faktycznego pomiaru czasu, jednak wynik pozwala się jako taki pomiar zastosować – co zostanie udowodnione w dalszych częściach pracy.
 Na rysunku \ref{fig:uklad-pomiarowy} przedstawione zostało połączenie czujnika z mikrokontrolerem, natomiast pseudokod \ref{alg:akwizycja} pokazuje działanie algorytmu akwizycji danych.
 
+\label{sekcja:alg-akwizycji}
+
 \begin{algorithm}
 \caption{Algorytm akwizycji pomiaru}
 \label{alg:akwizycja}
@@ -472,7 +474,7 @@ Oprócz wymienionych elementów zawiera on również styki zasilania oraz otwory
 Wykonanie płytek zostało zamówione u producenta JLCPCB\footnote{https://jlcpcb.com/}.
 Do skonstruowania całego urządzenia konieczne było złożenie dwóch egzemplarzy -- w pierwszej kolejności wlutowano rezystory ładowania bramek, a następnie przymocowane zostały tunele.
 W celu zapewnienia precyzji ich rozmieszczenia, w technologii druku 3D zaprojektowany został specjalny wzornik utrzymujący płytki i tunele w odpowiedniej pozycji na czas lutowania.
-Na samym końcu przymocowane zostały moduły mikrokontrolerów. Stworzone układy były gotowe do programowania (rysunek \ref{fig:2pcb}.
+Na samym końcu przymocowane zostały moduły mikrokontrolerów. Stworzone układy (rysunek \ref{fig:2pcb} były gotowe do programowania.
 
 \begin{figure}
     \centering
@@ -484,8 +486,201 @@ Na samym końcu przymocowane zostały moduły mikrokontrolerów. Stworzone ukła
 
 
 \subsection{Oprogramowanie mikrokontrolerów}
+
+Wyróżnione zostały cztery podstawowe zadania, które realizować musi program napisany na mikrokontrolery:
+
+\begin{enumerate}
+    \item Akwizycja pomiaru z bramek --- realizacja algorytmu umożliwiającego odczyt sygnału z kondensatorów w poszczególnych czujnikach, zgodnie z pseudokodem \ref{alg:akwizycja} opisanym w sekcji \ref{sekcja:alg-akwizycji};
+    \item Komunikacja między mikrokontrolerami --- przesył danych z układu pomocniczego do układu głównego;
+    \item Komunikacja ze światem zewnętrznym --- docelowo komunikacja bezprzewodowa, jednak na tym etapie pracy dowolna metoda komunikacji, która umożliwi potwierdzenie prawidłowego działania systemu;
+    \item Przetwarzanie pomiaru (liczenie pszczół) --- konwersja surowego sygnału z bramek na informację o wchodzących i wychodzących pszczołach. Funkcjonalność ta nie jest realizowana na tym etapie pracy -- stanowi ona obiekt rodziału \ref{chapter:algorytm}.
+\end{enumerate}
+W kolejnych sekcjach zawarte zostały fragmenty kodu projektu. Wszystkie omawiane pliki znaleźć można w publicznym repozytorium git, dostępnym pod adresem \url{https://github.com/tototmek/bee-counter}.
+
+
   \subsubsection{Algorytm akwizycji}
+% TODO: Tu można napisać o testach pomiaru równoległego i szeregowego
+
+Przedstawione na następnych fragmenty kodu zawierają implementację algorytmu akwizycji sygnału bramki, zgodną z pseudokodem \ref{alg:akwizycja} w sekcji \ref{sekcja:alg-akwizycji}.
+W ramach dobrej praktyki programistycznej w pliku \texttt{include/gate.h} zdefiniowano również abstrakcyjne reprezentacje struktur danych występujących w systemie.
+Struktura \texttt{GateConfig} zawiera wszystkie dane reprezentujące pojedynczą bramkę -- przypisania pinów GPIO, a także binarną flagę umożliwiającą odwrócić kierunek bramki.
+Zmiana kierunku zliczania części bramek na pewno będzie konieczna, ponieważ konstrukcja urządzenia zakłada bramki zorientowane naprzemiennie w obu kierunkach (rysunek \ref{fig:2pcb}).
+Struktura \texttt{GateReading} reprezentuje pojedynczy odczyt z czujnika (surowe sygnały obu kondensatorów w bramce), opisany dodatkowo numerem bramki, z której pochodzą dane.
+Czasy ładowania kondensatorów zapisywane są przez 32-bitowe dodatnie liczby całkowite, co daje wystarczająco duży zakres reprezentacji wyników na potrzeby tworzonego urządzenia.
+Największe znaczenie ma klasa \texttt{Gate}, która reprezentuje pojedynczą bramkę czujnika: opisywana jest przez konfigurację bramki i posiada metody \texttt{void initialize()} oraz \texttt{gate\_reading\_t measure()}. Służą one, odpowiednio, do inicjalizacji stanu początkowego bramki, oraz do akwizycji odczytu. 
+
+
+\vspace{2em}
+\inputminted[label={include/gate.h}, linenos, frame=single, framesep=0.5em, fontsize=\footnotesize]{cpp}{code/gate.h}
+\vspace{2em}
+
+Implementacja metod klasy \texttt{Gate} zawarta jest w poniższym pliku \texttt{src/gate.cpp}
+Inicjalizacja bramki w funkcji \texttt{void Gate::initialize()} opiera się głównie na odpowiedniej konfiguracji pinów GPIO mikrokontrolera i zapewnieniu rozładowania kondensatorów bramki.
+Konfigurowany jest parametr \texttt{drive\_capability} wszystkich pinów połączonych z bramką.
+Ustawiana jest jego maksymalna wartość \texttt{GPIO\_DRIVE\_CAP\_3}, co zapewnia najkrótszy możliwy czas narastania sygnału na pinie wyjściowym mikrokontrolera po ustawieniu go w programie na stan wysoki \cite{ESP-IDF_GPIO_v4.3}.
+Ma to znaczenie, ponieważ czas narastania napięcia na kondensatorze, który mierzymy jest bardzo krótki i należy unikać możliwych zakłóceń pomiaru, takich jak m.in. efekt slew-rate na wyjściu mikrokontrolera.
+
+\vspace{2em}
+\inputminted[label={src/gate.cpp}, linenos, frame=single, framesep=0.5em, fontsize=\footnotesize]{cpp}{code/gate.cpp}
+\vspace{2em}
+
+Funkcja \texttt{gate\_reading\_t Gate::measure()} realizuje omawiany wcześniej algorytm akwizycji z dwoma nieznacznymi rozszerzeniami.
+Po pierwsze, pętla zliczania iteracji ładowania kondensatorów poprzedzona została wywołaniem funkcji \texttt{noInterrupts()}.
+Funkcja ta wyłącza obsługę przerwań mikrokontrolera, których pojawienie się w trakcie akwizycji zakłócałoby sygnał, poprzez zajmowanie czas procesora.
+Wyłączenie przerwań umożliwia niezakłócone zliczanie iteracji algorytmu.
+Po zakończeniu akwizycji sygnału przerwania są ponownie włączane -- ich obsługa jest konieczna do prawidłowej pracy systemu, w którym zrównoleglone zostanie wiele zadań.
+Uruchomienie przerwań realizuje wywołanie funkcji \texttt{interrupts()}.
+
+Kolejnym rozszerzeniem względem najprostszej wersji algorytmu jest wprowadzony parametr \texttt{kChargeTimeout}, czyli suma zliczonych iteracji, przy której pętla jest przerywana pomimo braku wykrycia naładowania kondensatora. 
+Podczas testów urządzenia zaobserwowano, że zdarzały się sytuacje (np. przy dotknięciu okładek), w których pojemność bramki i czas jej ładowania rosły na tyle, że licznik iteracji przepełniał się, a sama akwizycja trwała zbyt długo.
+Sytuacje takie oczywiście stanowią anomalię, pomimo to dla zapewnienia stabilności systemu wprowadzono mechanizm, który przerywa pomiar jeśli trwa on zbyt długo.
+Domyślnie skonfigurowane maksimum to 0xffff, czyli zarazem maksymalna wartość licznika iteracji, po której następowałoby przepełnienie.
+Implementacja tego zachowania wymagała dodanie dodatkowych poleceń do głównej pętli algorytmu, której czas wykonania ma krytyczne znaczenie, natomiast nie będzie ona miała zauważalnego negatywnego wpływu -- czas wykonania porównania dwóch zmiennych typu \texttt{uint16\_t} wynosi pojedyncze cykle zegara procesora.
+
+Na koniec, wartości liczników iteracji wpisywane są do struktury wynikowej jako czasy ładowania poszczególnych kondensatorów w bramce. Struktura ta stanowi wyjście funkcji.
+
+
+
+  
   \subsubsection{Komunikacja między mikrokontrolerami}
+  
+Ze względu na kompromisy podjęte podczas doboru sprzętu, system składa się z dwóch podukładów sterowanych przez osobne mikrokontrolery.
+Konieczne jest zapewnienie komunikacji pomiędzy nimi, w celu zebrania pełnych danych o stanie bramek.
+Problem ten stanowi wyzwanie, ponieważ każdy z mikrokontrolerów posiada tylko jeden wolny pin, możliwy do wykorzystania w tym celu. 
+W ramach niniejszej pracy zaprojektowano protokół przesyłu danych z mikrokontrolera pomocniczego do mikrokontrolera głównego wykorzystujący tylko jeden przewód, oparty na protokole UART.
+Na rysunku \ref{fig:uart-connection} przedstawione zostało połączenie elektryczne pomiędzy układami.
+\begin{figure}
+    \centering
+    \includegraphics{tex/img/uart-connection.pdf}
+    \caption{Połączenia pomiędzy płytkami PCB umożliwiające współpracę podukładów.}
+    \label{fig:uart-connection}
+\end{figure}
+
+Jaką podstawę komunikacji wybrano protokół UART (ang. \textit{Universal Asynchronous Receiver-Transmitter}.
+Jego przewagą w tej sytuacji nad innymi podobnymi protokołami (np. SPI, I$^2$C) jest asynchroniczność -- czyli nie wymaga on używania sygnału zegarowego.
+Komunikujące się urządzenia znają zakładaną prędkość komunikacji (\textit{baudrate}) i taktują kolejne bity we własnym zakresie \cite{uart}.
+Standardowo, UART wykorzystuje dwie linie danych, RX oraz TX, dla dwóch kierunków komunikacji.
+W przypadku projektowanego systemu konieczne (i, na szczęście, możliwe) jest przesyłanie danych tylko w jednym kierunku -- od układu pomocniczego do głównego.
+W ten sposób, wymagana jest tylko jedna linia asynchronicznej wymiany informacji: RX dla układu pomocniczego i TX dla układu głównego (rysunek \ref{fig:uart-connection}).
+
+\begin{figure}
+    \centering
+    \includegraphics{tex/img/uart-ramka.pdf}
+    \caption{Ramka UART reprezentująca pojedynczy pomiar bramki.}
+    \label{fig:uart-ramka}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics{tex/img/uart-algorytmy.pdf}
+    \caption{Algorytmy pracy mikrokontrolera głównego i pomocniczego.}
+    \label{fig:uart-algorytmy}
+\end{figure}
+Wykorzystywany mikrokontroler ESP32-C3 posiada wbudowany kontroler UART, pozwalający na prostą implementację podstawowej komunikacji przez programistę \cite{ESP32C3Datasheet}.
+Układ ten realizuje kolejkowanie wysyłanych i odbieranych bajtów, sprawdzanie bitów startu i bitów parzystości, umożliwiając wymianę pojedynczych bajtów informacji w sposób bezbłędny i łatwy w obsłudze.
+Pojedyncze bajty nie wystarczają jednak do zapisu pełnej informacji zwrotnej z czujników pojemnościowych: pełna informacja (struktura \texttt{GateReading}) wymaga 9 bajtów.
+Z tej przyczyny zdefiniowano 11-bajtową ramkę UART reprezentującą pojedynczy pomiar bramki, której struktura przedstawiona została na rysunku \ref{fig:uart-ramka}.
+Jej dwa pierwsze bajty stanowi ustalona sekwencja startowa, która umożliwia odbiorcy potoku danych zlokalizowanie początków poszczególnych ramek.
+Dziewięć ostatnich bajtów stanowią dane odczytu, zapisywane w sposób zgodny z reprezentacją struktury \texttt{GateReading} w pamięci mikrokontrolera, co pozwala uniknąć konwersji podczas nadawania i odbioru.
+Ze względu na konieczność implementacji komunikacji po wyłącznie jednej linii, zdecydowano się na dość nietypowy model wymiany informacji, przedstawiony na rysunku \ref{fig:uart-algorytmy}.
+Nie zastosowano najpopularniejszego w podobnych sytuacjach modelu zapytanie-odpowiedź, w którym układ główny wysyła do pomocniczego zapytanie o dane, a tamten odsyła przechowywane w pamięci wyniki.
+Takie rozwiązanie w prosty sposób zapewnia synchronizację przesyłanych ramek, natomiast wymaga dwukierunkowej komunikacji.
+Implementacja połączenia half-duplex pozwoliłaby na zastoswanie tego modelu, jednak w niniejszej pracy zastosowano alternatywne rozwiązanie -- prostsze, dokładające jednak pewien narzut w postaci dodatkowych sekwencji startowych przesyłanych przez mikrokontroler pomocniczy.
+Ponieważ ilość przesyłanych danych nie jest szczególnie duża, aspekt ten nie ma negatywnego wpływu na działanie systemu. 
+
+Mikrokontroler w układzie pomocniczym pracuje w nieskończonej pętli, w której dokonuje akwizycji kolejnych bramek, a następnie przesyła ramki z wynikami.
+Dane przesyłane są sekwencyjnie, a wykrycie początków poszczególnych ramek jest możliwe dzięki występowaniu w nich sekwencji startowej \texttt{0xfefd}.
+Mikrokontroler główny pracuje w analogicznej pętli, na przemian dokonując akwizycji jednej z bramek, oraz odbierając jedną ramkę od układu pomocniczego.
+Dane zapisywane są wyłącznie przez mikrokontroler główny, który wykorzystuje je później do algorytmu detekcji pszczół.
+
+
+\begin{figure}
+    \centering
+    \includegraphics{tex/img/uart-fsm.pdf}
+    \caption{Odbiór ramek uart -- schemat automatu stanowego.}
+    \label{fig:uart-fsm}
+\end{figure}
+
+Ważne dla skutecznej wymiany informacji jest wykrywanie sekwencji startu ramki.
+Zostało to zrealizowane poprzez implementację automatu stanowego przedstawionego na rysunku \ref{fig:uart-fsm}.
+Przejścia między kolejnymi stanami odbywają się w wyniku odebrania przez kontroler UART kolejnego bajtu. 
+Po skutecznym odbiorze sekwencji startowej kolejne bajty zapisywane są do tablicy wynikowej, i inkrementowany jest ich licznik.
+Zapełnienie tablicy wynikowej jest warunkiem zakończenia pracy automatu stanowego -- odebrana została pełna ramka.
+Implementacja omawianego automatu zawarta jest funkcji \texttt{Receiver::receiveReading} z pliku \texttt{src/connection.cpp}, którego odpowiedni fragment przedstawiono na poniższym fragmencie kodu.
+
+\vspace{1em}
+\vbox{
+\begin{minted}
+[
+    label={include/connection.cpp > Receiver::receiveReading}, 
+    linenos, 
+    frame=single, 
+    framesep=0.5em, 
+    fontsize=\small
+]{cpp}
+bool Receiver::receiveReading(gate_reading_t* reading, uint32_t timeoutMs) {
+    uint8_t bytes[sizeof(gate_reading_t)];
+    uint32_t timeoutTime = millis() + timeoutMs;
+    uint8_t state = 0;
+    int data_idx = 0;
+    int b = 0;
+    while (millis() < timeoutTime) {
+        if (!Serial1.available()) continue;
+        b = Serial1.read();
+        if (b == -1) continue; // No bytes received, continue spinning
+        switch (state) {
+          case 0:
+            if (b == 0xfe) state = 1;
+            break;
+          case 1:
+            if (b == 0xfd) state = 2;
+            else state = 0;
+            break;
+          case 2:
+            bytes[data_idx++] = b;
+            if (data_idx == sizeof(gate_reading_t)) {
+                memcpy((uint8_t*)reading, bytes, sizeof(gate_reading_t));
+                return true; // All data received
+            }
+            break;
+        }
+    }
+    return false;
+}
+\end{minted}
+}
+\vspace{1em}
+
+Dodatkowo, funkcja pozwalająca na transmisję ramki została przedstawiona na poniższym fragmencie kodu.
+
+\vspace{1em}
+\vbox{
+\begin{minted}
+[
+    label={include/connection.cpp > Transmitter::transmitReading}, 
+    linenos, 
+    frame=single, 
+    framesep=0.5em, 
+    fontsize=\small
+]{cpp}
+void Transmitter::transmitReading(const gate_reading_t* reading) {
+    Serial1.write(0xfe);
+    Serial1.write(0xfd);
+    Serial1.write((const uint8_t*)reading, sizeof(gate_reading_t));
+}
+\end{minted}
+}
+\vspace{1em}
+
+Działanie utworzonego sposobu komunikacji przetestowano z wykorzystaniem przykładowych, arbitralnych danych przesyłanych między mikrokontrolerami.
+System działał prawidłowo i umożliwi przetwarzanie sygnałów ze wszystkich ośmiu tuneli na mikrokontrolerze głównym.
+
+
   \subsubsection{Komunikacja ze światem zewnętrznym}
+
+
+TODO: tutaj też o tym, że remapowana jest numeracja tuneli
+
+
+TODO: tutaj coś o tym, że w eepromie zapisuję który mikrokontroler jest poboczny, a który główny, a firmware jest dokładnie ten sam
 \subsection{Testy}
 \subsection{Montaż urządzenia}
