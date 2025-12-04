@@ -262,7 +262,7 @@ Dodatkowo, ustawione flagi \texttt{build\_flags} umożliwiają programowanie mik
 Ustawiono również prędkość komunikacji monitora portu szeregowego (jednego z dostępnych w PlatformIO narzędzi) na wartość zgodną z wcześniej przedstawionym programem. Po odpowiednim skonfigurowaniu projektu możliwe było wgranie utworzonego oprogramowania na mikrokontroler i przetestowanie proponowanego rozwiązania.
 
 
-  \subsubsection{Testy}
+  \subsubsection{Testy} \label{sekcja:testy-prototypu}
   
 \begin{figure}
     \centering
@@ -611,11 +611,11 @@ Implementacja omawianego automatu zawarta jest funkcji \texttt{Receiver::receive
 \vbox{
 \begin{minted}
 [
-    label={include/connection.cpp > Receiver::receiveReading}, 
+    label={src/connection.cpp > Receiver::receiveReading}, 
     linenos, 
     frame=single, 
     framesep=0.5em, 
-    fontsize=\small
+    fontsize=\footnotesize
 ]{cpp}
 bool Receiver::receiveReading(gate_reading_t* reading, uint32_t timeoutMs) {
     uint8_t bytes[sizeof(gate_reading_t)];
@@ -656,11 +656,11 @@ Dodatkowo, funkcja pozwalająca na transmisję ramki została przedstawiona na p
 \vbox{
 \begin{minted}
 [
-    label={include/connection.cpp > Transmitter::transmitReading}, 
+    label={src/connection.cpp > Transmitter::transmitReading}, 
     linenos, 
     frame=single, 
     framesep=0.5em, 
-    fontsize=\small
+    fontsize=\footnotesize
 ]{cpp}
 void Transmitter::transmitReading(const gate_reading_t* reading) {
     Serial1.write(0xfe);
@@ -677,10 +677,164 @@ System działał prawidłowo i umożliwi przetwarzanie sygnałów ze wszystkich 
 
   \subsubsection{Komunikacja ze światem zewnętrznym}
 
+Docelowo, tworzone urządzenie ma komunikować się bezprzewodowo z serwerem agregującym dane, jednak na bieżącym etapie pracy zostanie wykorzystana jedynie prostsza w implementacji komunikacja przewodowa.
+Wystarczy ona do zbadania jakości działania urządzenia, a także do eksperymentów pozwalających rozwijać algorytmy przetwarzające dane.
+Do komunikacji z komputerem wykorzystane zostało złącze USB typu C na urządzeniu oraz kontroler protokołu USB wpudowany w ESP32-C3.
+Osiem próbek pobranych ze wszystkich tuneli urządzenia przesyłane jest łączem szeregowym po uprzednim zakodowaniu do postaci napisu z dziesiętną reprezentacją tych liczb, poprzedzielanych przecinkami, wszystko w kodowaniu znaków ASCII.
+Kolejne rekordy oddzielane są od siebie znakiem nowej linii.
+Taka reprezentacja danych oczywiście nie jest optymalna, jednak wydajność transmisji nie ma wpływu na działanie urządzenia, wybrano więc to rozwiązanie jako najbardziej intuicyjne w późniejszej interpretacji danych.
+Znaki odbierane z urządzenia mogą być zapisywane bezpośrednio do pliku w formacie CSV z zapisem przebiegów.
 
-TODO: tutaj też o tym, że remapowana jest numeracja tuneli
+Do zakodowania danych w odpowiedni napis wykorzystana została biblioteka \texttt{fmt} dla języka C++ \cite{fmt}, a w szczególności oferowana w jej ramach funkcja \texttt{fmt::format}.
+Wysłanie danych w protokole USB zrealizowane zostało za pomocą funkcji \texttt{Serial.print}, stanowiącej element frameworka Arduino.
+Pełen kod pętli programu został przedstawiony na fragmencie kodu poniżej (plik \texttt{src/main.cpp}, funkcja \texttt{primaryMcuLoop}).
 
+Pomiędzy akwizycją danych, a ich przesyłem do komputera użytkownika, wykonywany jest dodatkowy krok obliczenia sygnałów różnicowych oraz odpowiedniego przyporządkowania numeracji bramek.
+Przemapowanie kolejności zapewnia, że kolejność sygnałów w zwracacych przez urządzenie danych odpowiada fizycznej kolejności tuneli w obudowie urządzenia.
 
-TODO: tutaj coś o tym, że w eepromie zapisuję który mikrokontroler jest poboczny, a który główny, a firmware jest dokładnie ten sam
+\vspace{1em}
+\vbox{
+\begin{minted}
+[
+    label={src/main.cpp > primaryMcuLoop}, 
+    linenos, 
+    frame=single, 
+    framesep=0.5em, 
+    fontsize=\footnotesize
+]{cpp}
+void primaryMcuLoop() { // Kod wykonywany w pętli na mikrokontrolerze głównym
+    // Pomiar bramek 0-3 i odbiór bramek 4-7
+    for (int i = 0; i < bee_counter::kNumGates; ++i) {
+        gate_reading[i] = gate[i].measure();
+        receiver.receiveReading(&single_reading, 5);
+        gate_reading[single_reading.gateId] = single_reading;
+    }
+    // Obliczenie sygnałów różnicowych i dostosowanie numeracji tuneli
+    delta[0] = gate_reading[7].timeRawR - gate_reading[7].timeRawL;
+    delta[1] = gate_reading[6].timeRawR - gate_reading[6].timeRawL;
+    delta[2] = gate_reading[5].timeRawR - gate_reading[5].timeRawL;
+    delta[3] = gate_reading[4].timeRawR - gate_reading[4].timeRawL;
+    delta[4] = gate_reading[0].timeRawL - gate_reading[0].timeRawR;
+    delta[7] = gate_reading[3].timeRawL - gate_reading[3].timeRawR;
+    delta[6] = gate_reading[2].timeRawL - gate_reading[2].timeRawR;
+    delta[5] = gate_reading[1].timeRawL - gate_reading[1].timeRawR;
+    // Przesył danych do PC
+    std::string message =
+        fmt::format("{},{},{},{},{},{},{},{},{}\n", millis(),
+                    delta[0], delta[1], delta[2], delta[3],
+                    delta[4], delta[5], delta[6], delta[7]);
+    Serial.print(message.c_str());
+}
+\end{minted}
+}
+\vspace{1em}
+\vspace{1em}
+\vbox{
+\begin{minted}
+[
+    label={src/main.cpp > secondaryMcuLoop}, 
+    linenos, 
+    frame=single, 
+    framesep=0.5em, 
+    fontsize=\footnotesize
+]{cpp}
+void secondaryMcuLoop() { // Kod wykonywany w pętli na kontrolerze pobocznym
+    // Pomiar bramek 0-3 i przesłanie do układu głównego jako bramki 4-7
+    for (int i = 0; i < bee_counter::kNumGates; ++i) {
+        single_reading = gate[i].measure();
+        single_reading.gateId = i+bee_counter::kNumGates;
+        transmitter.transmitReading(&single_reading);
+    }
+}
+\end{minted}
+}
+\vspace{1em}
+
+Powyżej przytoczona została również treść fukcji \texttt{secondaryMcuLoop}, która wykonywana jest w pętli na mikrokontrolerze pomocniczym.
+Realizuje ona wyłącznie pobranie pomiarów i ich transmisję do mikrokontrolera głównego.
+Wybór, który z dwóch mikrokontrolerów urządzenia wykonuje zadania pętli głównej odbywa się poprzez ustawienie pierwszego bajtu pamięci EEPROM.
+Wartość \texttt{0x00} oznacza mikrokontroler główny, natomiast \texttt{0x01} mikrokontroler poboczny.
+Dzięki takiemu podejściu istnieje możliwość wgrywania tego samego programu na oba mikrokontrolery, a zaprogramowany tryb pozostaje zapamiętany również po aktualizacji programu.
+Wystarczy jedynie sprawdzać w programie wartość pierwszego pola pamięci i wykonywać odpowiednią funkcję z przedstawionych powyżej.
+Szczegółowa implementacja ustawiania i sprawdzania trybu mikrokontrolera nie zostanie przedstawiona w niniejszej pracy, można się z nią natomiast zapoznać w kodzie źródłowym projektu -- w plikach \texttt{include/connection.h}, \texttt{src/connection.cpp} oraz \texttt{src/main.cpp}. 
+
 \subsection{Testy}
+
+Przeprowadzony został szereg testów mających na celu weryfikację sprawnego działania całego urządzenia.
+W pierwszej kolejności zweryfikowano, czy sygnał różnicowy generowany przez bramkę czujnika zawiera impulsy wywołane przejściem pszczoły przez tunel zbliżone do teoretycznych idealnych przebiegów z rysunku \ref{fig:campbell-symulacja-wynik}.
+Zasada eksperymentu była zbliżona do działań opisanych w sekcji \ref{sekcja:testy-prototypu}, z następującymi modyfikacjami:
+\begin{enumerate}
+\item W celu zasymulowania przejścia owada przez czujnik wykorzystana została prawdziwa pszczoła -- martwy osobnik zebrany z dna ula.
+Po jego pobraniu zadbano o niezwłoczne przeprowadzenie eksperymentu w celu uniknięcia wysuszenia organizmu.
+Wykorzystanie prawdziwej pszczoły zapewnia bliższy żywemu osobnikowi model właściwości elektrycznych;
+\item Zbierane były dane różnicowe z bramki jednego z czujników.
+\end{enumerate}
+Test został wykonany na tunelu o numerze 0. Pszczołę przeprowadzono przez bramkę kilkukrotnie w obu kierunkach.
+Wynikowy przebieg sygnału wyjściowego został przedstawiony na rysunku \ref{fig:test-dead-bee}. Dane zostały przefiltrowane średnią kroczącą na oknie 30 próbek.
+\begin{figure}
+    \centering
+    \caption{Przebieg sygnału wyjściowego bramki podczas przeprowadzonego testu.}
+    \includegraphics{tex/img/test-dead-bee.pdf}
+    \label{fig:test-dead-bee}
+\end{figure}
+
+Na prezentowanym zakresie przebiegu wyraźnie widoczne jest pięć podwójnych asymetrycznych impulsów odpowiadających kolejnym przejściom obiektu przez czujnik. Ich polaryzacja zmienia się naprzemiennie -- odpowiada to kierunkowi ruchu pszczoły.
+Należy zwrócić uwagę na cechy sygnału, którymi odbiega on od przebiegów idealnych. Po pierwsze, widoczne są drobne wahania poziomu sygnału o czasie trwania zbliżonym do analizowanych impulsów.
+Dodatkowo, widoczny jest wyraźny trend w sygnale -- poziom zerowy sygnału różnicowego mocno przesuwa się w czasie.
+Konieczne okaże się opracowanie metody przetwarzania sygnału, która pozwoli zminimalizować wpływ tych efektów na działanie algorytmów detekcji pszczoły.
+Pomimo tych wad, pojawiające się impulsy są bardzo wyraźne, ich wykrycie będzie zatem możliwe z pomocą dość prostych algorytmów mogących działać na mikrokontrolerze o ograniczonych zasobach.
+
+Przeprowadzono kolejny eksperyment weryfikujący działanie całości urządzenia. Badanie analogiczne jak poprzednio przeprowadzono dla wszystkich ośmiu tuneli, przeprowadzając martwą pszczołę czterokrotnie kolejno przez każdy z nich.
+Sygnał wyjściowy bramek zbierano przez cały czas trwania eksperymentu.
+Przeprowadzone badanie miało udowodnić, że stworzony system czujników nadaje się do zastosowania jeżeli:
+\begin{enumerate}[label=(\alph*)]
+    \item Na przebiegu sygnału każdego z czujników pojawią się impulsy w momentach odpowiadających pojawianiu się pszczoły w odpowiedniej bramce, 
+    \item Impulsy widoczne na każdym z sygnałów będą miały kształt wystarczająco podobny, by w ramach dalszego rozwoju umożliwić wykrywanie ich jednym uniwersalnym algorytmem.
+\end{enumerate}
+\begin{figure}
+    \centering
+    \caption{Przebiegi sygnałów wyjściowych bramek $x_0$--$x_7$ podczas testu działania urządzenia.}
+    \includegraphics{tex/img/test-zlozenia.pdf}
+    \label{fig:test-zlozenia}
+\end{figure}
+Dane zebrane podczas niniejszego eksperymentu zostały przedstawione na rysunku \ref{fig:test-zlozenia}.
+Na ich podstawie jednoznacznie można stwierdzić, że każda z bramek reaguje prawidłowo na pojawienie się pszczoły w tunelu.
+Na sygnałach wyjściowych kolejno pojawiały się serie szpilek jasno odpowiadających przejściom obiektu przez tunel.
+Impulsy zebrane przez urządzenie nie były idealne: wyraźnie widoczne są wspomniane wcześniej efekty spontanicznych wychyleń sygnału oraz pojawianie się trendu -- ponownie jednakże stwierdzono że jakość sygnału nada się do wykorzystania w dalszym przetwarzaniu sygnału.
+
+
+Przeprowadzone eksperymenty pozwoliły jednoznacznie stwierdzić, że skonstruowane urządzenie działa prawidłowo.
+Możliwe było rozpoczęcia dalszych prac, aby umożliwić przetestowanie urządzenia na żywych pszczołach w pasiece.
+
 \subsection{Montaż urządzenia}
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics{tex/img/exploded.pdf}
+    \caption{Schemat złożenia obudowy urządzenia}
+    \label{fig:exploded}
+\end{figure}
+\begin{figure}[htb]
+    \centering
+    \includegraphics{tex/img/dokumentacja-zlozenia.pdf}
+    \caption{Zdjęcia z kolejnych etapów montażu urządzenia w obudowie}
+    \label{fig:zlozenie-zdjecia}
+\end{figure}
+
+Aby możliwe było wykorzystanie stworzonego systemu w warunkach rzeczywistych konieczne jest umieszczenie urządzenia w obudowie, która odizoluje je od zmiennych warunków otoczenia, oraz ograniczy ruch pszczół do wnętrza tuneli czujników.
+Przyjęto nastepujące dodatkowe założenia dla jej projektu:
+\begin{enumerate}
+    \item Technologia wykonania: druk 3D, materiał PLA;
+    \item Jak największa kompaktowość, w celu ułatwienia montażu na ulu dowolnego rodzaju;
+    \item Zapewnienie izolacji mechanicznej (uniemożliwienie dostania się owadów do środka, a także zanieczyszczenia wnętrza pyłkiem), oraz elektrostatycznej.
+\end{enumerate}
+Do stworzenia projektu obudowy wykorzystano oprogramowanie \textit{Onshape}\footnote{\url{https://cad.onshape.com}} służące do parametrycznego modelowania 3D.
+Zaprojektowane części, pozostałe elementy, a także sposób ich złożenia zostały przedstawione na rysunku \ref{fig:exploded}.
+Drukowana obudowa składa się z czterech fragmentów, oznaczonych A., B. i dwukrotnie C.
+Panele boczne (C.) posiadają kilkumilimetrowe kołnierze nachodzące na końce tuneli czujnika, zapewniając szczelne połączenie.
+Wchodzą one w dopasowane wpusty w dolnej i górnej części obudowy (A., B.), również zapobiegając występowaniu szczelin.
+Płytki PCB czujnika przykręcane są przez otwory montażowe sześcioma śrubami M2, po uprzednim ekranowaniu warstwą materiałów: izolującego (arkusz papieru do pieczenia), oraz ekranującego (folia aluminiowa).
+Piny komunikacyjne i zasilające obu podukładów łączone są ze sobą przewodami, a w ostatnim kroku złożenia obie połowy obudowy skręcane są ze sobą śrubami M3.
+Dolna część obudowy wyposażona jest dodatkowo w otwory montażowe, z których użytkownik urządzenia może skorzystać, aby przyczepić je do półki przy wylotku ula.
+Na rysunku \ref{fig:zlozenie-zdjecia} przedstawiona została dokumentacja fotograficzna kolejnych kroków montażu płytek PCB w obudowie.
+
