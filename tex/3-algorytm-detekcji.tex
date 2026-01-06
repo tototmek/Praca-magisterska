@@ -1,7 +1,77 @@
 \clearpage
 \section{Algorytm detekcji} \label{chapter:algorytm}
+
+Opisany w poprzedniej części pracy system czujników generuje sygnały wyjściowe, na przebiegach czasowych których widoczne są impulsy wywołane ruchem pszczół.
+W celu umożliwienia wykorzystania stworzonego urządzenia do automatycznego zliczania pszczół w ulu, konieczne jest zaprojektowanie algorytmu wykrywającego te impulsy.
+Przyjęte zostały następujące założenia:
+\begin{enumerate}
+    \item Algorytm ma być uruchomiony na mikrokontrolerze wchodzącym w skład urządzenia -- co pozwoli uniknąć konieczności rozszerzenia systemu o dodatkowy węzeł, którego zadaniem byłoby jedynie wykonywanie obliczeń.
+    Wymagać to będzie niskiej złożoności pamięciowej algorytmu oraz niewielkiego narzutu obliczeniowego.
+    \item Algorytm ma być wykonywany \textit{on line} -- w każdej iteracji działania urządzenia, lub na buforze z maks. kilku sekund. W ten sposób zagwarantowane będą bieżące dane, oraz brak przerw w akwizycji sygnału z czujników pojemnościowych.
+\end{enumerate}
+
+
 \subsection{Zbiór danych przykładowych}
+
+Pierwszym krokiem, zanim rozpoczęto pracę nad projektem algorytmu, było zebranie dużej ilości przykładowych danych z pracy urządzenia w warunkach rzeczywistych.
+Są one niezwykle ważne, pozwolą bowiem do oceny proponowanych w kolejnych sekcjach algorytmów i ich konfiguracji -- posłużą do przeprowadzenia testów \textit{off line}.
+
   \subsubsection{Testy urządzenia w pasiece}
+
+W celu uzyskania reprezentatywnych danych z pracy urządzenia w środowisku rzeczywistym przeprowadzone zostały eksperymenty w dwóch niezależnych pasiekach, w różnych tygodniach, przy innych warunkach atmosferycznych i aktywności pszczół.
+Testy prowadzono według następującej metody:
+\begin{enumerate}
+    \item Wybierano ul, który zostanie wykorzystany do eksperymentu. W obu przypadkach kierowano się największą aktywnością pszczół w całej pasiece, by w zebranych przebiegach wystąpiło jak najwięcej przejść owadów przez czujnik;
+    \item Na wylotku wybranego ula umieszczano urządzenie. Zastosowano dwie alternatywne jego pozycje: wewnątrz ula -- zamocowane do dennicy, a także na zewnątrz ula na półce przed wylotkiem.
+    Pszczelarze w prowadzonych rozmowach sugerowali, że przy drugiej z wymienionych metod pszczoły mogą być niechętne do wchodzenia do gniazda, jednak w eksperymencie nie zaobserwowano tego zjawiska.
+    Wszelkie szczeliny pozostające między urządzeniem a ścianami ula zatkano, aby uniemożliwić pszczołom ominięcie tuneli czujnika.
+    \item W obu eksperymentach odczekano około 30 minut, aby pszczoły poruszone zamieszaniem przy montażu urządzenia uspokoiły się, a następnie aby przyzwyczaiły się do nowego obiektu na wylotku.
+    \item Na statywie przed ulem umieszczono kamerę wideo, nagrywającą obraz urządzenia. Kadr dobrany został tak, by wyraźnie widoczne były wloty wszystkich tuneli urządzenia.
+    Nagranie to będzie później wykorzystane do anotacji danych -- ręczne opisu chwil, w których pszczoły wchodziły i wychodziły.
+    \item Urządzenie łączono z portem USB laptopa, aby zapewnić przesył kolejnych próbek sygnałów wyjściowych każdego z czujników pojemnościowych.
+    Uruchamiano stworzony uprzednio skrypt Python, zapisujący otrzymywane dane do pliku CSV.
+    \item W chwili uruchomienia w komputerze akwizycji sygnału, wykonywano przed kamerą klaśnięcie, co pozwoli na późniejszą synchronizację nagrania z zebranymi danymi.
+\end{enumerate}
+Na rysunku \ref{fig:exp2} przedstawiona jest fotografia prezentująca jeden z przeprowadzonych eksperymentów, natomiast na rysunku \ref{fig:exp1} przedstawiono alternatywne miejsce montażu urządzenia (od środka ula).
+W tabeli \ref{tab:test1} podsumowano informacje o przeprowadzonych eksperymentach.
+\begin{table}[H]
+\centering
+\caption{Zbiór danych przykładowych -- podsumowanie eksperymentów}
+\begin{tabular}{l|l|l|l}
+                       & \multicolumn{1}{c|}{\textbf{Eksperyment 1}} & \multicolumn{1}{c|}{\textbf{Eksperyment 2}} &                                                \\ 
+\cline{1-3}
+\textbf{Data}          & 20 lipca 2025                               & 26 lipca 2025                               &                                                \\
+\textbf{Lokalizacja}   & gmina Miastkowo                             & gmina Choroszcz                             & \multicolumn{1}{c}{\textit{\textbf{Łącznie}}}  \\ 
+\cline{4-4}
+\textbf{Czas trwania}  & ok. 45 min                                  & ok. 30 min                                  & ok. 1 h 15 min                                 \\
+\textbf{Liczba próbek} & 274214                                      & 182435                                      & 456649                                        
+\end{tabular}
+\label{tab:test1}
+\end{table}
+
+Przeprowadzone eksperymenty stanowiły również pierwszą weryfikację działania urządzenia w warunkach rzeczywistych -- przy współpracy z żywymi pszczołami.
+Fragment zebranych danych zwizualizowano na wykresie (rysunek \ref{fig:exp1-data}), w celu sprawdzenia czy zawiera prawidłowo wyglądające impulsy wywoływane ruchem pszczół.
+Stwierdzono, że system działa prawidłowo: pomimo występującego szumu widoczne są wzory bardzo podobne do wzorcowych przebiegów; warto porównać zaprezentowane przebiegi z tymi na rysunku \ref{fig:campbell-symulacja-wynik}.
+\begin{figure}[H]
+    \centering
+    \includegraphics{tex/img/wizualizacja-testu-z-pasieki.pdf}
+    \caption{Przebieg sygnału $x_0(t)$ (wyjścia pierwszego czujnika pojemnościowego) w pierwszych kilkudziesięciu sekundach trwania eksperymentu. Przebieg filtrowany został wygenerowany poprzez nałożenie na dane oryginalne filtru średniej kroczącej o długości okna równej 50.}
+    \label{fig:exp1-data}
+\end{figure}
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=0.9\linewidth]{tex/img/8-eksperyment-2-downscaled.jpg}
+    \caption{Zdjęcie jednego z eksperymentów. Widoczne jest urządzenie zamontowane na wylotku ula, oraz kamera nagrywające jego wylot. Znajdujący się na obrazie fioletowy przewód łączy czujnik z komputerem zapisującym dane.}
+    \label{fig:exp2}
+\end{figure}
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=0.9\linewidth]{tex/img/7-eksperyment-1.JPG}
+    \caption{Zdjęcie prezentujące montaż urządzenia podczas drugiego eksperymentu. Jest ono przybite do dennicy -- pozostałą część ula nastawia się na widoczny na obrazie element.}
+    \label{fig:exp1}
+\end{figure}
+
+  
   \subsubsection{Ręczna anotacja danych}
 \subsection{Wstępne przetwarzanie danych}
   \subsubsection{Filtr uśredniający}
