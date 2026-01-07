@@ -5,7 +5,7 @@ Opisany w poprzedniej części pracy system czujników generuje sygnały wyjści
 W celu umożliwienia wykorzystania stworzonego urządzenia do automatycznego zliczania pszczół w ulu, konieczne jest zaprojektowanie algorytmu wykrywającego te impulsy.
 Przyjęte zostały następujące założenia:
 \begin{enumerate}
-    \item Algorytm ma być uruchomiony na mikrokontrolerze wchodzącym w skład urządzenia -- co pozwoli uniknąć konieczności rozszerzenia systemu o dodatkowy węzeł, którego zadaniem byłoby jedynie wykonywanie obliczeń.
+    \item Algorytm ma być uruchomiony na mikrokontrolerze wchodzącym w skład urządzenia, co pozwoli uniknąć konieczności rozszerzenia systemu o dodatkowy węzeł, którego zadaniem byłoby jedynie wykonywanie obliczeń.
     Wymagać to będzie niskiej złożoności pamięciowej algorytmu oraz niewielkiego narzutu obliczeniowego.
     \item Algorytm ma być wykonywany \textit{on line} -- w każdej iteracji działania urządzenia, lub na buforze z maks. kilku sekund. W ten sposób zagwarantowane będą bieżące dane, oraz brak przerw w akwizycji sygnału z czujników pojemnościowych.
 \end{enumerate}
@@ -18,7 +18,7 @@ Są one niezwykle ważne, pozwolą bowiem do oceny proponowanych w kolejnych sek
 
   \subsubsection{Testy urządzenia w pasiece}
 
-W celu uzyskania reprezentatywnych danych z pracy urządzenia w środowisku rzeczywistym przeprowadzone zostały eksperymenty w dwóch niezależnych pasiekach, w różnych tygodniach, przy innych warunkach atmosferycznych i aktywności pszczół.
+W celu uzyskania reprezentatywnych danych z pracy urządzenia w środowisku rzeczywistym przeprowadzone zostały eksperymenty w dwóch niezależnych pasiekach, w różnych tygodniach, przy innych warunkach atmosferycznych i aktywności pszczół. Zbierano sygnały $x_i(t)$, dla $i=0\dots7$, czyli wyjściowe przebiegi czasowe wszystkich bramek urządzenia.
 Testy prowadzono według następującej metody:
 \begin{enumerate}
     \item Wybierano ul, który zostanie wykorzystany do eksperymentu. W obu przypadkach kierowano się największą aktywnością pszczół w całej pasiece, by w zebranych przebiegach wystąpiło jak najwięcej przejść owadów przez czujnik;
@@ -29,7 +29,7 @@ Testy prowadzono według następującej metody:
     \item Na statywie przed ulem umieszczono kamerę wideo, nagrywającą obraz urządzenia. Kadr dobrany został tak, by wyraźnie widoczne były wloty wszystkich tuneli urządzenia.
     Nagranie to będzie później wykorzystane do anotacji danych -- ręczne opisu chwil, w których pszczoły wchodziły i wychodziły.
     \item Urządzenie łączono z portem USB laptopa, aby zapewnić przesył kolejnych próbek sygnałów wyjściowych każdego z czujników pojemnościowych.
-    Uruchamiano stworzony uprzednio skrypt Python, zapisujący otrzymywane dane do pliku CSV.
+    Uruchamiano stworzony uprzednio skrypt Python (plik \texttt{scripts/collect\_data.py} w repozytorium projektu), zapisujący otrzymywane dane do pliku CSV.
     \item W chwili uruchomienia w komputerze akwizycji sygnału, wykonywano przed kamerą klaśnięcie, co pozwoli na późniejszą synchronizację nagrania z zebranymi danymi.
 \end{enumerate}
 Na rysunku \ref{fig:exp2} przedstawiona jest fotografia prezentująca jeden z przeprowadzonych eksperymentów, natomiast na rysunku \ref{fig:exp1} przedstawiono alternatywne miejsce montażu urządzenia (od środka ula).
@@ -71,8 +71,46 @@ Stwierdzono, że system działa prawidłowo: pomimo występującego szumu widocz
     \label{fig:exp1}
 \end{figure}
 
+\FloatBarrier
   
   \subsubsection{Ręczna anotacja danych}
+Umożliwienie oceny algorytmów z wykorzystaniem zbudowanego zbioru danych wymaga przeprowadzenia jego anotacji.
+Polega ona na niezależnym, ręcznym oznaczeniu chwil przechodzenia pszczół przez tunele czujnika.
+Podczas testowania algorytmów weryfikowana ma być zgodność generowanych przez nie wyników z tymi właśnie oznaczeniami.
+Do anotacji wykorzystane zostały wspomniane wcześniej nagrania wideo z eksperymentów.
+W celu przyspieszenia procesu ręcznego przeglądu materiału, a także zredukowania prawdopodobieństwa popełniania błędów, stworzono dedykowany program: wyświetlał on użytkownikowi nagranie, dając możliwość kontroli tempa odtwarzania, a także zautomatyzowanego tworzenia anotacji danych poprzez pojedyncze uderzenia klawiszy (plik \texttt{scripts/manual\_annotation.py}).
+Wciśnięcie wybranego przycisku zapisywało dla danej chwili nagrania wystąpienie wejścia/wyjścia pszczoły przez odpowiedni tunel.
+Na rysunku \ref{fig:annotation} przedstawiony został zrzut ekranu z programu -- prezentuje on także przykładowy kadr z nagrania eksperymentu.
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=\linewidth]{tex/img/manual-annotation.png}
+    \caption{Zrzut ekranu z programu do ręcznej anotacji danych z eksperymentu.}
+    \label{fig:annotation}
+\end{figure}
+Ręczne etykietowanie całego materiału nagraniowego okazało się wymagać większego nakładu pracy niż początkowo oczekiwano -- ze względu na ograniczenia percepcji operatora programu konieczne było przetwarzanie całej długości nagrania z osobna dla każdego z tuneli, co ośmiokrotnie wydłużyło oczekiwany czas pracy.
+
+Wynikiem niniejszego etapu pracy było powstanie dla każdego z tuneli urządzenia dwóch zbiorów anotacji: $L_i^{\mathrm{we}}$ -- zawierającego chwile $t$, w których pszczoły wchodziły do ula przez tunel $i$; oraz $L_i^{\mathrm{wy}}$ -- zawierającego chwile $t$, w których pszczoły wychodziły z ula przez tunel $i$.
+Etykiety w takiej formie porównano z oryginalnymi sygnałami wyjściowymi $x_i(t)$, aby empirycznie potwierdzić, że impulsy generowane przez pszczoły pokrywają się z anotacjami. Na rysunku \ref{fig:anotacja-dane} przedstawiony jest fragment danych, na którym wyraźnie widać, że anotacje są prawidłowe, oraz że nie wystąpiły problemy z synchronizacją danych z czujnika i nagrania. Każdemu z wyraźnie widocznych impulsów odpowiada element zbioru etykiet; ponadto, rodzaj anotacji (wejście/wyjście) jest zgodny z polaryzacją impulsów.
+\begin{figure}[htb]
+    \centering
+    \includegraphics{tex/img/anotacja-dane.pdf}
+    \caption{Fragment przebiegu sygnału $x_0$ zestawiony z ręcznie dodaną anotacją.}
+    \label{fig:anotacja-dane}
+\end{figure}
+
+
+TODODODODODODOD
+\begin{figure}[htb]
+    \centering
+    \includegraphics{tex/img/exp1-populacja.pdf}
+    \caption{}
+    \label{fig:exp1-populacja}
+\end{figure}
+
+
+wykres populacji wygenerowany
+omówić ubytki anotacji
+
 \subsection{Wstępne przetwarzanie danych}
   \subsubsection{Filtr uśredniający}
   \subsubsection{Usuwanie trendu}
