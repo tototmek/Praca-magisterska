@@ -98,18 +98,34 @@ Etykiety w takiej formie porównano z oryginalnymi sygnałami wyjściowymi $x_i(
     \label{fig:anotacja-dane}
 \end{figure}
 
-
-TODODODODODODOD
+Na rysunku \ref{fig:exp1-populacja} przedstawione zostały przebiegi czasowe bilansu pszczół w jednym z przeprowadzonych eksperymentów. Wyznaczono je osobno dla poszczególnych tuneli, oraz łącznie dla całego urządzenia, poprzez sumowanie łącznej liczby osobników, które do danej chwili $t$ weszły do ula, minus te, które go opuściły daną ścieżką.
 \begin{figure}[htb]
     \centering
     \includegraphics{tex/img/exp1-populacja.pdf}
-    \caption{}
+    \caption{Bilans pszczół w poszczególnych tunelach podczas jednego z eksperymentów.}
     \label{fig:exp1-populacja}
 \end{figure}
+Można zaobserwować, że na początku eksperymentu owady prawie wyłącznie wchodziły do ula. Jest to rezultat nasilonego powrotu osobników, które opuściły gniazdo podczas montażu czujnika w grupowym instynkcie obronnym.
+Po kilkunastu minutach tendencja ta została zmieniona, a pszczoły zaczęły intensywnie opuszczać ul -- prawdopodobnie wracając do pracy po jej zaburzeniu.
+Warto również zauważyć, że owady miały swój ulubiony tunel, którym wchodziły do ula (tunel 0), oraz ulubiony tunel wyjściowy (tunel 6).
 
+Należy zwrócić uwagę na możliwe problemy wynikające z przedstawionej metody prowadzenia anotacji danych.
+W przeprowadzonym procesie, oznaczano na podstawie nagrania wideo chwile, w których pszczoła pojawiała się na wlocie tunelu.
+W ogólności, jest to dość dobre przybliżenie chwili jej przejścia przez czujnik pojemnościowy, bez względu na kilka centymetrów dzielące koniec tunelu od położenia czujnika -- pszczoły zazwyczaj poruszają się ze znaczną szybkością.
+Niestety, mogą wystąpić sytuacje szczególne czterech rodzajów:
+\begin{enumerate}
+    \item Pszczoła spoza ula wlatuje do tunelu, zatrzymuje się przed dotarciem do czujnika, czeka dłuższy czas, i dopiero przelatuje przez bramkę czujnika. W tym przypadku generowana jest etykieta wejścia znacznie wyprzedzająca moment faktycznego pojawienia się impulsu na sygnale bramki;
+    \item Pszczoła spoza ula wlatuje do tunelu, a następnie zawraca przed dotarcie do czujnika i opuszcza tunel. W tym przypadku generowane są dwie etykiety: wejście i wyjście, pomimo braku faktycznego wykrycia pszczoły przez bramkę;
+    \item Sytuacja symetryczna dla 1: pszczoła z wewnątrz ula przechodzi przez bramkę czujnika, i odczekuje dłuższy czas przed opuszczeniem tunelu. W tym przypadku generowana jest etykieta wyjścia znacznie opóźniona względem faktycznego wykrycia;
+    \item Sytuacja symetryczna dla 2: pszczoła z wewnątrz ula przechodzi przez bramkę czujnika, a następnie zawraca przed totarciem do końca tunelu, i przechodząc ponownie przez czujnik wraca do ula. W tym przypadku nie zostanie wygenerowana żadna etykieta, a na sygnale wyjściowym bramki pojawiają się dwa impulsy: wyjście i wejście.
+\end{enumerate}
+Przeprowadzone zostało porównanie „na oko”, na podstawie którego stwierdzono, że błędy rodzajów 1, 3 oraz 4 nie występują często (nie natrafiono na ich ślady), natomiast czasem zdarzają się błędy rodzaju 2 (pszczoły zawracające przed dotarciem do bramki -- dwie nadmiarowe etykiety).
+Nie została wyznaczona konkretna częstotliwość pojawiania się błędów, jednak ustalono, że zachodzą one na tyle rzadko, że nie będą stanowić problemu przy zastosowaniu opracowanej anotacji do oceny działania rozwijanych algorytmów.
+Gdyby planowane było stosowanie metod opartych o machine learning, nawet bardzo rzadkie występowanie błędnych etykiet mogłoby znacząco pogorszyć działanie algorytmów, natomiast w przypadku niniejszej pracy, spowoduje ono jedynie lekkie pogorszenie oceny każdego z proponowanych rozwiązań.
+Kara ta będzie jednak równa dla każdego z testowanych algorytmów, ponieważ każdy z nich otrzyma tyle samo przykładów testowych z błędnie oznaczonymi rozwiązaniami.
 
-wykres populacji wygenerowany
-omówić ubytki anotacji
+Na podstawie zebranych w niniejszych badaniach przebiegów można jasno stwierdzić, że zaprojektowane czujniki pojemnościowe sprawdzają się we współpracy z żywymi pszczołami poruszającymi się samodzielnie przez tunele urządzenia.
+Zebrano zbiór danych, na którym możliwe będzie testowanie metod detekcji impulsów wywoływanych przez owady pojawiające się w bramkach czujników -- możliwe było zatem przejście do projektowania algorytmów przetwarzania sygnałów, opisanych w kolejnych sekcjach.
 
 \subsection{Wstępne przetwarzanie danych}
   \subsubsection{Filtr uśredniający}
