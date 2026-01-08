@@ -127,9 +127,102 @@ Kara ta będzie jednak równa dla każdego z testowanych algorytmów, ponieważ 
 Na podstawie zebranych w niniejszych badaniach przebiegów można jasno stwierdzić, że zaprojektowane czujniki pojemnościowe sprawdzają się we współpracy z żywymi pszczołami poruszającymi się samodzielnie przez tunele urządzenia.
 Zebrano zbiór danych, na którym możliwe będzie testowanie metod detekcji impulsów wywoływanych przez owady pojawiające się w bramkach czujników -- możliwe było zatem przejście do projektowania algorytmów przetwarzania sygnałów, opisanych w kolejnych sekcjach.
 
+
 \subsection{Wstępne przetwarzanie danych}
+
+Niezależnie od stosowanej później metody detekcji, surowe dane z czujnika muszą być wstępnie przygotowane.
+Każdy z sygnałów przejdzie dwa kroki przetwarzania: filtr uśredniający oraz usuwanie trendu.
+W kolejnych sekcjach opisano te kroki, rozważając je dla sygnału pojedynczego tunelu urządzenia -- dla uproszczenia zapisu pominięto we wzorach indeks czujnika $i$ -- ten sam wzór stosuje się dla każdego z sygnałów $x_i(k)$, gdzie $i=0\dots7$. Ponadto, ściśle podkreślona zostanie ich dyskretna natura, stąd indeksowanie numerem próbki $k$, a nie chwilą czasu ciągłego $t$.
+
   \subsubsection{Filtr uśredniający}
+
+Sygnały wyjściowe czujników pojemnościowych obarczone są znacznym szumem, widocznym wyraźnie m.in. na rysunku \ref{fig:filtr-brak}. 
+Oprócz tego, przyjmują one jedynie wartości całkowite, przy czym amplituda impulsów nie przekracza zwykle 10 -- a co za tym idzie -- ich rozdzielczość pozostawia wiele do życzenia.
+Oba te problemy rozwiązywane są poprzez nałożenie na sygnały filtra średniej kroczącej.
+Zdecydowano się na ten rodzaj filtra, ponieważ jest optymalny na potrzeby niniejszego zastosowania, a przy tym jest jednym z najprostszych i najłatwiejszych w implementacji filtrów cyfrowych \cite{smith1997}.
+Filtr ten zaimplementowano zgodnie z przedstawionym poniżej wzorem:
+\begin{equation}
+    x_\mathrm{f}(k) = \frac{1}{N}\sum^{N-1}_{i=0}{x(k-i)},
+\end{equation}
+gdzie $x_\mathrm{f}(k)$ oznacza przefiltrowaną wersję sygnału $x(k)$, a $N$ to wybrana długość okna -- parametr filtra.
+Na rysunku \ref{fig:filtr} przedstawione zostało zestawienie oryginalnego, nieprzefiltrowanego sygnału, z wynikiem działania filtra średniej kroczącej o przykładowej długości okna $N=50$.
+\begin{figure}[htb]
+    \centering
+    \begin{subfigure}{\textwidth}
+        \centering
+        \caption{Przebieg sygnału oryginalnego}
+        \includegraphics{tex/img/filtr-brak.pdf}
+        \label{fig:filtr-brak}
+    \end{subfigure}
+    \begin{subfigure}{\textwidth}
+        \centering
+        \caption{Sygnał filtrowany filtrem średniej kroczącej o oknie długości $N=50$}
+        \includegraphics{tex/img/filtr-jest.pdf}
+        \label{fig:filtr-jest}
+    \end{subfigure}
+    \caption{Porównanie sygnału oryginalnego z przefiltrowanym filtrem średniej kroczącej.}
+    \label{fig:filtr}
+\end{figure}
+Widoczne są pożądane efekty pracy filtra:
+\begin{itemize}
+    \item Po pierwsze, zlikwidował on prawie zupełnie sumy obecne w oryginalnych danych;
+    \item Ponadto, dzięki uśrednieniu próbek, zbiór wartości sygnału znacznie się powiększył -- zwiększona została znacząco jego rozdzielczość.
+\end{itemize}
+W wyniku obu tych zjawisk, przebieg wyjścia czujnika stał się znacznie łagodny, a impuls wygenerowany przez ruch pszczoły w tunelu jest bardzo wyraźnie widoczny.
+Można stwierdzić, że zaprojektowana metoda filtrowania danych sprawdza się w przypadku niniejszego zastosowania.
+Warto zwrócić uwagę, że filtrowanie sygnału wpłynęło na znaczące zmniejszenie amplitudy prezentowanego impulsu -- stanowi to pewien koszt filtrowania.
+Dopóki jednak redukcja amplitudy nie zrównuje jej z pozostającym po filtrowaniu szumem, wzory generowane przez pszczoły pozostaną odróżnialne i będzie możliwe ich wykrycie.
+Inną wadą stosowania filtrów może być wprowadzanie przez nie opóźnienia sygnału, jednak w przypadku projektowanego systemu nie stanowi to zagrożenia -- nie zawiera on sprzężeń zwrotnych, które mogłyby się zdestabilizować, a poza tym opóźnienie w zliczeniu pszczoły, nawet wynoszące wiele sekund, zupełnie nie ma znaczenia dla prawidłowości ogólnego szacunku populacji w skali dnia.
+
+Istotne jest odpowiednie dobranie długości okna $N$, aby zastosowany filtr skutecznie tłumił szumy sygnału, ale przy tym nie redukował zbytnio amplitudy odpowiedzi na ruch pszczoły.
+Na rysunku \ref{fig:filtr-dlugosc} przedstawione zostało porównanie tego samego fragmentu przebiegu poddanego filtracji z różnymi wartościami $N$: 5, 50 oraz 500.
+\begin{figure}[htb]
+    \centering
+    \begin{subfigure}{\textwidth}
+        \centering
+        \caption{Sygnał filtrowany filtrem średniej kroczącej o oknie długości $N=5$}
+        \includegraphics{tex/img/filtr-slaby.pdf}
+        \label{fig:filtr-dlugosc-5}
+    \end{subfigure}
+    \begin{subfigure}{\textwidth}
+        \centering
+        \caption{Sygnał filtrowany filtrem średniej kroczącej o oknie długości $N=50$}
+        \includegraphics{tex/img/filtr-dobry.pdf}
+        \label{fig:filtr-dlugosc-50}
+    \end{subfigure}
+    \begin{subfigure}{\textwidth}
+        \centering
+        \caption{Sygnał filtrowany filtrem średniej kroczącej o oknie długości $N=500$}
+        \includegraphics{tex/img/filtr-zasilny.pdf}
+        \label{fig:filtr-dlugosc-500}
+    \end{subfigure}
+    \caption{Porównanie działania filtrów o długościach okna: (a) $N=5$, (b) $N=50$, (c) $N=500$.}
+    \label{fig:filtr-dlugosc}
+\end{figure}
+Na ostatnim z prezentowanych wykresów (rysunek \ref{fig:filtr-dlugosc-500}), widoczne są efekty zbyt długiego okna: szum został skutecznie usunięty, jednak praktycznie zupełnie pozbyto się również impulsów generowanych przez pszczoły.
+Filtr o $N=500$ jest znacząco zbyt mocny.
+Z kolei na pierwszym z wykresów (rysunek \ref{fig:filtr-dlugosc-5}), impulsy pozostają wyraźnie widoczne, ale redukcja szumu nie jest wystarczająca.
+Dobrą wartością długości okna filtra okazuje się być prezentowane wcześniej $N=50$ (wykres na rysunku \ref{fig:filtr-dlugosc-50}): szumy oryginalnego sygnału są w znacznej mierze usunięte, natomiast odpowiedź sygnału na obecność pszczoły w tunelu pozostaje ostra i wyraźnie widoczna.
+Konkretne wartości $N$ zostaną wybrane na etapie optymalizacji parametrów poszczególnych algorytmów detekcji, jednak już na tym etapie można stwierdzić, że wartości optymalnej należy szukać w pobliżu $N=50$.
+
+
+\FloatBarrier
   \subsubsection{Usuwanie trendu}
+
+Może tutaj porównanie metod... bo w sumie testowałem różne
+
+\begin{equation}
+    y(k) = x_\mathrm{f}(k) - \text{median}\left(\begin{bmatrix} 
+    x_\mathrm{f}(k) \\
+    x_\mathrm{f}(k-1) \\ 
+    \vdots \\ 
+    x_\mathrm{f}(k-N) 
+\end{bmatrix}
+\right)
+\end{equation}
+
+
+  
 \subsection{Opis proponowanych algorytmów}
   \subsubsection{Automat stanowy}
   \subsubsection{Korelacja wzajemna z wzorcem}
