@@ -204,24 +204,86 @@ Filtr o $N=500$ jest znacząco zbyt mocny.
 Z kolei na pierwszym z wykresów (rysunek \ref{fig:filtr-dlugosc-5}), impulsy pozostają wyraźnie widoczne, ale redukcja szumu nie jest wystarczająca.
 Dobrą wartością długości okna filtra okazuje się być prezentowane wcześniej $N=50$ (wykres na rysunku \ref{fig:filtr-dlugosc-50}): szumy oryginalnego sygnału są w znacznej mierze usunięte, natomiast odpowiedź sygnału na obecność pszczoły w tunelu pozostaje ostra i wyraźnie widoczna.
 Konkretne wartości $N$ zostaną wybrane na etapie optymalizacji parametrów poszczególnych algorytmów detekcji, jednak już na tym etapie można stwierdzić, że wartości optymalnej należy szukać w pobliżu $N=50$.
+Wszystkie przedstawione w kolejnych częściach pracy przebiegi wyjścia czujnika, o ile nie stwierdzono inaczej, zostały uprzednio przefiltrowane średnią kroczącą o oknie tej właśnie długości.
 
 
 \FloatBarrier
   \subsubsection{Usuwanie trendu}
 
-Może tutaj porównanie metod... bo w sumie testowałem różne
+Przefiltrowany sygnał wciąż nie jest w pełni gotowy do dalszego zastosowania, ze względu na występujący w nim trend.
+Przesunięcie poziomu spoczynkowego sygnału względem zera wynika z subtelnych różnic pomiędzy kondensatorami w bramce czujnika, może się również w zauważalnym stopniu zmieniać w czasie przez zmienne warunki zewnętrzne -- jeden taki skok zawarty jest w analizowanym przykładowym przebiegu (okolice próbki $k=6000$).
+Konieczne jest opracowanie metody usuwania trendu, która zapewni, że poziom spoczynkowy sygnału niezależnie od zewnętrznych zakłóceń znajduje się w wartości zero.
+Należy zadbać, by stworzone rozwiązanie nie pogarszało zbytnio jakości impulsów generowanych przez pszczoły.
 
+Najprostszą podejściem, które potencjalnie może przynieść oczekiwane efekty, jest detrending przez różniczkowanie (ang. \textit{detrending by differencing})\cite{box2015}.
+Metoda ta polega na wykorzystaniu, zamiast sygnału $x(k)$ obarczonego trendem, odpowiadającego mu sygnału różnicowemu $\nabla x(k)$, wyznaczonego zgodnie ze wzorem:
 \begin{equation}
-    y(k) = x_\mathrm{f}(k) - \text{median}\left(\begin{bmatrix} 
-    x_\mathrm{f}(k) \\
-    x_\mathrm{f}(k-1) \\ 
-    \vdots \\ 
-    x_\mathrm{f}(k-N) 
-\end{bmatrix}
-\right)
+    \nabla x(k) = x(k) - x(k-1).
 \end{equation}
+Wzór ten zaaplikowano dla przykładowych danych, analizowanych już w poprzedniej sekcji.
+Na rysunku \ref{fig:detrending-derivative} przedstawione zostały wygenerowane przebiegi.
+\begin{figure}[htb]
+    \centering
+    \includegraphics{tex/img/detrending-derivative.pdf}
+    \caption{Usuwanie trendu z wykorzystaniem sygnału różnicowego. Jako $x(k)$ oznaczony jest sygnał oryginalny obarczony trendem, natomiast jako $\nabla x(k)$ -- wyznaczony na jego podstawie sygnał różnicowy.}
+    \label{fig:detrending-derivative}
+\end{figure}
+Wyraźnie widać, że szumy pozostające w sygnale zostały w efekcie różniczkowania wzmocnione w stopniu, który uniemożliwia odróżnienie momentów pojawiania się pszczół.
+Metoda ta zupełnie się zatem nie nadaje do zastosowania w niniejszej pracy.
 
+Z tego względu, konieczne staje się opracowanie alternatywnej metody usuwania trendu.
+W dalszej kolejności przetestowano technikę opartą na odejmowaniu od sygnału jego mediany wyznaczonej na pewnym oknie przeszłych próbek.
+Sygnał pozbawiony trendu, oznaczony $y(k)$, dany jest w niej wzorem:
+\begin{equation}
+\label{eqn:mediana1}
+    y(k) = x(k) - x_\mathrm{m}(k),
+\end{equation}
+gdzie:
+\begin{equation}
+    x_\mathrm{m}(k) = \text{mediana}\left(\begin{bmatrix} 
+    x(k) \\
+    x(k-1) \\ 
+    \vdots \\ 
+    x(k-M) 
+\end{bmatrix}
+\right),
+\end{equation}
+przy czym $M$ to parametr oznaczający długość okna mediany.
+Wyniki testu tej metody, dla $M=1200$, zostały przedstawione na rysunku \ref{fig:detrending-median}.
+Można zaobserwować, że sygnał mediany $x_\mathrm{m}(k)$ utrzymuje się na poziomie spoczynku sygnału $x(k)$, natomiast jego odpowiedź na zmianę tego poziomu jest szybka (okolice chwili $k=6000$).
+Sygnał $x_\mathrm{m}(k)$ nie reaguje ponadto na impulsy wywołane obecnością pszczół -- dzięki temu, na wykresie sygnału $y(k)$, pozostały one perfekcyjnie zachowane po usunięciu trendu.
+Metoda ta działa bardzo dobrze.
+Nie wzmacnia ona szumów sygnału i pozostawia interesujące impulsy nienaruszone.
+Jej pewną wadę stanowi jedynie jej złożoność algorytmiczna -- wyliczanie mediany w każdym kroku programu wymaga sortowania buforu $M$ ostatnich próbek (o możliwej optymalizacji tego procesu napisano w sekcji \ref{sekcja:implementacja}).
+Stosownym wydało się, z tego względu, przetestowanie pewnej modyfikacji przedstawionej metody detrendingu -- wykorzystanie zamiast mediany średniej arytmetycznej.
+Metryka ta posiada podobne właściwości, jest jednak mniej obciążająca obliczeniowo.
+Powtórzono eksperyment, zastępując w równaniu~\ref{eqn:mediana1} składnik $x_\mathrm{m}(k)$ sygnałem $x_\mathrm{a}(k)$, danym jako: 
+\begin{equation}
+    x_\mathrm{a}(k) = \frac{1}{M}\sum^M_{i=0}{x(k-i)}.
+\end{equation}
+Otrzymane przebiegi zostały przedstawione na rysunku \ref{fig:detrending-average}.
+Jak widać, zmodyfikowana metoda zachowała tę cechę, że skutecznie usuwa przesunięcie sygnału względem zera (chwile $k$ od 0 do ok. 2000 oraz po $k\approx7000$).
+Charakteryzuję ją jednak znacząco wolniejsza odpowiedź na zmianę poziomu przesunięcia sygnału (okolice chwili $k=6000$) -- w której wyniku fragment sygnału, który winien leżeć w okolicach wartości zero, znacznie od niej odbiega.
+Ponadto, sygnał $x_\mathrm{a}(k)$ w widocznym stopniu reaguje na impulsy pszczół, co prowadzi do modyfikacji ich kształtu oraz zmniejszenia amplitudy.
+W okolicach chwili $k=4300$ występuje ponadto odpowiedź sygnału $x_\mathrm{a}(k)$ na impuls, który pojawił się znacznie wcześniej (ok. $k=2500$).
+Deformuje ona fragment przebiegu $y(k)$, który powinien być zupełnie płaski i leżeć w zerze.
 
+Zmodyfikowana wersja metody za mocno odbiega jakością od jej podstawowej wersji, nie zostanie zatem zastosowana w dalszych etapach pracy.
+
+\begin{figure}[p]
+    \centering
+    \includegraphics{tex/img/detrending-median.pdf}
+    \caption{Metoda usuwania trendu z wykorzystaniem mediany sygnału -- przebiegi testowe}
+    \label{fig:detrending-median}
+\end{figure}
+\begin{figure}[p]
+    \centering
+    \includegraphics{tex/img/detrending-average.pdf}
+    \caption{Wariant metody usuwania trendu wykorzystujący średnią sygnału -- przebiegi testowe}
+    \label{fig:detrending-average}
+\end{figure}
+
+\FloatBarrier
   
 \subsection{Opis proponowanych algorytmów}
   \subsubsection{Automat stanowy}
@@ -229,4 +291,4 @@ Może tutaj porównanie metod... bo w sumie testowałem różne
   \subsubsection{Klasyfikator na cechach sygnału}
 \subsection{Wyniki testów}
 \subsection{Wybór algorytmu}
-\subsection{Implementacja algorytmu na sprzęcie}
+\subsection{Implementacja algorytmu na sprzęcie} \label{sekcja:implementacja}
