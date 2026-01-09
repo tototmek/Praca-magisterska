@@ -7,7 +7,8 @@ Przyjęte zostały następujące założenia:
 \begin{enumerate}
     \item Algorytm ma być uruchomiony na mikrokontrolerze wchodzącym w skład urządzenia, co pozwoli uniknąć konieczności rozszerzenia systemu o dodatkowy węzeł, którego zadaniem byłoby jedynie wykonywanie obliczeń.
     Wymagać to będzie niskiej złożoności pamięciowej algorytmu oraz niewielkiego narzutu obliczeniowego.
-    \item Algorytm ma być wykonywany \textit{on line} -- w każdej iteracji działania urządzenia, lub na buforze z maks. kilku sekund. W ten sposób zagwarantowane będą bieżące dane, oraz brak przerw w akwizycji sygnału z czujników pojemnościowych.
+    \item Algorytm ma być wykonywany \textit{on line} -- w każdej iteracji działania urządzenia, lub na buforze z maks. kilku sekund. W ten sposób zagwarantowane będą bieżące dane, oraz brak przerw w akwizycji sygnału z czujników pojemnościowych;
+    \item Ten sam algorytm zostanie uruchomiony niezależnie dla wszystkich tuneli urządzenia, z opcją dostowania jego parametrów konfiguracyjnych do zmiennych właściwości poszczególnych bramek.
 \end{enumerate}
 
 
@@ -117,7 +118,7 @@ Niestety, mogą wystąpić sytuacje szczególne czterech rodzajów:
     \item Pszczoła spoza ula wlatuje do tunelu, zatrzymuje się przed dotarciem do czujnika, czeka dłuższy czas, i dopiero przelatuje przez bramkę czujnika. W tym przypadku generowana jest etykieta wejścia znacznie wyprzedzająca moment faktycznego pojawienia się impulsu na sygnale bramki;
     \item Pszczoła spoza ula wlatuje do tunelu, a następnie zawraca przed dotarcie do czujnika i opuszcza tunel. W tym przypadku generowane są dwie etykiety: wejście i wyjście, pomimo braku faktycznego wykrycia pszczoły przez bramkę;
     \item Sytuacja symetryczna dla 1: pszczoła z wewnątrz ula przechodzi przez bramkę czujnika, i odczekuje dłuższy czas przed opuszczeniem tunelu. W tym przypadku generowana jest etykieta wyjścia znacznie opóźniona względem faktycznego wykrycia;
-    \item Sytuacja symetryczna dla 2: pszczoła z wewnątrz ula przechodzi przez bramkę czujnika, a następnie zawraca przed totarciem do końca tunelu, i przechodząc ponownie przez czujnik wraca do ula. W tym przypadku nie zostanie wygenerowana żadna etykieta, a na sygnale wyjściowym bramki pojawiają się dwa impulsy: wyjście i wejście.
+    \item Sytuacja symetryczna dla 2: pszczoła z wewnątrz ula przechodzi przez bramkę czujnika, a następnie zawraca przed dotarciem do końca tunelu, i przechodząc ponownie przez czujnik wraca do ula. W tym przypadku nie zostanie wygenerowana żadna etykieta, a na sygnale wyjściowym bramki pojawiają się dwa impulsy: wyjście i wejście.
 \end{enumerate}
 Przeprowadzone zostało porównanie „na oko”, na podstawie którego stwierdzono, że błędy rodzajów 1, 3 oraz 4 nie występują często (nie natrafiono na ich ślady), natomiast czasem zdarzają się błędy rodzaju 2 (pszczoły zawracające przed dotarciem do bramki -- dwie nadmiarowe etykiety).
 Nie została wyznaczona konkretna częstotliwość pojawiania się błędów, jednak ustalono, że zachodzą one na tyle rzadko, że nie będą stanowić problemu przy zastosowaniu opracowanej anotacji do oceny działania rozwijanych algorytmów.
@@ -273,22 +274,150 @@ Zmodyfikowana wersja metody za mocno odbiega jakością od jej podstawowej wersj
 \begin{figure}[p]
     \centering
     \includegraphics{tex/img/detrending-median.pdf}
-    \caption{Metoda usuwania trendu z wykorzystaniem mediany sygnału -- przebiegi testowe}
+    \caption{Metoda usuwania trendu z wykorzystaniem mediany sygnału -- przebiegi testowe.}
     \label{fig:detrending-median}
 \end{figure}
 \begin{figure}[p]
     \centering
     \includegraphics{tex/img/detrending-average.pdf}
-    \caption{Wariant metody usuwania trendu wykorzystujący średnią sygnału -- przebiegi testowe}
+    \caption{Wariant usuwania trendu wykorzystujący średnią sygnału -- przebiegi testowe.}
     \label{fig:detrending-average}
 \end{figure}
 
 \FloatBarrier
   
 \subsection{Opis proponowanych algorytmów}
+Po opracowaniu metod wstępnego przetwarzania danych możliwe było przejście do kolejnego, kluczowego etapu pracy -- projektu algorytmu detekcji pszczół.
+Jego wejściem jest sygnał $y(k)$, czyli pomiar czujnika pojemnościowego, poddany uprzednio filtrowaniu i usunięciu trendu.
+Za zadanie ma on wyznaczenie chwil $k$, w których w bramce czujnika pojawiły się pszczoły, a także klasyfikację kierunku ruchu pszczoły (wejście/wyjście) -- w celu ustalenia łącznego bilansu pszczół, które weszły do ula.
+Ogólna struktura algorytmu została przedstawiona na rysunku \ref{fig:struktura-algorytmu}.
+Wewnętrzny licznik oznaczono jako ${bee}$, natomiast wyjściem systemu jest jego wartość na daną chwilę $k$, czyli ${bee}(k)$.
+\begin{figure}[htb]
+    \centering
+    \includegraphics{tex/img/schemat-algorytmu.pdf}
+    \caption{Ogólna struktura algorytmu detekcji.}
+    \label{fig:struktura-algorytmu}
+\end{figure}
+Zaprojektowano kilka różnych algorytmów detekcji, które potencjalnie mogą zostać wykorzystane do analizy generowanych sygnałów.
+Zostały one opisane w kolejnych sekcjach pracy.
+
   \subsubsection{Automat stanowy}
+Główną ideą stojąca za pierwszą proponowaną metodą detekcji pszczelych impulsów jest prosta obserwacja, że fragmenty które należy wykryć zawsze składają się z dwóch ostrych szpilek sygnału, następujących tuż po sobie.
+Algorytm opiera się na progowaniu $y(k)$, w celu wykrycia skoków jego wartości, a następnie wykorzystaniu automatu stanowego -- FSM (rysunek \ref{fig:fsm-structure}), który wykryje zadane sekwencje w skwantowanym sygnale.
+\begin{figure}[htb]
+    \centering
+    \includegraphics{tex/img/fsm-structure.pdf}
+    \caption{Struktura automatu stanowego. Warunki przejścia zapisano przy początkach strzałek, natomiast akcje przejścia przy końcach strzałek. Dodatkowo, akcje oznaczono pogrubieniem.}
+    \label{fig:fsm-structure}
+\end{figure}
+
+Sygnał progowany $Y(k)$ wyznaczany jest na podstawie $y(k)$ zgodnie ze wzorem:
+\begin{equation}
+Y(k) = \begin{cases}
+    1 & \text{if } y(k) > \gamma(k) \\
+    0 & \text{if } -\gamma \le y(k) \le \gamma(k) \\
+    -1 & \text{if } y(k) < -\gamma(k),
+\end{cases}
+\end{equation}
+gdzie $\gamma$ oznacza wartość progowania.
+Rozważane są dwa warianty niniejszej metody: 
+\begin{enumerate}
+    \item Progowanie statyczne, w którym $\gamma(k)=\gamma_0$ dla każdej chwili $k$;
+    \item Progowanie adaptacyjne, w którym $\gamma(k)$ jest dynamicznie dostosowywane do właściwości sygnału wejściowego.
+    Zastosowany został następujący wzór na wartość dynamicznego progu:
+\begin{equation} \label{eqn:adaptive-thresh}
+   \gamma(k) = \alpha \cdot \mu\cdot\hat{Q}_y(q,\,K,\,k) + (1-\alpha)\cdot\gamma_0,
+\end{equation}
+    gdzie $\alpha$, $\mu$ oraz $q$ to parametry strojenia, $\gamma_0$ to wartość progu statycznego,  natomiast $\hat{Q}_y(q,\,K,\,k)$ oznacza $q$-ty kwantyl ze zbioru $K$ ostatnich próbek $y$ dla chwili $k$. Zapisano wzór na próg dolny -- dla progu górnego przyjąć kwantyl $(1-q)$.
+\end{enumerate}
+Struktura zaprojektowanego automatu jest symetryczna.
+Jego prawa część (stany $s_0$, $s_1$, $s_3$) odpowiada za wykrywanie pszczół wchodzących do ula.
+W stanie $s_0$, algorytm oczekuje pojawienia się jedynki na wejściu (wystąpienia dodatniej szpilki na sygnale czujnika) -- w wyniku której przechodzi do stanu $s_1$.
+Jeśli niedługo po przejściu na wejściu pojawi się $-1$, system wykrywa wchodzącą pszczołę: inkrementuje licznik $bee$ i przechodzi do stanu $s_3$.
+Następnie, oczekuje na pojawienie się ponownie zera na wejściu, by powrócić do oczekiwania w stanie $s_0$.
+Dodatkowo, podczas wejścia w stan $s_1$, ustawiany jest na zero licznik $t$. Zlicza on, ile iteracji trwa oczekiwanie w stanie $s_1$ -- jeżeli przekroczona zostanie wartość $t_\mathrm{max}$ (parametr algorytmu), następuje powrót do stanu $s_0$.
+Dzięki temu, algorytm nie zablokuje się przy wystąpieniu pojedynczej szpilki, wynikającej na przykład z szumu danych wejściowych.
+Lewa część automatu (stany $s_0$, $s_2$, $s_3$) działa analogicznie, z tą różnicą, że wykrywa odwrotną sekwencję sygnału wejściowego, a licznik $bee$ jest dekrementowany.
+
+Algorytm zgodny z powyższym opisem, w obu wariantach, uruchomiono na fragmencie danych eksperymentalnych.
+Na rysunkach \ref{fig:fsm-static} oraz \ref{fig:fsm-adaptive} przedstawiono uzyskane w ten sposób przebiegi.
+Zastosowano konfiguracje parametrów przedstawione w tabeli \ref{tab:fsm-config}.
+\begin{table}[H]
+\caption{Parametry testowanych automatów stanowych.}
+\centering
+\begin{tabular}{l|c|c|c}
+\label{tab:fsm-config}
+\textbf{Parametr} & \textbf{Symbol} & \textbf{FSM, prog. statyczne} & \textbf{FSM, prog. adaptacyjne} \\
+\hline
+Długość okna filtra & $N$                                                                                     & 30                                                                                  & 30                                                                                     \\
+Długość okna mediany & $M$                                                                                     & 1200                                                                                & 1200                                                                                   \\
+Maks. oczekiwanie na impuls & $t_\mathrm{max}$                                                                       & 200                                                                                 & 200                                                                                    \\
+Wartość progu statycznego & $\gamma_0$                                                                             & 1.0                                                                                 & 1.0                                                                                    \\
+Waga progu adaptacyjnego & $\alpha$                                                                                & ---                                                                                 & 0.4                                                                                    \\
+Mnożnik progu adaptacyjnego & $\mu$                                                                                   & ---                                                                                 & 7                                                                                      \\
+Kwantyl progu adaptacyjnego & $q$                                                                                     & ---                                                                                 & 0.2                                                                                    \\
+Dł. okna kwantylu prog. adapt. & $K$                                                                                     & ---                                                                                 & 1500                                                                                  
+\end{tabular}
+\end{table}
+\begin{figure}[p]
+    \centering
+    \includegraphics{tex/img/fsm-static-example.pdf}
+    \caption{Fragment przebiegów z testu automatu stanowego z progowaniem statycznym.}
+    \label{fig:fsm-static}
+\end{figure}
+\begin{figure}[p]
+    \centering
+    \includegraphics{tex/img/fsm-adaptive-example.pdf}
+    \caption{Fragment przebiegów z testu automatu stanowego z progowaniem adaptacyjnym. }
+    \label{fig:fsm-adaptive}
+\end{figure}
+
+Warto uważnie przyjrzeć się wykresom przedstawionym na rysunku \ref{fig:fsm-static}.
+Na górnym panelu zaprezentowano momenty przejść pszczół przez czujnik, załadowane ze zbioru etykiet wypracowanego wcześniej (oznaczone \textit{Anotacja}).
+Na zielono oznaczono pszczoły wchodzące do ula, natomiast na czerwono wychodzące.
+Osie czasowe wszystkich przebiegów na rysunku wyskalowane są jednakowo, można zatem stwierdzić, że wszystkie etykiety są prawidłowe -- w jasny sposób odpowiadają impulsom widocznym na sygnale $y(k)$ (panel środkowy).
+Na tle przebiegu wejścia algorytmu przedstawione zostały linie, reprezentujące poziom progu $\gamma_0$.
+Oznaczono próg górny i dolny.
+Na ostatnim panelu rysunku zawarto wykres skwantowanego sygnału wejściowego $Y(k)$, a na jego tle wygenerowane przez algorytm momenty inkrementacji lub dekrementacji licznika $bee$ (oznaczone \textit{Detekcja}).
+
+Widać, że progowanie statyczne pozwoliło skutecznie wykryć skoki $y(k)$, generując prawidłowy sygnał $Y(k)$. Automat stanowy również działa na niniejszym przykładzie poprawnie -- każdy z impulsów w $y(k)$ został wykryty, a ich typy zostały sklasyfikowane poprawnie.
+Zastosowana struktura automatu poradziła sobie z nieidealnym sygnałem Y(k) (1. i 3. impuls nie składają się z pojedynczych szpilek).
+
+Na rysunku \ref{fig:fsm-adaptive} przedstawione zostały analogiczne przebiegi uzyskane z wykorzystaniem adaptacyjnego progowania sygnału $y(k)$.
+Należy zwrócić uwagę na kształt linii oznaczających poziomy progu $\gamma$ (środkowy panel). Zmieniają się one w czasie, dostosowując się do szumów i skoków $y(k)$.
+Można wyciągnąć analogiczne wnioski, jak dla poprzedniej metody: progowanie i automat stanowy pozwoliły z pełną skutecznością zrealizować dane im zadanie.
+
+Na podstawie wykonanych doświadczeń możnaby wybrać metodę ze stałym $\gamma(k)$ jako lepszą, ze względu na mniejszą złożoność obliczeniową wyznaczania wartości progowych.
+Wykonane zostały jednak dodatkowe eksperymenty, na przykładzie innego fragmentu danych eksperymentalnych, z wadliwym fragmentem przebiegu.
+Przebieg ten, przedstawiony m.in. na rysunku \ref{fig:fsm-static-bad}, zawiera szum dorównujący amplitudą typowe impulsy pszczół.
+Ten chaotyczny wzór został, najprawdopodobniej, spowodowany przez pszczołę, która zatrzymała się w środku bramki czujnika. 
+Zdarzenie to, choć rzadkie (znaleziono tylko jeden taki fragment w całości zebranych danych), może potencjalnie mieć znaczny negatywny wpływ na estymację bilansu pszczół.
+Oba warianty algorytmu uruchomiono na omawianym fragmencie przebiegu.
+Wyniki dla progowania statycznego jednoznacznie potwierdzają powyższą tezę: gdy szum przekroczył poziom progowania, automat zaczął zliczać dziesiątki pszczół.
+W przypadku progowania adaptacyjnego natomiast, poziomy $\gamma$ podążały za rosnącą amplitudą szumu, znacząco redukując liczbę przypadkowych zliczeń (dwa błędy \textit{false positive} kontra 25).
+Ze względu na wzrost $\gamma$, nie zostały zliczone dwa przejścia, które pojawiły się podczas okresu podwyższonego szumu; pomimo to, algorytm adaptacyjny popełnił przeważająco mniej błędów.
+
+Szczegółowe porównanie obu metod, wraz z opisem optymalizacji parametrów, zostały zawarte w sekcji \ref{sekcja:wyniki-testów}.
+Na ten moment utrzymać można hipotezę, że algorytm adaptacyjny będzie charakteryzował się lepszymi wynikami, kosztem większej złożoności obliczeniowej.
+
+\begin{figure}[p]
+    \centering
+    \includegraphics{tex/img/fsm-static-bad.pdf}
+    \caption{Fragment przebiegów z testu automatu stanowego z progowaniem statycznym, zawierający słabej jakości sygnał wejściowy algorytmu.}
+    \label{fig:fsm-static-bad}
+\end{figure}
+\begin{figure}[p]
+    \centering
+    \includegraphics{tex/img/fsm-adaptive-bad.pdf}
+    \caption{Fragment przebiegów z testu automatu stanowego z progowaniem adaptacyjnym, zawierający słabej jakości sygnał wejściowy algorytmu.}
+    \label{fig:fsm-adaptive-bad}
+\end{figure}
+
+\FloatBarrier
+
+  
   \subsubsection{Korelacja wzajemna z wzorcem}
   \subsubsection{Klasyfikator na cechach sygnału}
-\subsection{Wyniki testów}
+\subsection{Wyniki testów} \label{sekcja:wyniki-testów}
 \subsection{Wybór algorytmu}
 \subsection{Implementacja algorytmu na sprzęcie} \label{sekcja:implementacja}
