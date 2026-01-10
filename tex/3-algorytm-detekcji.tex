@@ -314,9 +314,9 @@ Algorytm opiera się na progowaniu $y(k)$, w celu wykrycia skoków jego wartośc
 Sygnał progowany $Y(k)$ wyznaczany jest na podstawie $y(k)$ zgodnie ze wzorem:
 \begin{equation}
 Y(k) = \begin{cases}
-    1 & \text{if } y(k) > \gamma(k) \\
-    0 & \text{if } -\gamma \le y(k) \le \gamma(k) \\
-    -1 & \text{if } y(k) < -\gamma(k),
+    1 & \text{jeśli\quad } y(k) > \gamma(k) \\
+    0 & \text{jeśli\quad } -\gamma \le y(k) \le \gamma(k) \\
+    -1 & \text{jeśli\quad } y(k) < -\gamma(k),
 \end{cases}
 \end{equation}
 gdzie $\gamma$ oznacza wartość progowania.
@@ -417,7 +417,107 @@ Na ten moment utrzymać można hipotezę, że algorytm adaptacyjny będzie chara
 
   
   \subsubsection{Korelacja wzajemna z wzorcem}
-  \subsubsection{Klasyfikator na cechach sygnału}
+
+Kolejna z opracowanych metod opiera się na wykorzystaniu korelacji krzyżowej sygnału $y(k)$ z opracowanym wzorcem idealnego impulsu pszczoły $w(m)$.
+Korelacja krzyżowa stanowi miarę podobieństwa sygnałów, w funkcji ich przesunięcia względem siebie -- nadaje się zatem idealnie do wykrycia chwil, w których w sygnale wejściowym występuje zadany wzorzec.
+
+Na rysunku \ref{fig:kernels} zostały przedstawione dwa przykładowe wzorce zastosowane w ramach przeprowadzonych z niniejszym algorytmem eksperymentów.
+Jeden z nich, oznaczony jako (a), to wycięty fragment zebranych danych, zawierający szczególnie niezakłócony impuls wywołany ruchem pszczoły.
+Drugi, oznaczony (b), jest wzorcem syntetycznym, będącym fragmentem sinusoidy przeskalowanym tak, by odpowiadać długością i amplitudą poprzedniemu.
+\begin{figure}[htb]
+\centering
+\includegraphics{tex/img/kernels.pdf}
+\caption{Przykładowe wzorce impulsu generowanego przez pszczołę; a -- wzorzec wybrany z danych eksperymentalnych, b -- wzorzec syntetyczny (fragment sinusoidy).}
+\label{fig:kernels}
+\end{figure}
+
+Sygnał korelacji krzyżowej $y(k)$ z wzorcem $w(m)$ o długości $M$ dany jest jako:
+\begin{equation}
+r_{wy}(k) = \sum^M_{m=0}w(m)\,y(k+m).
+\end{equation}
+Zgodnie z właściwościami korelacji krzyżowej, na przebiegu $r_{wy}(k)$ występować będzie dodatni skok wartości na fragmentach, w których przebieg $y(k)$ jest podobny do wzorca $w(m)$.
+Ponadto, pojawiać będzie się ujemny skok $r_{wy}(k)$, kiedy na przebiegu $y(k)$ wystąpi wzorzec $w(m)$ o odwróconej polaryzacji.
+Zgodnie z powyższym, aby wyznaczyć momenty, w których system powinien naliczać pszczoły, wystarczy wykrywać gwałtowne skoki wartości sygnału korelacji krzyżowej $r_{wy}(k)$.
+Zadanie to będzie realizowane poprzez progowanie tego sygnału, zgodnie z poniższym wzorem:
+\begin{equation}
+R(k) = \begin{cases}
+    1 & \text{jeśli\quad} r_{wy}(k) > \gamma(k) \\
+    0 & \text{jeśli\quad} -\gamma(k) \le r_{wy}(k) \le \gamma(k) \\
+    -1 & \text{jeśli\quad} r_{wy}(k) < -\gamma(k),
+\end{cases}
+\end{equation}
+przy czym $\gamma(k)$ (poziom progowania), podobnie jak w przypadku automatu stanowego, może przyjąć stałą wartość, lub być dynamicznie dostosowywany -- do sygnału $r_{wy}(k)$.
+Na podstawie wartości progowanej, dla każdej chwili $k$, wyznaczany jest inkrement licznika pszczół $bee$, oznaczony jako $B(k)$.
+By każda pszczoła została zliczona dokładnie raz, $B(k)$ wynosi 1 lub $-1$ tylko w chwili pojawienia się zbocza narastającego $R(k)$ do wartości 1, lub zbocza opadającego $R(k)$ do wartości $-1$ -- zgodnie z poniższym wzorem.
+\begin{equation}
+B(k) = \begin{cases}
+1 & \text{jeśli\quad} R(k) = 1 \land R(k-1) \neq 1 \\
+-1 & \text{jeśli\quad} R(k) = -1 \land R(k-1) \neq -1 \\
+0 & \text{w pozostałych przypadkach.}
+\end{cases}
+\end{equation}
+
+Opisany algorytm został uruchomiony na przykładowym fragmencie $y(k)$ w dwóch konfiguracjach: z progowaniem statycznym oraz adaptacyjnym.
+Obrane wartości parametrów zostały zawarte w tabeli \ref{tab:correlation-config}.
+Przebiegi uzyskane w ramach obu eksperymentów przedstawione zostały na rysunkach \ref{fig:correlation} oraz \ref{fig:correlation-adaptive}.
+\begin{table}[H]
+\centering
+\caption{Parametry testowanych algorytmów korelacji krzyżowej.}
+\label{tab:correlation-config}
+\begin{tblr}{
+  column{even} = {c},
+  column{3} = {c},
+  vline{2-4} = {-}{},
+  hline{2} = {-}{},
+}
+\textbf{Parametr}              & \textbf{Symbol} & \textbf{Korelacja, prog. stat.}   & \textbf{Korelacja, prog. adapt.} \\
+Długość okna filtra            & $N$             & 30                                    & 30                                    \\
+Długość okna mediany           & $M$             & 1200                                  & 1200                                  \\
+Wartość progu statycznego      & $\gamma_0$      & 90                                    & 90                                    \\
+Waga progu adaptacyjnego       & $\alpha$        & —                                     & 0.4                                   \\
+Mnożnik progu adaptacyjnego    & $\mu$           & —                                     & 9                                     \\
+Kwantyl progu adaptacyjnego    & $q$             & —                                     & 0.2                                   \\
+Dł. okna kwantylu prog. adapt. & $K$             & —                                     & 1200                                  \\
+Zastosowany wzorzec impulsu    & $w(m)$          & \small syntetyczny (rys. \ref{fig:kernels}b) & \small syntetyczny (rys. \ref{fig:kernels}b) 
+\end{tblr}
+\end{table}
+
+Zgodnie z oczekiwaniem, impulsom na przebiegu $y(k)$ odpowiadają szpilki występujące na $r_{wy}(k)$.
+Oba zastosowane sposoby progowania pozwoliły na osiągnięcie bezbłędnej detekcji i klasyfikacji pszczół -- chwile $k$ oznaczone przez algorytm (ozn. Detekcja) odpowiadają tym ze zbioru etykiet (ozn. Anotacja).
+Podobnie jak w przypadku automatu stanowego, przeprowadzono dodatkowy eksperyment na fragmencie zakłóconych danych wejściowych, by porównać odporność obu wariantów algorytmu.
+Uzyskane wyniki zawarte zostały na rysunku \ref{fig:correlation-bad}.
+Zgodnie z oczekiwaniem, algorytm z progowaniem adaptacyjnym zadziałał w tym przypadku znacznie lepiej -- wygenerował tylko jedną błędną detekcję (kontra 9 dla algorytmu z progowaniem statycznym).
+Oprócz tego, był on w stanie wykryć jeden z impulsów występujących razem z zakłóceniem, z czym nie poradził sobie automat stanowy.
+Na podstawie obu przeprowadzonych algorytmów stwierdzono, że algorytm korelacji krzyżowej ze wzorcem działa poprawnie.
+Stawiana jest również hipoteza, że jest on lepszy niż algorytm z automatem stanowym.
+
+\begin{figure}[p]
+    \centering
+    \includegraphics{tex/img/correlation-example.pdf}
+    \caption{Fragment przebiegów z testu korelacji krzyżowej z progowaniem statycznym.}
+    \label{fig:correlation}
+\end{figure}
+\begin{figure}[p]
+    \centering
+    \includegraphics{tex/img/correlation-adaptive.pdf}
+    \caption{Fragment przebiegów z testu korelacji krzyżowej z progowaniem adaptacyjnym.}
+    \label{fig:correlation-adaptive}
+\end{figure}
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics{tex/img/correlation-bad.pdf}
+    \caption{Porównanie działania wariantów algorytmu korelacji krzyżowej na fragmencie danych wejściowych niskiej jakości.}
+    \label{fig:correlation-bad}
+\end{figure}
+
+Dodatkowym rozszerzeniem omawianego algorytmu jest zastosowanie wielu różnych wzorców $w(m)$.
+Rozwiązanie takie może pozwolić na skuteczniejsze rozpoznawanie impulsów o różnych kształtach, amplitudach, lub czasie trwania.
+Sygnały korelacji $y(k)$ ze wszystkimi wzorcami mogą być uśredniane, w celu wyznaczenia łączonego $r_{wy}(k)$.
+Alteratywnie, zastosować można medianę, lub najwyższą wartość spośród poszczególnych sygnałów korelacji.
+Kilka wariantów takiej modyfikacji algorytmu zostało przetestowane w ramach niniejszej pracy, a uzyskane wyniki zostaną przedstawione w kolejnej sekcji.
+
+  
 \subsection{Wyniki testów} \label{sekcja:wyniki-testów}
 \subsection{Wybór algorytmu}
 \subsection{Implementacja algorytmu na sprzęcie} \label{sekcja:implementacja}
