@@ -34,7 +34,7 @@ Testy prowadzono według następującej metody:
     \item W chwili uruchomienia w komputerze akwizycji sygnału, wykonywano przed kamerą klaśnięcie, co pozwoli na późniejszą synchronizację nagrania z zebranymi danymi.
 \end{enumerate}
 Na rysunku \ref{fig:exp2} przedstawiona jest fotografia prezentująca jeden z przeprowadzonych eksperymentów, natomiast na rysunku \ref{fig:exp1} przedstawiono alternatywne miejsce montażu urządzenia (od środka ula).
-W tabeli \ref{tab:test1} podsumowano informacje o przeprowadzonych eksperymentach.
+W tabeli \ref{tab:test1} podsumowano informacje o eksperymentach.
 \begin{table}[H]
 \centering
 \caption{Zbiór danych przykładowych -- podsumowanie eksperymentów}
@@ -52,7 +52,7 @@ W tabeli \ref{tab:test1} podsumowano informacje o przeprowadzonych eksperymentac
 
 Przeprowadzone eksperymenty stanowiły również pierwszą weryfikację działania urządzenia w warunkach rzeczywistych -- przy współpracy z żywymi pszczołami.
 Fragment zebranych danych zwizualizowano na wykresie (rysunek \ref{fig:exp1-data}), w celu sprawdzenia czy zawiera prawidłowo wyglądające impulsy wywoływane ruchem pszczół.
-Stwierdzono, że system działa prawidłowo: pomimo występującego szumu widoczne są wzory bardzo podobne do wzorcowych przebiegów; warto porównać zaprezentowane przebiegi z tymi na rysunku \ref{fig:campbell-symulacja-wynik}.
+Stwierdzono, że system działa prawidłowo: pomimo występującego szumu widoczne są wzory bardzo podobne do wzorcowych przebiegów; warto porównać z rysunkiem \ref{fig:campbell-symulacja-wynik}.
 \begin{figure}[H]
     \centering
     \includegraphics{tex/img/wizualizacja-testu-z-pasieki.pdf}
@@ -416,7 +416,7 @@ Na ten moment utrzymać można hipotezę, że algorytm adaptacyjny będzie chara
 \FloatBarrier
 
   
-  \subsubsection{Korelacja wzajemna z wzorcem}
+  \subsubsection{Korelacja wzajemna z wzorcem} \label{sekcja:korelacja}
 
 Kolejna z opracowanych metod opiera się na wykorzystaniu korelacji krzyżowej sygnału $y(k)$ z opracowanym wzorcem idealnego impulsu pszczoły $w(m)$.
 Korelacja krzyżowa stanowi miarę podobieństwa sygnałów, w funkcji ich przesunięcia względem siebie -- nadaje się zatem idealnie do wykrycia chwil, w których w sygnale wejściowym występuje zadany wzorzec.
@@ -517,7 +517,190 @@ Sygnały korelacji $y(k)$ ze wszystkimi wzorcami mogą być uśredniane, w celu 
 Alteratywnie, zastosować można medianę, lub najwyższą wartość spośród poszczególnych sygnałów korelacji.
 Kilka wariantów takiej modyfikacji algorytmu zostało przetestowane w ramach niniejszej pracy, a uzyskane wyniki zostaną przedstawione w kolejnej sekcji.
 
-  
+\newpage
 \subsection{Wyniki testów} \label{sekcja:wyniki-testów}
+W celu wyboru najlepszego z algorytmów, a także jego zestawu parametrów, należało przeprowadzić szereg eksperymentów testujących ich skuteczność.
+Każdy wariant algorytmu uruchamiano na całości zebranych danych rzeczywistych ze wszystkich tuneli urządzenia.
+Jakość jego działania oceniano według metryki $E$ zdefiniowanej jako:
+\begin{equation}
+    E = \frac{1}{2} (F_1^\mathrm{wejście} + F_1^\mathrm{wyjście}),
+\end{equation}
+gdzie norma $F_1$ typu zdarzenia $t$ (wejście lub wyjście z ula) dana jest jako:
+\begin{equation}
+    F_1^{\mathrm{t}} = 2\cdot\frac{\text{precyzja}^t\cdot\text{czułość}^t}{\text{precyzja}^t+\text{czułość}^t},
+\end{equation}
+przy czym precyzja (ang. \textit{precision}), oraz czułość (ang. \textit{recall}), wyznaczone są zgodnie z następującymi wzorami:
+\begin{align}
+    \mathrm{precyzja}^t &= \frac{\mathrm{TP}^t}{\mathrm{TP}^t + \mathrm{FP}^t} \\
+    \mathrm{czułość}^t &= \frac{\mathrm{TP}^t}{\mathrm{TP}^t + \mathrm{FN}^t}.
+\end{align}
+$\mathrm{TP}^t$, $\mathrm{FP}^t$ oraz $\mathrm{FN}^t$ oznaczają, kolejno, całkowitą liczbę prawdziwie dodatnich (ang. \textit{true positive}), fałszywie dodatnich (ang. \textit{false positive}), oraz fałszywie ujemnych (ang. \textit{false negative}) wyników wygenerowanych przez algorytm dla rodzaju zdarzenia $t$.
+Metryki te obliczone są zgodnie z następującą metodą:
+Niech $A^t$ oznacza zbiór chwil oznaczonych przez algorytm jako czasy występowania zdarzenia $t$, natomiast $L^t$ -- zbiór etykiet $t$, czyli ręcznie oznaczonych chwil, dla których faktycznie wystąpiło $t$.
+Dla każdego elementu $a$ ze zbioru $A^t$, jeżeli $L^t$ zawiera odpowiadający mu element $l$, nie różniący się od $a$ o więcej niż 3 sekundy, inkrementuje się $\mathrm{TP}^t$ oraz usuwa $l$ ze zbioru $L^t$;
+w przeciwnym wypadku, inkrementuje się $\mathrm{FP}^t$.
+Po przetworzeniu całego zbioru $A^t$, wartość $\mathrm{FN}^t$ równa jest liczbie elementów pozostałych w $L^t$.
+
+W ramach poszukiwania najlepszego algorytmu przetestowano dziesiątki różnych konfiguracji, w ramach równie wielu eksperymentów.
+Szczegółowy proces optymalizacji parametrów każdej z metod nie został udokumentowany w ramach niniejszej pracy; zamiast tego zdecydowano się zaprezentować kilka wybranych konfiguracji, które uznano za najważniejsze.
+Zostały one przedstawione poniżej:
+\begin{enumerate}
+
+    \item Automat stanowy, progowanie statyczne:
+    \begin{itemize}
+        \renewcommand\labelitemi{---}
+        \item parametry przetwarzania wstępnego: $N=31$, $M=1269$;
+        \item parametry automatu stanowego: $t_\mathrm{max}=180$;
+        \item parametry progowania: $s_0=1.22$;
+    \end{itemize}
+    
+    \item Automat stanowy, progowanie adaptacyjne:
+    \begin{itemize}
+        \renewcommand\labelitemi{---}
+        \item parametry przetwarzania wstępnego: $N=31$, $M=1269$;
+        \item parametry automatu stanowego: $t_\mathrm{max}=180$;
+        \item parametry progowania: $s_0=0.87$, $\alpha=0.4$, $\mu=7$, $q=0.2$, $K=1500$;
+    \end{itemize}
+    
+    \item Korelacja krzyżowa, wzorzec rzeczywisty, progowanie statyczne:
+    \begin{itemize}
+        \renewcommand\labelitemi{---}
+        \item parametry przetwarzania wstępnego: $N=36$, $M=1252$;
+        \item parametry korelacji krzyżowej: 1 wzorzec wybrany z danych eksperymentalnych (rys. \ref{fig:kernels}a);
+        \item parametry progowania: $s_0=100$;
+    \end{itemize}
+    
+    \item Korelacja krzyżowa, 3 wzorce rzeczywiste, progowanie statyczne:
+    \begin{itemize}
+        \renewcommand\labelitemi{---}
+        \item parametry przetwarzania wstępnego: $N=36$, $M=1252$;
+        \item parametry korelacji krzyżowej: 3 wzorce wybrane z danych eksperymentalnych, o zróżnicowanym kształcie. Sygnały korelacji uśrednione;
+        \item parametry progowania: $s_0=85$;
+    \end{itemize}
+    
+    \item Korelacja krzyżowa, 3 wzorce rzeczywiste, progowanie adaptacyjne:
+    \begin{itemize}
+        \renewcommand\labelitemi{---}
+        \item parametry przetwarzania wstępnego: $N=36$, $M=1252$;
+        \item parametry korelacji krzyżowej: 3 wzorce tak samo jak w punkcie poprzednim;
+        \item parametry progowania: $s_0=0.87$, $\alpha=0.4$, $\mu=8.6$, $q=0.2$, $K=1200$;
+    \end{itemize}
+    
+    \item Korelacja krzyżowa, wzorzec syntetyczny, progowanie statyczne: \label{punkt:sinus}
+    \begin{itemize}
+        \renewcommand\labelitemi{---}
+        \item parametry przetwarzania wstępnego: $N=15$, $M=850$;
+        \item parametry korelacji krzyżowej: 1 wzorzec syntetyczny: jeden okres sinusoidy, rozciągnięty na 81 próbek, i~przeskalowany o współczynnik $1.33$, a następnie otoczony z obu stron 20 próbkami równymi 0 (rys. \ref{fig:kernels}b);
+        \item parametry progowania: $s_0=88$;
+    \end{itemize}
+    
+    \item Korelacja krzyżowa, 3 wzorce syntetyczne, progowanie statyczne:
+    \begin{itemize}
+        \renewcommand\labelitemi{---}
+        \item parametry przetwarzania wstępnego: $N=15$, $M=850$;
+        \item parametry korelacji krzyżowej: 3 wzorzec syntetyczny -- jeden jak powyżej, pozostałe przeskalowane w czasie i amplitudzie;
+        \item parametry progowania: $s_0=80$;
+    \end{itemize}
+    
+    \item Korelacja krzyżowa, wzorzec syntetyczny, progowanie adaptacyjne:
+    \begin{itemize}
+        \renewcommand\labelitemi{---}
+        \item parametry przetwarzania wstępnego: $N=15$, $M=850$;
+        \item parametry korelacji krzyżowej: 1 wzorzec syntetyczny -- jak w punkcie \ref{punkt:sinus};
+        \item parametry progowania: $s_0=94$, $\alpha=0.4$, $\mu=9$, $q=0.2$, $K=1200$;
+    \end{itemize}
+    
+\end{enumerate}
+
+Wyniki w metryce $E$ uzyskane przez każdy z opisanych algorytmów zostały zaprezentowane w tabeli \ref{tab:wyniki}.
+\begin{table}[htb]
+\centering
+\caption{Wyniki porównania algorytmów detekcji.}
+\label{tab:wyniki}
+\begin{tblr}{
+  column{1} = {c},
+  column{3} = {c},
+  vline{2-3} = {-}{},
+  hline{2} = {-}{},
+}
+\textbf{Lp.} & \textbf{Algorytm}                                               & \textbf{Wynik~$E$} \\
+1            & Automat stanowy, progowanie statyczne                           & 0.8719             \\
+2            & Automat stanowy, progowanie adaptacyjne                         & 0.9044             \\
+3            & Korelacja krzyżowa, wzorzec rzeczywisty, prog. statyczne        & 0.7656             \\
+4            & Korelacja krzyżowa, 3 wzorce rzeczywiste, prog. statyczne       & 0.8209             \\
+5            & Korelacja krzyżowa, 3 wzorce rzeczywiste, prog. adaptacyjne     & 0.8370             \\
+6            & Korelacja krzyżowa, wzorzec syntetyczny, p. statyczne   & 0.8336             \\
+7            & Korelacja krzyżowa, 3 wzorce syntetyczne, p. statyczne  & 0.8014             \\
+8            & Korelacja krzyżowa, wzorzec syntetyczny, p. adaptacyjne & 0.8740             
+\end{tblr}
+\end{table}
+Automat stanowy z progowaniem adaptacyjnym uzyskał najwyższy wynik, wynoszący $E=0.9044$ -- zgodnie z oczekiwaniami przewyższając skutecznością wariant z progowaniem statycznym -- ten jednak, okazał się również bardzo dobry.
+Jedynym innym algorytmem z wyższym wynikiem od niego jest korelacja krzyżowa z wzorcem syntetycznym i progowaniem adaptacyjnym (drugie miejsce, wynik $E=0.8740$).
+Korelacja krzyżowa wykorzystująca kilka wzorców impulsu, w przypadku zastosowania wzorców rzeczywistych, uzyskała wynik znacznie lepszy niż w przypadku pojedynczego wzorca ($E=0.8209$ kontra $E=0.7656$).
+Wbrew oczekiwaniom, efekt ten nie jest jednak widoczny w przypadku wzorca syntetycznego, gdzie wariant z pojedynczym wzorcem uzyskał lepszy wynik.
+Progowanie adaptacyjne poprawiło działanie korelacji krzyżowej z wzorcami rzeczywistymi, jednak w zaskakująco małym stopniu.
+W przypadku wzorca syntetycznego, poprawa ta jest bardzo znacząca.
+
+Na podstawie zebranych obserwacji można wnioskować co następuje:
+\begin{enumerate}
+    \item Co najważniejsze: algorytm detekcji pszczół oparty na automacie stanowym jest lepszy od tego z korelacją krzyżową -- odrzucając tym samym odwrotną hipotezę z sekcji \ref{sekcja:korelacja};
+    \item Zastosowanie odpowiednio skonfigurowanego progowania adaptacyjnego zawsze zapewnia lepszą skuteczność algorytmu detekcji;
+    \item Wykorzystanie większej ilości wzorców w metodzie korelacji krzyżowej nie musi gwarantować poprawy wyników.
+\end{enumerate}
+
+Uzyskany najlepszy wynik, równy $E=0.9044$, jest niestety poniżej optymistycznych oczekiwań przyjętych przed wykonaniem eksperymentów.
+Taki poziom dokładności uniemożliwia skuteczne szacowanie łącznego bilansu pszczół, który przemieścił się tunelami urządzenia; niemożliwa jest zatem ocena całkowitej populacji ula.
+Błędy generowane przez system akumulowałyby się w bardzo szybkim tempie, błyskawicznie prowadząc do bardzo błędnych wyników.
+Nie mniej jednak, precyzja stworzonego rozwiązania jest wystarczająca do szacowania chwilowego natężenia ruchu owadów na wejściu ula, co również stanowi bardzo przydatną informację dla pszczelarzy.
+Przeanalizowano znaczną część przebiegów wygenerowanych podczas testu najlepszego z algorytmów w celu wyszukania źródeł tak znacznych błędów.
+Za część z nich odpowiadają błędne etykiety danych, stanowią one jednak mniejszość.
+Więcej przeanalizowanych błędów stanowią faktyczne błędy algorytmu detekcji, występujące głównie w przypadku próby wykrycia impulsów o nietypowych kształtach -- jak na rysunku \ref{fig:error-real}.
+\begin{figure}[htb]
+    \centering
+    \includegraphics{tex/img/error-real.pdf}
+    \caption{Przykładowy błąd popełniony przez automat stanowy. Impuls nie został wykryty ze względu na nietypowy, asymetryczny kształt.}
+    \label{fig:error-real}
+\end{figure}
+Mimo to, okazuje się, że większość pojawiających się błędów nie wynika bezpośrednio z niedostatecznej jakości algorytmu: ich źródłem, w głównej mierze, są nietypowe zachowania pszczół poruszających się wewnątrz bramki czujnika.
+Przebiegi odpowiadające takim sytuacjom przedstawione zostały na rysunku \ref{fig:errors}.
+Pierwszy z wykresów (\ref{fig:error1}) zawiera błąd spowodowany najprawdopodobniej przez pszczołę zawracającą wewnątrz bramki czujnika.
+W wyniku tego zachowania wygenerowany został impuls o zupełnie innym kształcie, na podstawie którego niemożliwe jest wnioskowanie o ruchu owada w tunelu.
+Podobny przypadek występuje na wykresie \ref{fig:error2}, gdzie dwie pszczoły mijające się w bramce czujnika wygenerowały jeden wspólny zdeformowany impuls.
+Na ostatnim rysunku (\ref{fig:error3}) prezentowany jest błąd detekcji wywołany grupowaniem pszczół: dwa osobniki poruszające się tuż obok siebie przeszły przez czujnik tuż po sobie, generując sygnał, na podstawie którego również bardzo trudno wnioskować o ich faktycznym ruchu.
+Na podstawie przeprowadzonej analizy stwierdzono, że uzyskany poziom błędu nie świadczy o niedostatecznie dobrym algorytmie detekcji, ale raczej prezentuje wadę opracowanego rozwiązania wykorzystującego pojedynczą parę czujników pojemnościowych.
+Najlepszym sposobem rozwiązania tego problemu wydaje się na ten moment zastosowanie większej liczby bramek w każdym z tuneli urządzenia, tak jak zrobiono w urządzeniu BeeCheck \cite{Bermig2020} -- co jednak znacząco powiększa złożoność całości projektu.
+Alternatywnie, poprawę mogłoby przynieść zastosowanie innych, bardziej zaawansowanych metod detekcji impulsów, przystosowanych również do radzenia sobie ze znanymi sytuacjami granicznymi -- te jednak wymusiłyby wykorzystanie platformy sprzętowej o większych możliwościach i koszcie.
+
+
+
+
+\begin{figure}[htb]
+    \centering
+    \begin{subfigure}{\textwidth}
+        \centering
+        \caption{Błąd spowodowany przez pszczołę zawracającą wewnątrz bramki.}
+        \includegraphics{tex/img/error1.pdf}
+        \label{fig:error1}
+    \end{subfigure}
+    \begin{subfigure}{\textwidth}
+        \centering
+        \caption{Błąd spowodowany przez pszczoły mijające się nawzajem w bramce.}
+        \includegraphics{tex/img/error2.pdf}
+        \label{fig:error2}
+    \end{subfigure}
+    \begin{subfigure}{\textwidth}
+        \centering
+        \caption{Błąd spowodowany przez pszczoły poruszające się przez tunel w grupie.}
+        \includegraphics{tex/img/error3.pdf}
+        \label{fig:error3}
+    \end{subfigure}
+    \caption{Przykładowe błędy popełnione przez algorytm detekcji (automat stanowy).}
+    \label{fig:errors}
+\end{figure}
+
+
+
 \subsection{Wybór algorytmu}
-\subsection{Implementacja algorytmu na sprzęcie} \label{sekcja:implementacja}
+Na podstawie przedstawionych dotychczas wyników łatwo zdecydować, że w niniejszym projekcie należy wykorzystać metodę detekcji pszczół opierającą się na automacie stanowym.
+Dała ona lepsze wyniki w przeprowadzonych eksperymentach ($E=0.9044$), a przy tym jest prostsza w implementacji na mikrokontrolerze: jest bowiem mniej wymagająca obliczeniowo i pamięciowo.
+W kolejnym rozdziale opisana została zrealizowana implementacja sprzętowa niniejszego algorytmu, a także jego test \textit{on line}, ostatecznie weryfikujący działanie całego systemu.
