@@ -1,6 +1,171 @@
 \clearpage
 \section{Test integracyjny}
 
+Na tym etapie realizacji pracy możliwe było przetestowanie pełnej funkcjonalności stworzonego urządzenia w finalnym teście integracyjnym.
+Ostatnim, co pozostało do wykonania przed jego przeprowadzeniem jest implementacja wybranego algorytmu detekcji pszczół na platformie sprzętowej ESP32-C3.
+
 \subsection{Implementacja algorytmu na sprzęcie} \label{sekcja:implementacja}
 
+Ograniczenia narzucane przez wykorzystywany mikrokontroler wymagają przeanalizowania etapów algorytmu pod kątem złożoności obliczeniowej i rozważenia optymalizacji implementacji niektórych z nich.
+Przytoczone poniżej wartości w notacji \textit{big O} zostały wyznaczone dla wykonania danej procedury w pojedynczej pętli urządzenia -- czyli dla jednej przychodzącej próbki sygnału wejściowego.
+Ponadto, założona została implementacja bezpośrednio wynikająca z przedstawionych wcześniej wzorów matematycznych, bez dodatkowych optymalizacji.
+
+Automat stanowy ma złożoność obliczeniową $O(1)$. Jest niezwykle prosty i nadaje się świetnie do pracy w ograniczonych zasobach.
+Problematycznym krokiem algorytmu jest natomiast progowanie adaptacyjne.
+Opiera się ono na wyznaczaniu pewnego kwantylu z buforu ostatnich próbek -- wymaga zatem posortowania próbek z całego wymaganego okna.
+Z tego względu, jego złożoność obliczeniowa to $O(n\log{n})$.
+Analogicznie w przypadku kroku usuwania trendu: korzysta on z mediany próbek w buforze o innej długości -- konieczne jest kolejne sortowanie ($O(n\log{n})$).
+Dodatkowo, filtr średniej kroczącej, w podstawowej implementacji, posiada złożoność obliczeniową $O(n)$, ponieważ w każdym kroku uśrednia próbki ze swojego buforu.
+
+Występowanie w implementacji etapów o złożoności $O(n\log{n})$ samo w sobie nie stanowi problemu, dopóki algorytm wykonuje się wystarczająco szybko.
+Aby sprawdzić, czy konieczna jest jego optymalizacja, przeprowadzony został test czasu wykonania pojedynczej operacji usunięcia trendu z próbki. Założono okno $K=1500$, zgodnie z najlepszą uzyskaną wcześniej konfiguracją.
+Algorytm uruchomiony został wiele razy, a zmierzony czas uśredniono. Wyniki dla komputera stacjonarnego oraz ESP32-C3 przedstawione zostały w tabeli \ref{tab:czas-wykonania}.
+Wyznaczony czas wykonania na mikrokontrolerze (3.79 milisekundy) jest znacząco za wysoki: pomnożony przez 8 tuneli uniemożliwiłby, sam w sobie, pracę urządzenia z zakładaną częstotliwością próbkowania 100 Hz.
+Wynika z tego, że konieczne jest zoptymalizowanie implementacji metody usuwania trendu.
+
+\begin{table}[htb]
+\centering
+\caption{Porównanie czasów wykonania implementacji usuwania trendu.}
+\label{tab:czas-wykonania}
+\begin{tblr}{
+  cells = {c},
+  column{1} = {r},
+  vline{2} = {-}{},
+  hline{2} = {-}{},
+}
+\textbf{Wersja implementacji}        & \textbf{Komputer stacjonarny} & \textbf{ESP32-C3} \\
+bez optymalizacji    & 51.63 $\mu s$                        & 3783 $\mu s$            \\
+zoptymalizowana & 6.075 $\mu s$                       & 19.65 $\mu s$             
+\end{tblr}
+\end{table}
+
+
+Proponowana optymalizacja opiera się na spostrzeżeniu, że w buforze zawsze dodawana i usuwana jest dokładnie jedna próbka -- pełne sortowanie całości jest zatem nadmiarowe.
+Do reprezentacji buforu próbek wykorzystane zostanie zbalansowane binarne drzewo poszukiwań (BST).
+Jest to struktura danych, która przechowuje posortowane elementy, umożliwiając ich dodawanie i usuwanie ze złożonością $O(\log n)$ \cite{cormen2019}.
+Dostęp do środkowego elementu (mediany) odbywa się w czasie $O(n)$.
+W każdym wykonaniu pętli programu wykonane zostanie zatem odnalezienie ($O(\log n)$ i usunięcie z drzewa pojedynczego elementu (najstarszej próbki), dodanie najnowszej próbki, oraz pobranie mediany.
+Sumarycznie, rozwiązanie takie pozwoli na usuwanie trendu z próbek z całkowitą złożonością obliczeniową $O(n)$, co powinno dać znaczną poprawę czasu wykonania względem wersji bez optymalizacji.
+W języku C++ zbalansowane binarne drzewo poszukiwań jest dostępne jako element biblioteki standardowej, pod nazwą \texttt{std::multiset} \cite{cppref_multiset}.
+Opracowana implementacja została przedstawiona na przedstawionym poniżej fragmencie kodu:
+
+\vspace{1em}
+\vbox{
+\begin{minted}
+[
+    label={include/detection.h > RollingMedianDetrender}, 
+    linenos, 
+    frame=single, 
+    framesep=0.5em, 
+    fontsize=\footnotesize
+]{cpp}
+class RollingMedianDetrender {
+  public:
+    RollingMedianDetrender() {
+        // Na początku, wypełnia BST próbkami z buforu
+        for (size_t i = 0; i < kDetrendWindow; ++i) {
+            float value = x.at(i);
+            bst.insert(value);
+        }
+    }
+
+    float update(float newValue) {
+        float oldestValue = x.at(0);       // Aktualizacja buforu
+        x.push_back(newValue);
+
+        bst.erase(bst.find(oldestValue));  // Aktualizacja BST
+        bst.insert(newValue);
+
+        float median = *next(bst.rbegin(), kDetrendWindow/2); // Pobranie mediany
+        return newValue - median;
+    }
+
+  private:
+    CircularBuffer<kDetrendWindow> x;
+    std::multiset<float> bst;
+};
+\end{minted}
+}
+\vspace{1em}
+
+Warto zwrócić uwagę, że oprócz samego drzewa binarnego, przechowywany jest również oryginalny bufor próbek.
+Jest on konieczny do zachowania informacji o kolejności próbek -- należy wiedzieć, jaka jest najstarsza próbka w buforze, by usunąć ją z drzewa.
+Powstaje dodatkowy narzut pamięciowy, ale ESP32-C3 posiada wystarczająco dużo adresów RAM, by nie stanowiło to problemu.
+Bufor reprezentowany jest przez strukturę \texttt{CircularBuffer}, zaimplementowaną na potrzeby niniejszej pracy.
+Jej celem jest przechowywanie buforu ostatnich próbek w postaci, która nie wymaga przesuwania całej zawartości jego pamięci o jedno pole w momencie pojawiania się nowej próbki; zamiast tego przesuwany jest wskaźnik na najnowszy element.
+Implementacja klasy \texttt{CircularBuffer} została przedstawiona poniżej.
+
+\vspace{1em}
+\vbox{
+\begin{minted}
+[
+    label={include/detection.h > CircularBuffer}, 
+    linenos, 
+    frame=single, 
+    framesep=0.5em, 
+    fontsize=\footnotesize
+]{cpp}
+template<size_t N>
+class CircularBuffer {
+  public:
+    CircularBuffer() : m_head(0) {
+        for (size_t i = 0; i < N; ++i) {
+            m_buffer[i] = 0.0f;
+        }
+    }
+
+    void push_back(float value) {
+        m_buffer[m_head] = value;
+        m_head = (m_head + 1) % N;
+    }
+
+    float at(size_t index) const {
+        size_t physicalIndex = (m_head + index) % N;
+        return m_buffer[physicalIndex];
+    }
+    
+    size_t size() const { return N; }
+
+  private:
+    float m_buffer[N];
+    size_t m_head;
+};
+\end{minted}
+}
+\vspace{1em}
+
+
+Wyniki z tabeli \ref{tab:czas-wykonania} pozwalają jednoznacznie potwierdzić, że optymalizacja przyspieszyła działanie algorytmu.
+Obliczenia zajęły w tym przypadku zaledwie 19.65 $\mu s$ -- wystarczająco mało, by system działał z prawidłowym czasem próbkowania.
+
+Kolejnym etapem algorytmu o złożoności $O(n\log n)$, wymagającym tym samym optymalizacji, jest obliczanie wartości dynamicznego progu $\gamma(k)$.
+Wąskim gardłem procesu jest wyznaczanie wartości $\hat{Q}_y(q,\,K,\,k)$ ($q$-tego kwantylu z buforu dłufości $K$).
+Zastosowano analogiczną optymalizację jak w przypadku mediany -- jedyną różnicą jest pozycja wartości pobieranej z BST.
+W tym przypadku, zamiast na pozycji środkowej, interesująca próbka leży na pozycji $q\cdot K$.
+
+Dalsza optymalizacja implementacji algorytmu detekcji, jednak dla elegancji rozwiązania zmodyfikowano kod filtra średniej kroczącej w sposób analogiczny do przedstawionych uprzednio usprawnień.
+Zamiast w każdej pętli programu uśredniać całe okno na nowo, całkowita wartość średniej jest jedynie aktualizowana o różnice między usuwaną, najstarszą próbką, a dodawaną -- najnowszą.
+W ten sposób z pracy w czasie $O(n)$ usprawniono ten krok algorytmu do $O(1)$.
+
+Łączny czas wykonania całego algorytmu detekcji na mikrokontrolerze ESP32-C3 wynosi 245 mikrosekund.
+Dla wszystkich ośmiu tuneli urządzenia daje to sumaryczny czas nie przekraczający 2 milisekund, wykorzystywane jest zatem jedynie niecałe 20\% dostępnego czasu przy próbkowaniu 100 Hz.
+Dalsza optymalizacja nie jest konieczna -- choć byłaby możliwa poprzez zastosowanie do reprezentacji buforu kilku drzew binarnych, balansowanych tak, by na początku jednego z nich znajdowała się zawsze interesująca próbka, np. mediana.
+
+
 \subsection{Test zliczania pszczół}
+Stworzony program zawierający opracowany algorytm detekcji pszczół wgrano na skonstruowane urządzenie.
+W celu weryfikacji działania systemu powtórnie przeprowadzono eksperyment z kawałkiem wilgotnej gąbki na żyłce symulującym pszczołę.
+Przez każdy z tuneli urządzenia przeciągnięto go czterokrotnie: dwa razy w każdym kierunku.
+Urządzenie połączone przez USB z komputerem stacjonarnym stale raportowało stany liczników pszczół $bee_i$, odpowiadające poszczególnym tunelom $i=0\dots7$.
+Uzyskane przebiegi czasowe zostały przedstawione na rysunku \ref{fig:test-integracyjny}.
+\begin{figure}[htb]
+    \centering
+    \includegraphics{tex/img/integration-test.pdf}
+    \caption{Przebiegi liczników $bee_i$, $i=1\dots7$, zebrane podczas testu integracyjnego.}
+    \label{fig:test-integracyjny}
+\end{figure}
+Na każdym z przedstawionych wykresów widać po dwa fragmentu, na których licznik przechodzi z zera na jedynkę.
+Skoki wartości $bee_i$ odpowiadają momentom przeciągania przez czujnik obiektu, i występują w prawidłowej kolejności.
+Można jednoznacznie wnioskować, że algorytm detekcji zadziałał prawidłowo w teście integracyjnym:
+wygenerował on prawidłowe momenty i kierunki wykrywanych zdarzeń.
+Na tym etapie pracy, stworzony system jest w pełni sprawny -- można przejść do uruchamiania go w warunkach rzeczywistych.
