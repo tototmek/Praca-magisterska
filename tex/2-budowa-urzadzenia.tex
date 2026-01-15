@@ -199,15 +199,15 @@ Wypracowane w tej pracy kryteria to:
 W ramach niniejszej pracy założono, że wewnętrzna średnica tunelu musi wynosić około 14 mm, aby zapewnić swobodny ruch pszczół, a przy tym uniemożliwić równoległe poruszanie się kilku osobników obok siebie.
 Średnica zewnętrzna zastosowanej rurki z tworzywa sztucznego to 16 mm, co daje promień okładki wynoszący 8 mm. Dla spełnienia wyżej wymienionego kryterium obrano rozstaw okładek $d=9$ mm.
 Do wykonania okładek wybrano drut miedziany o średnicy 1.5 mm.
-\begin{figure}[H]
+\begin{figure}[p]
     \centering
     \includegraphics[width=0.8\textwidth]{tex/img/prototyp-tech.pdf}
-    \caption{Wymiary prototypowego tunelu -- oznaczenia dla tabeli \ref{tab:prototyp}}
+    \caption{Wymiary prototypowego tunelu -- oznaczenia dla tabeli \ref{tab:prototyp}.}
     \label{fig:prototyp-oznaczenia}
 \end{figure}
-\begin{table}[H]
+\begin{table}[p]
     \centering
-    \caption{Wymiary prototypowego tunelu}
+    \caption{Wymiary prototypowego tunelu.}
     \begin{tblr}{cl|r}
         \textbf{Oznaczenie} & \textbf{Opis} & \textbf{Wartość} [mm] \\
         \hline
@@ -222,7 +222,7 @@ Do wykonania okładek wybrano drut miedziany o średnicy 1.5 mm.
 \end{table}
 
 
-\begin{figure}[htb]
+\begin{figure}[p]
     \centering
     \includegraphics{tex/img/uklad-prototyp.pdf}
     \caption{Schemat układu elektronicznego prototypowego tunelu.}
@@ -231,7 +231,9 @@ Do wykonania okładek wybrano drut miedziany o średnicy 1.5 mm.
 
 
 Na uniwersalnej płytce prototypowej stworzono układ elektroniczny zgodny tym przedstawionym na rysunku \ref{fig:uklad-pomiarowy}. Na potrzeby przetestowania prototypu pominięto jeden z kondensatorów w tunelu i do mikrokontrolera podłączono jedynie okładkę lewego kondensatora. Zastosowany został wspominany wcześniej mikrokontroler ESP32-C3 na płytce deweloperskiej ESP32-C3 Super Mini \cite{ESP32C3Datasheet}. Moduł ten wyposażony jest w konwerter USB-UART umożliwiający komunikację urządzenia z komputerem z wykorzystaniem złącza USB.
-Na mikrokontroler zaimplementowana została uproszczona (mierząca tylko jedną z bramek) wersja algorytmu \ref{alg:akwizycja} -- program w zamieszczonym poniżej pliku \texttt{prototype/main.cpp}.
+Na mikrokontroler zaimplementowana została uproszczona (mierząca tylko jedną z bramek) wersja algorytmu \ref{alg:akwizycja} -- program w zamieszczonym dalej pliku \texttt{prototype/main.cpp}.
+
+\FloatBarrier
 
 \vspace{2em}
 \vbox{
@@ -587,12 +589,6 @@ Z tej przyczyny zdefiniowano 11-bajtową ramkę UART reprezentującą pojedynczy
 Jej dwa pierwsze bajty stanowi ustalona sekwencja startowa, która umożliwia odbiorcy potoku danych zlokalizowanie początków poszczególnych ramek.
 Dziewięć ostatnich bajtów stanowią dane odczytu, zapisywane w sposób zgodny z reprezentacją struktury \texttt{GateReading} w pamięci mikrokontrolera, co pozwala uniknąć konwersji podczas nadawania i odbioru.
 Ze względu na konieczność implementacji komunikacji po wyłącznie jednej linii, zdecydowano się na dość nietypowy model wymiany informacji, przedstawiony na rysunku \ref{fig:uart-algorytmy}.
-\begin{figure}[htb]
-    \centering
-    \includegraphics{tex/img/uart-algorytmy.pdf}
-    \caption{Algorytmy pracy mikrokontrolera głównego i pomocniczego.}
-    \label{fig:uart-algorytmy}
-\end{figure}
 Nie zastosowano najpopularniejszego w podobnych sytuacjach modelu zapytanie-odpowiedź, w którym układ główny wysyła do pomocniczego zapytanie o dane, a tamten odsyła przechowywane w pamięci wyniki.
 Takie rozwiązanie w prosty sposób zapewnia synchronizację przesyłanych ramek, natomiast wymaga dwukierunkowej komunikacji.
 Implementacja połączenia half-duplex pozwoliłaby na zastoswanie tego modelu, jednak w niniejszej pracy zastosowano alternatywne rozwiązanie -- prostsze, dokładające jednak pewien narzut w postaci dodatkowych sekwencji startowych przesyłanych przez mikrokontroler pomocniczy.
@@ -607,16 +603,23 @@ Dane zapisywane są wyłącznie przez mikrokontroler główny, który wykorzystu
 
 Ważne dla skutecznej wymiany informacji jest wykrywanie sekwencji startu ramki.
 Zostało to zrealizowane poprzez implementację automatu stanowego przedstawionego na rysunku \ref{fig:uart-fsm}.
+Przejścia między kolejnymi stanami odbywają się w wyniku odebrania przez kontroler UART kolejnego bajtu. 
+Po skutecznym odbiorze sekwencji startowej kolejne bajty zapisywane są do tablicy wynikowej, i inkrementowany jest ich licznik.
+Zapełnienie tablicy wynikowej jest warunkiem zakończenia pracy automatu stanowego -- odebrana została pełna ramka.
+Implementacja omawianego automatu zawarta jest funkcji \texttt{Receiver::receiveReading} z pliku \texttt{src/connection.cpp}, którego odpowiedni fragment zawarto w przedstawionym dalej fragmencie kodu.
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics{tex/img/uart-algorytmy.pdf}
+    \caption{Algorytmy pracy mikrokontrolera głównego i pomocniczego.}
+    \label{fig:uart-algorytmy}
+\end{figure}
 \begin{figure}[htb]
     \centering
     \includegraphics{tex/img/uart-fsm.pdf}
     \caption{Odbiór ramek uart -- schemat automatu stanowego.}
     \label{fig:uart-fsm}
 \end{figure}
-Przejścia między kolejnymi stanami odbywają się w wyniku odebrania przez kontroler UART kolejnego bajtu. 
-Po skutecznym odbiorze sekwencji startowej kolejne bajty zapisywane są do tablicy wynikowej, i inkrementowany jest ich licznik.
-Zapełnienie tablicy wynikowej jest warunkiem zakończenia pracy automatu stanowego -- odebrana została pełna ramka.
-Implementacja omawianego automatu zawarta jest funkcji \texttt{Receiver::receiveReading} z pliku \texttt{src/connection.cpp}, którego odpowiedni fragment przedstawiono na poniższym fragmencie kodu.
 
 \vspace{1em}
 \vbox{
@@ -767,7 +770,7 @@ Wybór, który z dwóch mikrokontrolerów urządzenia wykonuje zadania pętli g�
 Wartość \texttt{0x00} oznacza mikrokontroler główny, natomiast \texttt{0x01} mikrokontroler poboczny.
 Dzięki takiemu podejściu istnieje możliwość wgrywania tego samego programu na oba mikrokontrolery, a zaprogramowany tryb pozostaje zapamiętany również po aktualizacji programu.
 Wystarczy jedynie sprawdzać w programie wartość pierwszego pola pamięci i wykonywać odpowiednią funkcję z przedstawionych powyżej.
-Szczegółowa implementacja ustawiania i sprawdzania trybu mikrokontrolera nie zostanie przedstawiona w niniejszej pracy, można się z nią natomiast zapoznać w kodzie źródłowym projektu -- w plikach \texttt{include/connection.h}, \texttt{src/connection.cpp} oraz \texttt{src/main.cpp}. 
+Z implementacją tego mechanizmu można się zapoznać w kodzie źródłowym projektu -- w plikach \texttt{include/connection.h}, \texttt{src/connection.cpp} oraz \texttt{src/main.cpp}. 
 
 \subsection{Testy}
 
@@ -801,12 +804,18 @@ Przeprowadzone badanie miało udowodnić, że stworzony system czujników nadaje
     \item Na przebiegu sygnału każdego z czujników pojawią się impulsy w momentach odpowiadających pojawianiu się pszczoły w odpowiedniej bramce, 
     \item Impulsy widoczne na każdym z sygnałów będą miały kształt wystarczająco podobny, by w ramach dalszego rozwoju umożliwić wykrywanie ich jednym uniwersalnym algorytmem.
 \end{enumerate}
-Dane zebrane podczas niniejszego eksperymentu zostały przedstawione na rysunku \ref{fig:test-zlozenia}.
+Dane zebrane podczas niniejszego eksperymentu zostały przedstawione na rysunkach \ref{fig:test-zlozenia} oraz \ref{fig:test-zlozenia2}.
 \begin{figure}[htb]
     \centering
-    \caption{Przebiegi sygnałów wyjściowych bramek $x_0$--$x_7$ podczas testu działania urządzenia.}
+    \caption{Przebiegi sygnałów wyjściowych bramek $x_0$--$x_3$ podczas testu działania urządzenia.}
     \includegraphics{tex/img/test-zlozenia.pdf}
     \label{fig:test-zlozenia}
+\end{figure}
+\begin{figure}[htb]
+    \centering
+    \caption{Przebiegi sygnałów wyjściowych bramek $x_4$--$x_7$ podczas testu działania urządzenia.}
+    \includegraphics{tex/img/test-zlozenia2.pdf}
+    \label{fig:test-zlozenia2}
 \end{figure}
 Na ich podstawie jednoznacznie można stwierdzić, że każda z bramek reaguje prawidłowo na pojawienie się pszczoły w tunelu.
 Na sygnałach wyjściowych kolejno pojawiały się serie szpilek jasno odpowiadających przejściom obiektu przez tunel.
@@ -815,6 +824,8 @@ Impulsy zebrane przez urządzenie nie były idealne: wyraźnie widoczne są wspo
 
 Przeprowadzone eksperymenty pozwoliły jednoznacznie stwierdzić, że skonstruowane urządzenie działa prawidłowo.
 Możliwe było rozpoczęcia dalszych prac, aby umożliwić przetestowanie urządzenia na żywych pszczołach w pasiece.
+
+\FloatBarrier
 
 \subsection{Montaż urządzenia}
 
@@ -846,3 +857,5 @@ Na rysunku \ref{fig:zlozenie-zdjecia} przedstawiona została dokumentacja fotogr
     \caption{Zdjęcia z kolejnych etapów montażu urządzenia w obudowie}
     \label{fig:zlozenie-zdjecia}
 \end{figure}
+
+Budowa urządzenia została niniejszym zakończona -- możliwe było rozpoczęcie pracy nad tworzeniem algorytmów detekcji pszczół.
