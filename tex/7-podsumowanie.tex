@@ -1,8 +1,61 @@
 \clearpage
 \section{Podsumowanie}
 
+Cel niniejszej pracy stanowiło stworzenie systemu czujników umożliwiającego zliczanie pszczół w ulu.
+Na podstawie przeglądu powiązanej literatury zdecydowano się wykorzystać czujniki pojemnościowe, których stosowanie zyskuje w ostatnich latach popularność.
+Przyjęto, że konstruowane urządzenie ma przyjąć formę szeregu tuneli z bramkami pojemnościowymi, montowanego na wejściu do ula.
+Realizacja zadania wymagała rozwiązania dwóch głównych problemów:
+\begin{enumerate}
+    \item zaprojektowania czujników pojemnościowych i metody akwizycji ich sygnałów,
+    \item opracowania algorytmu umożliwiającego wykrywanie pszczół na podstawie wyjść czujników pojemnościowych.
+\end{enumerate}
 
+W pierwszym etapie pracy zbudowano prototyp czujnika, bazując na konstrukcjach dostępnych w literaturze.
+Opracowano dla niego uproszczoną metodę akwizycji sygnału, nie wymagającą kosztownych komponentów ani kalibracji.
+W ramach eksperymentu z modelem pszczoły potwierdzono prawidłowe działanie prototypowej konstrukcji i metody akwizycji.
+Kolejnym krokiem w pracy była realizacja sprzętowa urządzenia wykorzystujące czujniki stworzone na bazie prototypu, dostosowane do gatunku pszczół \textit{Apis mellifera}.
+Dobrano mikrokontroler, a następnie zaprojektowano płytkę PCB z układem ośmiu czujników.
+Po iteracji projektu, układ działał w pełni poprawnie, co potwierdzono kolejnym badaniem laboratoryjnym na modelu pszczoły.
+Uzyskiwane przebiegi wyjść czujników były bardzo podobne do literaturowych, uzyskanych przez symulację elektrostatyczną.
+Przed przejściem do etapu tworzenia algorytmu detekcji pszczół, konieczne było zebranie dużej ilości danych przykładowych, które miały umożliwić ocenę jakości działania kolejnych rozwiązań.
+W tym celu, przeprowadzone zostały pierwsze testy pracy urządzenia w warunkach rzeczywistych: odwiedzono dwie różne pasieki, w których zebrano dane generowane przez urządzenie działające z żywymi pszczołami, wraz z referencyjnym nagraniem wideo.
+Kilka godzin uzyskanych danych zostało poddane ręcznej anotacji, w ramach której oznaczono chwile przechodzenia pszczół przez tunele czujników.
+Z obszernym zbiorem oetykietowanych danych, można było przejść do projektu algorytmu detekcji.
+W ramach niniejszej pracy zaproponowane zostały dwa rozwiązania, które wykazywały duży potencjał, zachowując przy tym niską złożoność obliczeniową: wykrywanie sekwencji progowanego sygnału automatem stanowym, oraz korelacja krzyżowa z wzorcem wykrywanego impulsu.
+Liczne konfiguracje obu algorytmów zostały uruchomione dla zbioru danych przykładowych, a ich wyjścia porównano z ręcznie oznaczonymi etykietami.
+Najwyższą zgodność osiągniął algorytm oparty na automacie stanowym.
+Wybraną metodę detekcji zaimplementowano dla platformy sprzętowej urządzenia, po uprzedniej koniecznej optymalizacji najważniejszych fragmentów.
+Skuteczność opracowanego oprogramowania dla nowych danych potwierdzono w ostatnim eksperymencie laboratoryjnym.
+Stworzony system ponownie uruchomiono na prawdziwym ulu -- tym razem z jego pełną funkcjonalnością automatycznego zliczania pszczół.
+Zebrane w ten sposób dane zostały zawarte i omówione w niniejszej pracy.
 
-Tutaj o tym, że sygnał różnicowy z dwóch kondensatorów daje odporność na zmienne warunki atmosferyczne, na niestacjonarność systemu i ogólnie na słabą kalibrację.
+\newpage
 
-Podziękowania
+Przeprowadzone badania pozwoliły na wyciągnięcie następujących wniosków:
+\begin{enumerate}
+    \item Czujniki pojemnościowe prezentowanego typu działają prawidłowo, a w połączeniu z opracowaną metodą akwizycji i przetwarzaniem generują dobrej jakości sygnał wyjściowy.
+    Impulsy powstające przy ruchu pszczół w czujniki są wyraźnie widoczne i bez problemów mogą zostać wykryte automatycznie.
+    Zastosowanie w roli sygnału wyjściowego różnicy między pojemnościami dwóch kondensatorów zapewnia rozwiązaniu odporność na zmienne warunki środowiska, niestacjonarność systemu, a także niweluje konieczność kalibracji.
+    Niezwykła prostota proponowanego układu akwizycji znacząco obniża koszt wykonania urządzenia;
+    \item Montaż urządzenia na wylotku ula wydaje się mieć znacznie mniejszy negatywny wpływ na zachowanie pszczół, niż się spodziewano.
+    Ruch owadów przez tunele rozpoczynał się praktycznie od razu; pszczoły nie próbowały także omijać urządzenia i wciskać się do ula bokiem.
+    Ograniczenie wymiany powietrza też nie wydało się być problemem -- nawet przy dłuższej pracy systemu nie pojawiało się zbyt wiele osobników wentylujących wejście ula;
+    \item Opracowany algorytm detekcji działa poprawnie, kiedy pszczoły w tunelu poruszają się typowo.
+    Zdarzają się błędy wynikające z niestandardowych zachowań pszczół, takich jak: grupowanie w tunelu, zatrzymywanie w czujniku.
+    Zachowania te okazują się występować częściej niż zakładano, przez co dokładność systemu jest niższa, niż oczekiwano.
+    W aktualnej wersji, urządzenie nie pozwala na skuteczne szacowanie aktualnego stanu populacji ula.
+    Zapewnia natomiast możliwość oceny chwilowego natężenia ruchu pszczół na jego wejściu, co również stanowi ważną metrykę świadczącą o zdrowiu i sile roju.
+\end{enumerate}
+
+Udowodniono, że opracowana technika automatycznego zliczania pszczół działa poprawnie.
+Znacząco obniżono koszt budowy urządzenia względem innych prac w literaturze, co może pozwolić na stosowanie systemu na większą skalę również w mniejszych pasiekach.
+Kontynuacja pracy nad stworzonym rozwiązaniem da szanse ograniczyć ilość występujących błędów.
+Możliwe kierunki rozwoju to:
+\begin{enumerate}
+    \item Zastosowanie większej liczby bramek pojemnościowych w każdym tunelu urządzenia -- dodatkowe dane mogą pozwolić lepiej rozróżniać atypowe zachowania pszczół;
+    \item Wykorzystanie bardziej zaawandowanych metod detekcji pszczelich impulsów, które byłyby zdolne do interpretacji przebiegów z anomaliami;
+    \item Opracowanie metody szacowania całkowitej populacji ula opartej na fuzji danych z modelem -- rozszerzenie analizy sygnałów o model probabilistyczny uzależniający natężenie ruchu pszczół od ich liczby w gnieździe.
+    Połączenie danych z dwóch źródeł: prostego zliczania wejść i wyjść, wraz z częstotliwością ruchu na wlotku mogłoby zapewnić estymację stanu populacji znacznie mniej podatną na akumulację występujących w systemie błędnych zliczeń.
+\end{enumerate}
+
+Dziękuję dr Jakubowi Gąbce za podzielenie się ekspercką wiedzą dotyczącą pszczół, oraz Andrzejowi Bielackiemu za udostepnienie swoich uli do eksperymentów.

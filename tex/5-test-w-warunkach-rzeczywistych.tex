@@ -1,2 +1,23 @@
 \clearpage
 \section{Rezultaty pracy w warunkach rzeczywistych}
+
+Stworzony system zliczania pszczół ponownie uruchomiono w jednej z odwiedzonych wcześniej pasiek.
+Urządzenie zostało zamontowane na wylotku ula, a następnie podłączono je przewodem USB z laptopem.
+Odczekano około godziny, by ruch pszczół uspokoił się po zakłóceniu.
+Następnie uruchomiono zapis danych: urządzenie co sekundę przesyłało do komputera aktualne stany wszystkich swoich liczników, które były zapisywane do pliku CSV.
+System pracował przez około 1 godzinę 20 minut, po czym pobrano z niego zapisane dane.
+Uzyskane przebiegi czasowe przedstawione zostały na rysunku \ref{fig:real-bee-count}.
+\begin{figure}[htb]
+    \centering
+    \includegraphics{tex/img/real-bee-count.pdf}
+    \caption{Przebiegi czasowe liczników pszczół zebrane podczas pracy testowanego urządzenia w warunkach rzeczywistych.}
+    \label{fig:real-bee-count}
+\end{figure}
+
+Na wykresach pojedynczych liczników widoczna jest mocna preferencja pszczół przy wyborze tunelu: niektórymi prawie wyłącznie wchodzą do ula, a innymi głównie wychodzą -- jest to zgodne z tym, co było widoczne na ręcznie anotowanych danych z rysunku z innej pasieki (rysunek \ref{fig:exp1-populacja}).
+Przez większość czasu trwania eksperymentu łączna liczba pszczół w ulu malała.
+Wynika to najpewniej z opuszczania ula przez pszczoły zbieraczki -- odlatują one w dużych falach, by następnie w podobnym czasie powrócić do gniazda.
+Uzyskane rezultaty przypominają dane, które zebrano wcześniej ręcznie: zarówno pod kątem kształtu przebiegów i zależności między nimi, jak i ogólnej intensywności ruchu pszczół.
+Można wnioskować, że stworzony system zadziałał prawidłowo poza laboratorium, w warunkach rzeczywistych.
+Uruchomienie urządzenia na dłuższym horyzoncie czasowym może zapewnić pszczelarzom głębszy wgląd w zdrowie i stan kolonii, zapewniając dokładną estymację natężenia ruchu pszczół na wylotku ula.
+Możliwości oceny chwilowego rozmiaru populacji pozostają jednak ograniczone ze względu na występujący w systemie błąd zliczania.

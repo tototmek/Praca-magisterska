@@ -88,7 +88,7 @@ class RollingMedianDetrender {
 }
 \vspace{1em}
 
-Warto zwrócić uwagę, że oprócz samego drzewa binarnego, przechowywany jest również oryginalny bufor próbek.
+Warto zwrócić uwagę, że oprócz samego drzewa binarnego, przechowywany jest również oryginalny bufor.
 Jest on konieczny do zachowania informacji o kolejności próbek -- należy wiedzieć, jaka jest najstarsza próbka w buforze, by usunąć ją z drzewa.
 Powstaje dodatkowy narzut pamięciowy, ale ESP32-C3 posiada wystarczająco dużo adresów RAM, by nie stanowiło to problemu.
 Bufor reprezentowany jest przez strukturę \texttt{CircularBuffer}, zaimplementowaną na potrzeby niniejszej pracy.
@@ -155,7 +155,7 @@ Dalsza optymalizacja nie jest konieczna -- choć byłaby możliwa poprzez zastos
 \subsection{Test zliczania pszczół}
 Stworzony program zawierający opracowany algorytm detekcji pszczół wgrano na skonstruowane urządzenie.
 W celu weryfikacji działania systemu powtórnie przeprowadzono eksperyment z kawałkiem wilgotnej gąbki na żyłce symulującym pszczołę.
-Przez każdy z tuneli urządzenia przeciągnięto go czterokrotnie: dwa razy w każdym kierunku.
+Przez każdy z tuneli urządzenia przeciągnięto go czterokrotnie: po dwa razy w każdym kierunku.
 Urządzenie połączone przez USB z komputerem stacjonarnym stale raportowało stany liczników pszczół $bee_i$, odpowiadające poszczególnym tunelom $i=0\dots7$.
 Uzyskane przebiegi czasowe zostały przedstawione na rysunku \ref{fig:test-integracyjny}.
 \begin{figure}[htb]
@@ -164,8 +164,8 @@ Uzyskane przebiegi czasowe zostały przedstawione na rysunku \ref{fig:test-integ
     \caption{Przebiegi liczników $bee_i$, $i=1\dots7$, zebrane podczas testu integracyjnego.}
     \label{fig:test-integracyjny}
 \end{figure}
-Na każdym z przedstawionych wykresów widać po dwa fragmentu, na których licznik przechodzi z zera na jedynkę.
-Skoki wartości $bee_i$ odpowiadają momentom przeciągania przez czujnik obiektu, i występują w prawidłowej kolejności.
+Na każdym z przedstawionych wykresów widać po dwa fragmenty, na których licznik przyjmuje wartość 1.
+Chwile skoku sygnału $bee_i$ odpowiadają momentom przeciągania przez czujnik obiektu, i występują w prawidłowej kolejności.
 Można jednoznacznie wnioskować, że algorytm detekcji zadziałał prawidłowo w teście integracyjnym:
 wygenerował on prawidłowe momenty i kierunki wykrywanych zdarzeń.
 Na tym etapie pracy, stworzony system jest w pełni sprawny -- można przejść do uruchamiania go w warunkach rzeczywistych.
