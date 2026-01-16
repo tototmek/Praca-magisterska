@@ -2,56 +2,56 @@
 \section{Budowa urządzenia}
 \subsection{Założenia projektu}
 Aby możliwe było wykorzystanie urządzenia zliczającego pszczoły do diagnostyki ula, musi ono spełniać szereg kryteriów.
-Po pierwsze, naturalne funkcjonowanie kolonii nie może zostać znacząco zakłócone. Należy zadbać, by ruch pszczół został zaburzony w minimalnym stopniu, a~wentylacja gniazda nie była zbytnio ograniczona.
+Po pierwsze, naturalne funkcjonowanie kolonii nie może zostać znacząco zakłócone. Należy zadbać, by ruch pszczół został zaburzony w~minimalnym stopniu, a~wentylacja gniazda nie była zbytnio ograniczona.
 Ponadto, istotna jest odporność systemu na warunki atmosferyczne i~aktywność pszczół: m.in. na zmiany nasłonecznienia, wilgotności, zbieranie się pyłku.
 
-Urządzenie ma dostarczać informację o chwilach wejścia/wyjścia, a także kierunku poruszania się pszczoły.
+Urządzenie ma dostarczać informację o~chwilach wejścia/wyjścia, a~także kierunku poruszania się pszczoły.
 Wyprodukowanie czujnika nie może mimo to wymagać trudno dostępnych lub drogich komponentów, aby możliwe było intensywne iteracyjne prototypowanie i~ewentualne szerokie wykorzystanie stworzonego systemu.
 
 \subsection{Prototypowy czujnik pojemnościowy}
-By spełnić wszystkie wymienione w poprzedniej sekcji założenia, stworzono autorski układ wykrywający pszczoły w oparciu o~czujnik pojemnościowy.
+By spełnić wszystkie wymienione w~poprzedniej sekcji założenia, stworzono autorski układ wykrywający pszczoły w~oparciu o~czujnik pojemnościowy.
   \subsubsection{Zasada działania}
-Pojemność elektryczna kondensatora zależy od przenikalności elektrycznej ośrodka między jego okładkami. W przypadku kondensatora płaskiego, pojemność opisywana jest wzorem:
+Pojemność elektryczna kondensatora zależy od przenikalności elektrycznej ośrodka między jego okładkami. W~przypadku kondensatora płaskiego, pojemność opisywana jest wzorem:
 \begin{equation}
 C = \frac{\varepsilon_r\,\varepsilon_0\,S}{d},
 \end{equation}
 gdzie $C$~--~pojemność kondensatora, $\varepsilon_r$~--~względna przenikalność elektryczna ośrodka, $\varepsilon_0$~--~przenikalność elektryczna próżni, $S$~--~pole powierzchni okładki, $d$~--~odległość między okładkami \cite{efizyka-kondensator}.
 
-Przenikalność elektryczna powietrza wynosi $\varepsilon_r = 1.00$ \cite{Hector1936}. Pszczoła nie jest jednorodnym ośrodkiem i jej parametry elektryczne nie były nigdy mierzone, jednak w znacznej części składa się ona z wody – substancji o wysokim $\varepsilon_r = 80.2$ (przy $20^\circ$C) \cite{Archer1990}.
-W literaturze proponowana jest arbitralna wartość przenikalności elektrycznej pszczoły równa $\varepsilon_r = 50$, która znajduje pośrednie potwierdzenie w eksperymentach \cite{Campbell2005}.
+Przenikalność elektryczna powietrza wynosi $\varepsilon_r = 1.00$ \cite{Hector1936}. Pszczoła nie jest jednorodnym ośrodkiem i~jej parametry elektryczne nie były nigdy mierzone, jednak w~znacznej części składa się ona z~wody – substancji o~wysokim $\varepsilon_r = 80.2$ (przy $20^\circ$C) \cite{Archer1990}.
+W literaturze proponowana jest arbitralna wartość przenikalności elektrycznej pszczoły równa $\varepsilon_r = 50$, która znajduje pośrednie potwierdzenie w~eksperymentach \cite{Campbell2005}.
 
-Wprowadzenie pszczoły pomiędzy okładki kondensatora spowoduje zatem wzrost średniej przenikalności elektrycznej ośrodka, zwiększając tym samym pojemność układu. Na rysunku \ref{fig:bee-in-capacitor} przedstawiony został układ kondensatora oraz teoretyczny wykres pojemności elektrycznej w zależności od położenia przemieszczającej się pszczoły. Na podstawie kształtu przebiegu pojemności określić można momenty wejścia i opuszczenia kondensatora (odpowiednio $t_{\mathrm{enter}}$ i $t_{\mathrm{leave}}$ na rysunku).
+Wprowadzenie pszczoły pomiędzy okładki kondensatora spowoduje zatem wzrost średniej przenikalności elektrycznej ośrodka, zwiększając tym samym pojemność układu. Na rysunku \ref{fig:bee-in-capacitor} przedstawiony został układ kondensatora oraz teoretyczny wykres pojemności elektrycznej w~zależności od położenia przemieszczającej się pszczoły. Na podstawie kształtu przebiegu pojemności określić można momenty wejścia i~opuszczenia kondensatora (odpowiednio $t_{\mathrm{enter}}$ i~$t_{\mathrm{leave}}$ na rysunku).
 
 \begin{figure}[htb]
     \centering
     \includegraphics{tex//img/bee-in-capacitor.pdf}
-    \caption{Schemat układu kondensatora z poruszającą się ruchem jednostajnym pszczołą oraz odpowiadający przebieg pojemności elektrycznej $C_1$.}
+    \caption{Schemat układu kondensatora z~poruszającą się ruchem jednostajnym pszczołą oraz odpowiadający przebieg pojemności elektrycznej $C_1$.}
     \label{fig:bee-in-capacitor}
 \end{figure}
 
-Przedstawiony układ nie umożliwia natomiast określenia kierunku poruszania się pszczoły w czujniku.
-Aby zapewnić tę funkcję, układ rozszerzony jest o drugi kondensator. Schemat takiego układu został przedstawiony na rysunku \ref{fig:bee-in-c2}. Wyjście czujnika stanowi sygnał $C_1 - C_2$. Założono, że kondensatory są identyczne, a więc gdy nie znajduje się w nich pszczoła, to $C_1 - C_2 = 0$. Ruch pszczoły między okładkami generuje na wyjściu bipolarny, środkowosymetryczny impuls, który  daje się zidentyfikować na podstawie kształtu, pozwalając na wykrycie pszczół w czujniku, oraz pozwala określić kierunek ruchu pszczoły na podstawie kolejności występowania piku dodatniego i ujemnego. Na rysunku \ref{fig:bee-in-minus-c2} przedstawiono sytuację, w której pszczoła porusza się w odwrotnym kierunku.
+Przedstawiony układ nie umożliwia natomiast określenia kierunku poruszania się pszczoły w~czujniku.
+Aby zapewnić tę funkcję, układ rozszerzony jest o~drugi kondensator. Schemat takiego układu został przedstawiony na rysunku \ref{fig:bee-in-c2}. Wyjście czujnika stanowi sygnał $C_1 - C_2$. Założono, że kondensatory są identyczne, a~więc gdy nie znajduje się w~nich pszczoła, to $C_1 - C_2 = 0$. Ruch pszczoły między okładkami generuje na wyjściu bipolarny, środkowosymetryczny impuls, który  daje się zidentyfikować na podstawie kształtu, pozwalając na wykrycie pszczół w~czujniku, oraz pozwala określić kierunek ruchu pszczoły na podstawie kolejności występowania piku dodatniego i~ujemnego. Na rysunku \ref{fig:bee-in-minus-c2} przedstawiono sytuację, w~której pszczoła porusza się w~odwrotnym kierunku.
 
 \begin{figure}[htb]
     \centering
     \includegraphics{tex//img/bee-in-c2.pdf}
-    \caption{Schemat i przebieg $C_1 - C_2$ dla układu dwóch kondensatorów.}
+    \caption{Schemat i~przebieg $C_1 - C_2$ dla układu dwóch kondensatorów.}
     \label{fig:bee-in-c2}
 \end{figure}
 
 \begin{figure}[htb]
     \centering
     \includegraphics{tex//img/bee-in-minus-c2.pdf}
-    \caption{Schemat i przebieg $C_1 - C_2$ dla układu dwóch kondensatorów -- pszczoła porusza się w odwrotnym kierunku.}
+    \caption{Schemat i~przebieg $C_1 - C_2$ dla układu dwóch kondensatorów -- pszczoła porusza się w~odwrotnym kierunku.}
     \label{fig:bee-in-minus-c2}
 \end{figure}
 
-Przedstawione ilustracje mają na celu wyłącznie prezentację podstawowej zasady działania czujnika pojemnościowego, a podczas ich tworzenia pominięte zostało wiele zjawisk fizycznych.
-W praktyce, kondensatory o płaskich okładkach nie sprawdzają się takim zastosowaniu -- są podatne na zewnętrzne zakłócenia, a także muszą być znacznie oddalone od siebie by uniknąć wzajemnego zakłócania \cite{Campbell2005}.
-Mimo to, wykorzystujące je rozwiązania znalazły wykorzystanie w pracach naukowych, na przykład urządzenie \textit{BeeCheck} \cite{Bermig2020}, kompensujące wady płaskich okładek wykorzystaniem 7 kondensatorów w czujniku.
+Przedstawione ilustracje mają na celu wyłącznie prezentację podstawowej zasady działania czujnika pojemnościowego, a~podczas ich tworzenia pominięte zostało wiele zjawisk fizycznych.
+W praktyce, kondensatory o~płaskich okładkach nie sprawdzają się takim zastosowaniu -- są podatne na zewnętrzne zakłócenia, a~także muszą być znacznie oddalone od siebie by uniknąć wzajemnego zakłócania \cite{Campbell2005}.
+Mimo to, wykorzystujące je rozwiązania znalazły wykorzystanie w~pracach naukowych, na przykład urządzenie \textit{BeeCheck} \cite{Bermig2020}, kompensujące wady płaskich okładek wykorzystaniem 7~kondensatorów w~czujniku.
 
-Znacznie skuteczniejszym podejściem jest wykorzystanie okładek pierścieniowych. Na rysunku \ref{fig:tunnel-concept} przedstawiona została ogólna idea tego rozwiązania. Na czujnik składa się rurka z izolatora, przez którą przechodzi owad, oraz trzy pierścienie z przewodnika.
-Konstrukcja ta realizuje taki sam układ elektryczny jak analizowano poprzednio, przy czym kondensatory $C_1$ i $C_2$ mają wspólną okładkę (środkowy pierścień – wyprowadzenie $C$). Kondensator $C_1$ znajduje się między wyprowadzeniami $L$ i $C$, natomiast kondensator $C_2$ między $R$ i $C$.
+Znacznie skuteczniejszym podejściem jest wykorzystanie okładek pierścieniowych. Na rysunku \ref{fig:tunnel-concept} przedstawiona została ogólna idea tego rozwiązania. Na czujnik składa się rurka z~izolatora, przez którą przechodzi owad, oraz trzy pierścienie z~przewodnika.
+Konstrukcja ta realizuje taki sam układ elektryczny jak analizowano poprzednio, przy czym kondensatory $C_1$ i~$C_2$ mają wspólną okładkę (środkowy pierścień – wyprowadzenie $C$). Kondensator $C_1$ znajduje się między wyprowadzeniami $L$ i~$C$, natomiast kondensator $C_2$ między $R$ i~$C$.
 Ułożenie to, pozwalając na równoczesne ładowanie obu kondensatorów, umożliwi łatwy pomiar różnicy pojemności $C_1 - C_2$.
 
 \begin{figure}[htb]
@@ -61,14 +61,14 @@ Ułożenie to, pozwalając na równoczesne ładowanie obu kondensatorów, umożl
     \label{fig:tunnel-concept}
 \end{figure}
 
-Działanie czujnika tego typu zostało zasymulowane numerycznie przez Campbell wraz z zespołem \cite{Campbell2005}. Przyjęto: średnicę wewnętrzną tunelu 15 mm, okładki kondensatora wykonane z drutu o średnicy 1.7 mm, odległość między okładkami 7 mm. Pszczołę zamodelowano jako cylinder o długości 12 mm i średnicy 6mm. Wyniki tej symulacji przedstawione zostały na rysunkach \ref{fig:campbell-symulacja-model} i \ref{fig:campbell-symulacja-wynik}.
-Model czujnika zakładał dodatkowe obudowanie całości stalowym ekranem i zastosowanie polistyrenowych zaślepek. Na rysunku \ref{fig:campbell-symulacja-model} widać, że pszczoła (symulowana jako cylinder o~$\varepsilon_r=50$) wchodząca do tunelu powoduje niesymetryczne rozłożenie pól elektrycznych w kondensatorach.
-Przejście pszczoły skutkuje pojawieniem się na wyjściu czujnika asymetrycznych, bipolarnych impulsów (rysunek \ref{fig:campbell-symulacja-wynik}), podobnych do tych na przebiegach z rozważań teoretycznych (rysunki \ref{fig:bee-in-c2}, \ref{fig:bee-in-minus-c2}). W symulacji przetestowano dodatkowo odpowiedź układu na pszczoły różnych rozmiarów (impulsy $a$, $b$ na rysunku \ref{fig:campbell-symulacja-wynik}). Zaobserwować można pewną różnicę w wyglądzie wygenerowanych przebiegów, jednak ogólny kształt nadal pozwala na rozpoznanie momentu oraz kierunku przejścia pszczoły.
+Działanie czujnika tego typu zostało zasymulowane numerycznie przez Campbell wraz z~zespołem \cite{Campbell2005}. Przyjęto: średnicę wewnętrzną tunelu 15 mm, okładki kondensatora wykonane z~drutu o~średnicy 1.7 mm, odległość między okładkami 7~mm. Pszczołę zamodelowano jako cylinder o~długości 12 mm i~średnicy 6mm. Wyniki tej symulacji przedstawione zostały na rysunkach \ref{fig:campbell-symulacja-model} i~\ref{fig:campbell-symulacja-wynik}.
+Model czujnika zakładał dodatkowe obudowanie całości stalowym ekranem i~zastosowanie polistyrenowych zaślepek. Na rysunku \ref{fig:campbell-symulacja-model} widać, że pszczoła (symulowana jako cylinder o~$\varepsilon_r=50$) wchodząca do tunelu powoduje niesymetryczne rozłożenie pól elektrycznych w~kondensatorach.
+Przejście pszczoły skutkuje pojawieniem się na wyjściu czujnika asymetrycznych, bipolarnych impulsów (rysunek \ref{fig:campbell-symulacja-wynik}), podobnych do tych na przebiegach z~rozważań teoretycznych (rysunki \ref{fig:bee-in-c2}, \ref{fig:bee-in-minus-c2}). W~symulacji przetestowano dodatkowo odpowiedź układu na pszczoły różnych rozmiarów (impulsy $a$, $b$ na rysunku \ref{fig:campbell-symulacja-wynik}). Zaobserwować można pewną różnicę w~wyglądzie wygenerowanych przebiegów, jednak ogólny kształt nadal pozwala na rozpoznanie momentu oraz kierunku przejścia pszczoły.
 
 \begin{figure}[htb]
     \centering
     \includegraphics{tex//img/campbell-symulacja-model.pdf}
-    \caption{Przekrój poprzeczny czujnika oraz linie ekwipotencjalne -- symulacja przeprowadzona przez Campbell wraz z zespołem. \cite{Campbell2005}}
+    \caption{Przekrój poprzeczny czujnika oraz linie ekwipotencjalne -- symulacja przeprowadzona przez Campbell wraz z~zespołem. \cite{Campbell2005}}
     \label{fig:campbell-symulacja-model}
 \end{figure}
 
@@ -80,47 +80,47 @@ Przejście pszczoły skutkuje pojawieniem się na wyjściu czujnika asymetryczny
 \end{figure}
 
   \subsubsection{Układ pomiarowy}
-Sygnał wyjściowy omawianego czujnika pojemnościowego jest trudny do zmierzenia. Pojemności kondensatorów $C_1$, $C_2$ wynoszą zaledwie ok. 0,5 pF \cite{Campbell2005}, a przy pojawieniu się pszczoły zwiększają się tylko o kilka--kilkanaście procent.
+Sygnał wyjściowy omawianego czujnika pojemnościowego jest trudny do zmierzenia. Pojemności kondensatorów $C_1$, $C_2$ wynoszą zaledwie ok. 0,5 pF \cite{Campbell2005}, a~przy pojawieniu się pszczoły zwiększają się tylko o~kilka--kilkanaście procent.
 Pomiar tak małych pojemności wymaga specjalistycznego sprzętu oraz niezwykłej dbałości podczas projektowania układu.
-Pojemności pasożytnicze ścieżek na płytce drukowanej mogą być przy słabym projekcie nawet o rząd wielkości wyższe niż pojemność badanego kondensatora.
-Szczegółowe założenia, którymi kierowano się przy projekcie PCB by zminimalizować ich wpływ, zostały szczegółowo opisane w sekcji \ref{pcb}.
+Pojemności pasożytnicze ścieżek na płytce drukowanej mogą być przy słabym projekcie nawet o~rząd wielkości wyższe niż pojemność badanego kondensatora.
+Szczegółowe założenia, którymi kierowano się przy projekcie PCB by zminimalizować ich wpływ, zostały szczegółowo opisane w~sekcji \ref{pcb}.
 
-W literaturze znaleźć można przykładowe układy pomiarowe, które działają na zasadzie różnicy przesunięcia fazowego. Wspólna okładka kondensatorów ekscytowana jest sygnałem okresowym (generowanym z pomocą układu Intersil ICL8038 \cite{Campbell2005} lub NE555P \cite{mathematastic}). Kondensatory czujnika połączone są z masą układu przez rezystory, tworząc razem filtr górnoprzepustowy przesuwający fazę sygnału w zależności od pojemności. Przesunięte sygnały są następnie odejmowane z pomocą precyzyjnego wzmacniacza różnicowego.
-Następnie następuje demodulacja i wzmocnienie sygnału. W efekcie, wyjście układu stanowi sygnał o napięciu proporcjonalnym do różnicy pojemności obu kondensatorów. 
+W literaturze znaleźć można przykładowe układy pomiarowe, które działają na zasadzie różnicy przesunięcia fazowego. Wspólna okładka kondensatorów ekscytowana jest sygnałem okresowym (generowanym z~pomocą układu Intersil ICL8038 \cite{Campbell2005} lub NE555P \cite{mathematastic}). Kondensatory czujnika połączone są z~masą układu przez rezystory, tworząc razem filtr górnoprzepustowy przesuwający fazę sygnału w~zależności od pojemności. Przesunięte sygnały są następnie odejmowane z~pomocą precyzyjnego wzmacniacza różnicowego.
+Następnie następuje demodulacja i~wzmocnienie sygnału. W~efekcie, wyjście układu stanowi sygnał o~napięciu proporcjonalnym do różnicy pojemności obu kondensatorów. 
 
-Taki sposób pomiaru został z powodzeniem zastosowany w urządzeniach zliczających pszczoły, jednak jest bardzo kosztowny. Konieczne jest użycie układów scalonych o wysokiej precyzji – szacunkowy koszt układów scalonych potrzebnych do obsłużenia jednej pary kondensatorów to 231 zł\footnote{Ceny na dzień 09.10.2025 za: ICL8038, AD620, AD630, LF411.}. Całe urządzenie ma się składać z ośmiu równoległych tuneli, łączna cena układów scalonych wyniosłaby 1848 zł znacznie przekraczając limit kosztu całego urządzenia.
+Taki sposób pomiaru został z~powodzeniem zastosowany w~urządzeniach zliczających pszczoły, jednak jest bardzo kosztowny. Konieczne jest użycie układów scalonych o~wysokiej precyzji – szacunkowy koszt układów scalonych potrzebnych do obsłużenia jednej pary kondensatorów to 231 zł\footnote{Ceny na dzień 09.10.2025 za: ICL8038, AD620, AD630, LF411.}. Całe urządzenie ma się składać z~ośmiu równoległych tuneli, łączna cena układów scalonych wyniosłaby 1848 zł znacznie przekraczając limit kosztu całego urządzenia.
 
 Alternatywnym podejściem jest zastosowanie dedykowanego scalonego układu przetwornika pojemnościowo-napięciowego.
-Przykładem takiego układu odpowiedniego do małych pojemności jest AD7746, zastosowany w pracy Perraulta \cite{Perrault2016}.
-Jest on przetwornikiem dwukanałowym, wystarczy zatem jeden na oba kondensatory w pojedynczym czujniku \cite{ad7746}. Koszt zakupu jednego układu scalonego to 67 zł (sumarycznie 536 zł na 8~tuneli), co jednak wciąż przekracza zakładany budżet.\newline
+Przykładem takiego układu odpowiedniego do małych pojemności jest AD7746, zastosowany w~pracy Perraulta \cite{Perrault2016}.
+Jest on przetwornikiem dwukanałowym, wystarczy zatem jeden na oba kondensatory w~pojedynczym czujniku \cite{ad7746}. Koszt zakupu jednego układu scalonego to 67 zł (sumarycznie 536 zł na 8~tuneli), co jednak wciąż przekracza zakładany budżet.\newline
 
-W ramach niniejszej pracy opracowany został prosty i niezwykle tani sposób akwizycji sygnału z czujnika pojemnościowego. Jakość pomiaru jest znacznie niższa niż w opisanych wcześniej rozwiązaniach, lecz uzyskane przebiegi czasowe wciąż pozwalają skutecznie wykrywać ruch pszczół i określać jego kierunek.
+W ramach niniejszej pracy opracowany został prosty i~niezwykle tani sposób akwizycji sygnału z~czujnika pojemnościowego. Jakość pomiaru jest znacznie niższa niż w~opisanych wcześniej rozwiązaniach, lecz uzyskane przebiegi czasowe wciąż pozwalają skutecznie wykrywać ruch pszczół i~określać jego kierunek.
 Schemat proponowanego układu przedstawiony jest na rysunku \ref{fig:uklad-pomiarowy}.
-Jego działanie opiera się na różnicy czasu ładowania kondensatorów o różnych pojemnościach.
+Jego działanie opiera się na różnicy czasu ładowania kondensatorów o~różnych pojemnościach.
 
 
-Rozważmy układ pojedynczego kondensatora (rysunek \ref{fig:ladowanie kondensatora}). Odpowiedź $u_C(t)$ na skok napięcia $u$ od 0 do $U$ dana jest jako:
+Rozważmy układ pojedynczego kondensatora (rysunek \ref{fig:ladowanie kondensatora}). Odpowiedź $u_C(t)$ na skok napięcia $u$ od 0~do $U$ dana jest jako:
 \begin{equation}
 u_C(t) = U\,\left(1-e^{-\frac{t}{\tau}}\right),
 \end{equation}
 
-gdzie $\tau = R\,C$ --- stała czasowa układu \cite{ladowanie-kondensatora}. Przykładowe przebiegi odpowiedzi skokowej przedstawione zostały na rysunku \ref{fig:ladowanie kondensatora}. Większa stała czasowa wiąże się z wolniejszym narastaniem napięcia na kondensatorze. 
+gdzie $\tau = R\,C$ --- stała czasowa układu \cite{ladowanie-kondensatora}. Przykładowe przebiegi odpowiedzi skokowej przedstawione zostały na rysunku \ref{fig:ladowanie kondensatora}. Większa stała czasowa wiąże się z~wolniejszym narastaniem napięcia na kondensatorze. 
 Przyjmując pewne napięcie progowe $U_{\mathrm{prog}}$, możemy określić czas ładowania kondensatora jako czas od skoku $u$ do przekroczenia $U_{\mathrm{prog}}$ przez $u_C$.
 Ponieważ $u_C(t)$ jest funkcją rosnącą, to dla stałych czasowych $\tau_1<\tau_2$ odpowiadające im czasy ładowania spełniają zależność $t_1 < t_2$
-Odpowiedni dobór $U_\mathrm{prog}$ ma wpływ na jakość działania systemu: przy niskim progu $t_1$ oraz $t_2$ będą niewielkie i bardzo zbliżone do siebie. Wysoki próg zwiększa podatność na szumy w pomiarze $u_C$. Wybór konkretnej wartości $U_\mathrm{prog}$ został szerzej opisany dalej.
+Odpowiedni dobór $U_\mathrm{prog}$ ma wpływ na jakość działania systemu: przy niskim progu $t_1$ oraz $t_2$ będą niewielkie i~bardzo zbliżone do siebie. Wysoki próg zwiększa podatność na szumy w~pomiarze $u_C$. Wybór konkretnej wartości $U_\mathrm{prog}$ został szerzej opisany dalej.
 
 \begin{figure}[htb]
     \centering
     \includegraphics{tex//img/ladowanie-kondensatora.pdf}
-    \caption{Ładowanie kondensatora: schemat układu i przebiegi napięć.}
+    \caption{Ładowanie kondensatora: schemat układu i~przebiegi napięć.}
     \label{fig:ladowanie kondensatora}
 \end{figure}
 
-W układzie czujnika każdy z kondensatorów ładowany jest przez taką samą rezystancję –- stałe czasowe podukładów zależą wyłącznie od pojemności elektrycznej samych kondensatorów. Metoda wykrywania pszczół stworzona w ramach niniejszej pracy nie została zatem oparta bezpośrednio na różnicy pojemności kondensatorów, tylko na różnicy w czasie ich ładowania.
+W układzie czujnika każdy z~kondensatorów ładowany jest przez taką samą rezystancję –- stałe czasowe podukładów zależą wyłącznie od pojemności elektrycznej samych kondensatorów. Metoda wykrywania pszczół stworzona w~ramach niniejszej pracy nie została zatem oparta bezpośrednio na różnicy pojemności kondensatorów, tylko na różnicy w~czasie ich ładowania.
 
-Wyzwaniem technicznym jest sam pomiar czasu ładowania kondensatora o tak niewielkiej pojemności. Przyjmując, jak wcześniej, orientacyjną pojemność kondensatora równą 0,5 pF, wyznaczyć można szacowaną stałą czasową układu (z rezystorem 1M$\Omega$):
+Wyzwaniem technicznym jest sam pomiar czasu ładowania kondensatora o~tak niewielkiej pojemności. Przyjmując, jak wcześniej, orientacyjną pojemność kondensatora równą 0,5 pF, wyznaczyć można szacowaną stałą czasową układu (z rezystorem 1M$\Omega$):
 \begin{equation}
-\tau = R\cdot C = 1\mathrm{M}\Omega\cdot0.5\mathrm{pF}
+\tau = R\cdot C~= 1\mathrm{M}\Omega\cdot0.5\mathrm{pF}
  =  
 10^6\Omega\cdot0.5\cdot10^{-12}\mathrm{F}
  = 
@@ -134,9 +134,9 @@ Wyzwaniem technicznym jest sam pomiar czasu ładowania kondensatora o tak niewie
     \caption{Schemat układu pomiarowego.}
     \label{fig:uklad-pomiarowy}
 \end{figure}
-Jak widać, stała czasowa układu przyjmuje wartości rzędu pojedynczych mikrosekund. Precyzyjny pomiar takich czasów jest zasadniczo niemożliwy z wykorzystaniem sprzętu o niskim koszcie.
-Z tego powodu, w niniejszej pracy zastosowana została pewna sztuczka: ładowanie kondensatora mierzone jest nie w jednostkach czasu, ale w liczbie wykonań pojedynczych instrukcji mikrokontrolera monitorującego stan wyjść czujnika. Działanie to formalnie nie daje faktycznego pomiaru czasu, jednak wynik pozwala się jako taki pomiar zastosować – co zostanie udowodnione w dalszych częściach pracy.
-Na rysunku \ref{fig:uklad-pomiarowy} przedstawione zostało połączenie czujnika z mikrokontrolerem, natomiast pseudokod \ref{alg:akwizycja} pokazuje działanie algorytmu akwizycji danych.
+Jak widać, stała czasowa układu przyjmuje wartości rzędu pojedynczych mikrosekund. Precyzyjny pomiar takich czasów jest zasadniczo niemożliwy z~wykorzystaniem sprzętu o~niskim koszcie.
+Z tego powodu, w~niniejszej pracy zastosowana została pewna sztuczka: ładowanie kondensatora mierzone jest nie w~jednostkach czasu, ale w~liczbie wykonań pojedynczych instrukcji mikrokontrolera monitorującego stan wyjść czujnika. Działanie to formalnie nie daje faktycznego pomiaru czasu, jednak wynik pozwala się jako taki pomiar zastosować – co zostanie udowodnione w~dalszych częściach pracy.
+Na rysunku \ref{fig:uklad-pomiarowy} przedstawione zostało połączenie czujnika z~mikrokontrolerem, natomiast pseudokod \ref{alg:akwizycja} pokazuje działanie algorytmu akwizycji danych.
 
 \label{sekcja:alg-akwizycji}
 
@@ -166,40 +166,40 @@ Na rysunku \ref{fig:uklad-pomiarowy} przedstawione zostało połączenie czujnik
 
 Algorytm inicjalizuje dwa liczniki iteracji odpowiadające dwóm kondensatorom: $n_l$ oraz $n_r$. Następnie na pin \textit{Charge} wystawiany jest stan wysoki, co rozpoczyna ładowanie kondensatorów.
 Program iteracyjnie inkrementuje liczniki dopóki piny GPIO $L$ oraz $R$ nie zostaną podniesione do stanu wysokiego.
-Stan wysoki występuje po przekroczeniu przez napięcie kondensatora progu jedynki logicznej mikrokontrolera – stanowi on w tym przypadku $U_\mathrm{prog}$ układu.
+Stan wysoki występuje po przekroczeniu przez napięcie kondensatora progu jedynki logicznej mikrokontrolera – stanowi on w~tym przypadku $U_\mathrm{prog}$ układu.
 Wartości progowe są dobierane tak, by minimalizować czas odpowiedzi pinu, ale również podatność na szumy. Optymalizowane przez projektantów mikrokontrolerów kryteria są podobne do tych, które musi spełniać odpowiednio dobrany próg $U_\mathrm{prog}$, można się zatem spodziewać, że system wykorzystujący cyfrowe piny GPIO będzie działał prawidłowo.
-Po naładowaniu kondensatorów i ustaleniu $n_L$ oraz $n_R$ pin \textit{Charge} ponownie ustawiany jest do stanu niskiego. Przed wykonaniem kolejnego pomiaru kondensatory muszą zostać rozładowane, nie wymaga to jednak rozbudowywania układu, ponieważ zastosowany rodzaj kondensatora szybko rozładowuje się samoistnie.
+Po naładowaniu kondensatorów i~ustaleniu $n_L$ oraz $n_R$ pin \textit{Charge} ponownie ustawiany jest do stanu niskiego. Przed wykonaniem kolejnego pomiaru kondensatory muszą zostać rozładowane, nie wymaga to jednak rozbudowywania układu, ponieważ zastosowany rodzaj kondensatora szybko rozładowuje się samoistnie.
 Należy jednak pamiętać, aby na kolejnych etapach projektu wprowadzić ograniczenie częstotliwości próbkowania, aby dać ładunkom elektrycznym czas na rozproszenie.
 
 Zaprezentowany algorytm akwizycji oferuje rozdzielczość pomiaru zależną od czasu wykonania instrukcji znajdujących się wewnątrz pętli \textit{while}.
 Najdłuższą operacją jest odczyt stanu pinu (\texttt{read\_gpio}) – dla zastosowanego mikrokontrolera ESP32-C3 może on trwać $0.05 - 0.17\,\mu\mathrm{s}$ (w zależności od implementacji) \cite{ESP32C3Datasheet}\cite{microcontroller-benchmarks}. Nawet przy konieczności dwukrotnego wykonania instrukcji, rozdzielczość taka jest wystarczająca na potrzeby tworzonego urządzenia.
 
-Alternatywnym podejściem, niewykorzystanym w niniejszej pracy z braku wyraźnej potrzeby, jednak mogącym zapewnić wyższą rozdzielczość byłoby wykorzystanie zewnętrznych przerwań mikrokontrolera. Modyfikacja przedstawionego algorytmu polega na usunięciu odczytu GPIO z pętli \textit{while}, zamiast czego $s_L$ oraz $s_R$ ustawiane są na wartość 1 w ramach obsługi przerwań EXTI wynikających z wykrycia zboczy narastających na pinach $L$ i $R$.
+Alternatywnym podejściem, niewykorzystanym w~niniejszej pracy z~braku wyraźnej potrzeby, jednak mogącym zapewnić wyższą rozdzielczość byłoby wykorzystanie zewnętrznych przerwań mikrokontrolera. Modyfikacja przedstawionego algorytmu polega na usunięciu odczytu GPIO z~pętli \textit{while}, zamiast czego $s_L$ oraz $s_R$ ustawiane są na wartość 1~w ramach obsługi przerwań EXTI wynikających z~wykrycia zboczy narastających na pinach $L$ i~$R$.
 
   
   \subsubsection{Realizacja sprzętowa}
 
 
 W celu przetestowania działania opisanego systemu zbudowana została prototypowa konstrukcja czujnika (rysunek \ref{fig:prototyp}).
-Tunel czujnika wykonany został z rurki z przezroczystego tworzywa sztucznego, natomiast okładki wykonano z obręczy wygiętych z drutu miedzianego i zlutowanych w miejscu łączenia.
-Wyprowadzenia okładek kondensatora zostały wykonane z izolowanych przewodów o długości ok. 15 cm.
+Tunel czujnika wykonany został z~rurki z~przezroczystego tworzywa sztucznego, natomiast okładki wykonano z~obręczy wygiętych z~drutu miedzianego i~zlutowanych w~miejscu łączenia.
+Wyprowadzenia okładek kondensatora zostały wykonane z~izolowanych przewodów o~długości ok. 15 cm.
 W tabeli \ref{tab:prototyp} zawarte zostały parametry opracowanej konstrukcji.
-Obrane wymiary oparte zostały na wynikach optymalizacji podobnego czujnika w pracy Campbell wraz z zespołem, w której przeprowadzono symulację elektrostatyczną, by następnie dobrać średnice $s$ i rozstaw okładek $d$, tak by maksymalizować amplitudę sygnału generowanego przez pszczołę w czujniku \cite{Campbell2005}.
+Obrane wymiary oparte zostały na wynikach optymalizacji podobnego czujnika w~pracy Campbell wraz z~zespołem, w~której przeprowadzono symulację elektrostatyczną, by następnie dobrać średnice $s$ i~rozstaw okładek $d$, tak by maksymalizować amplitudę sygnału generowanego przez pszczołę w~czujniku \cite{Campbell2005}.
 \begin{figure}[htb]
     \centering
     \includegraphics[width=0.8\textwidth]{tex/img/prototyp.pdf}
     \caption{Prototypowy czujnik pojemnościowy.}
     \label{fig:prototyp}
 \end{figure}
-Wypracowane w tej pracy kryteria to:
+Wypracowane w~tej pracy kryteria to:
 \begin{enumerate}
-    \item \(\frac{1}{2}\,s+t < d <s + 2\,t\) -- rozstaw okładek powinien być większy od promienia okładki, ale nie większy od średnicy;
-    \item $g$ -- średnica drutu, z którego wykonane są okładki powinna być jak największa -- na ile pozwolą inne ograniczenia konstrukcyjne.
+    \item \(\frac{1}{2}\,s+t < d~<s + 2\,t\) -- rozstaw okładek powinien być większy od promienia okładki, ale nie większy od średnicy;
+    \item $g$ -- średnica drutu, z~którego wykonane są okładki powinna być jak największa -- na ile pozwolą inne ograniczenia konstrukcyjne.
 \end{enumerate}
 
-W ramach niniejszej pracy założono, że wewnętrzna średnica tunelu musi wynosić około 14 mm, aby zapewnić swobodny ruch pszczół, a przy tym uniemożliwić równoległe poruszanie się kilku osobników obok siebie.
-Średnica zewnętrzna zastosowanej rurki z tworzywa sztucznego to 16 mm, co daje promień okładki wynoszący 8 mm. Dla spełnienia wyżej wymienionego kryterium obrano rozstaw okładek $d=9$ mm.
-Do wykonania okładek wybrano drut miedziany o średnicy 1.5 mm.
+W ramach niniejszej pracy założono, że wewnętrzna średnica tunelu musi wynosić około 14 mm, aby zapewnić swobodny ruch pszczół, a~przy tym uniemożliwić równoległe poruszanie się kilku osobników obok siebie.
+Średnica zewnętrzna zastosowanej rurki z~tworzywa sztucznego to 16 mm, co daje promień okładki wynoszący 8~mm. Dla spełnienia wyżej wymienionego kryterium obrano rozstaw okładek $d=9$ mm.
+Do wykonania okładek wybrano drut miedziany o~średnicy 1.5 mm.
 \begin{figure}[p]
     \centering
     \includegraphics[width=0.8\textwidth]{tex/img/prototyp-tech.pdf}
@@ -213,8 +213,8 @@ Do wykonania okładek wybrano drut miedziany o średnicy 1.5 mm.
         \textbf{Oznaczenie} & \textbf{Opis} & \textbf{Wartość} [mm] \\
         \hline
        $\textbf{\textit{l}}$ & Długość tunelu & 120  \\
-       $\textbf{\textit{D}}$ & Odległość do 1. okładki & 8 \\
-       $\textbf{\textit{d}}$ & Rozstaw okładek & 9 \\
+       $\textbf{\textit{D}}$ & Odległość do 1. okładki & 8~\\
+       $\textbf{\textit{d}}$ & Rozstaw okładek & 9~\\
        $\textbf{\textit{g}}$ & Średnica drutu okładki & 1.5 \\
        $\textbf{\textit{t}}$ & Grubość ścianki tunelu & 0.85 \\
        $\textbf{\textit{s}}$ & Średnica wewn. tunelu & 14.3 \\
@@ -231,8 +231,8 @@ Do wykonania okładek wybrano drut miedziany o średnicy 1.5 mm.
 \end{figure}
 
 
-Na uniwersalnej płytce prototypowej stworzono układ elektroniczny zgodny tym przedstawionym na rysunku \ref{fig:uklad-pomiarowy}. Na potrzeby przetestowania prototypu pominięto jeden z kondensatorów w tunelu i do mikrokontrolera podłączono jedynie okładkę lewego kondensatora. Zastosowany został wspominany wcześniej mikrokontroler ESP32-C3 na płytce deweloperskiej ESP32-C3 Super Mini \cite{ESP32C3Datasheet}. Moduł ten wyposażony jest w konwerter USB-UART umożliwiający komunikację urządzenia z komputerem z wykorzystaniem złącza USB.
-Na mikrokontroler zaimplementowana została uproszczona (mierząca tylko jedną z bramek) wersja algorytmu \ref{alg:akwizycja} -- program w zamieszczonym dalej pliku \texttt{prototype/main.cpp}.
+Na uniwersalnej płytce prototypowej stworzono układ elektroniczny zgodny tym przedstawionym na rysunku \ref{fig:uklad-pomiarowy}. Na potrzeby przetestowania prototypu pominięto jeden z~kondensatorów w~tunelu i~do mikrokontrolera podłączono jedynie okładkę lewego kondensatora. Zastosowany został wspominany wcześniej mikrokontroler ESP32-C3 na płytce deweloperskiej ESP32-C3 Super Mini \cite{ESP32C3Datasheet}. Moduł ten wyposażony jest w~konwerter USB-UART umożliwiający komunikację urządzenia z~komputerem z~wykorzystaniem złącza USB.
+Na mikrokontroler zaimplementowana została uproszczona (mierząca tylko jedną z~bramek) wersja algorytmu \ref{alg:akwizycja} -- program w~zamieszczonym dalej pliku \texttt{prototype/main.cpp}.
 
 \FloatBarrier
 
@@ -242,20 +242,20 @@ Na mikrokontroler zaimplementowana została uproszczona (mierząca tylko jedną 
 }
 \vspace{2em}
 
-Do programowania ESP32-C3 wykorzystano popularny framework \textit{Arduino}, udostępniający warstwę abstrakcji sprzętowej umożliwiającą szybkie i łatwe tworzenie oprogramowania dla mikrokontrolerów \cite{Arduino}.
-Framework Arduino pozwala pisać kod programu w języku C++, a także udostępnia wiele wysokopoziomowych funkcji obsługujących układy peryferialne mikrokontrolera.
-W utworzonym programie, w funkcji \texttt{setup()} inicjalizowana jest komunikacja z komputerem, a następnie ustawiane są tryby pracy odpowiednich pinów GPIO. Pin \texttt{CHARGE} ustawiany jest na stan niski, by rozładować bramkę czujnika przygotowując system do pierwszego pomiaru.
+Do programowania ESP32-C3 wykorzystano popularny framework \textit{Arduino}, udostępniający warstwę abstrakcji sprzętowej umożliwiającą szybkie i~łatwe tworzenie oprogramowania dla mikrokontrolerów \cite{Arduino}.
+Framework Arduino pozwala pisać kod programu w~języku C++, a~także udostępnia wiele wysokopoziomowych funkcji obsługujących układy peryferialne mikrokontrolera.
+W utworzonym programie, w~funkcji \texttt{setup()} inicjalizowana jest komunikacja z~komputerem, a~następnie ustawiane są tryby pracy odpowiednich pinów GPIO. Pin \texttt{CHARGE} ustawiany jest na stan niski, by rozładować bramkę czujnika przygotowując system do pierwszego pomiaru.
 Kolejne pomiary wykonywane są cyklicznie co ok. 100 ms (funkcja \texttt{loop()}).
-W funkcji \texttt{measureChargeTime()} zaimplementowany jest proponowany w niniejszej pracy algorytm akwizycji sygnału.
+W funkcji \texttt{measureChargeTime()} zaimplementowany jest proponowany w~niniejszej pracy algorytm akwizycji sygnału.
 Zmienna \texttt{counter} stanowi licznik iteracji algorytmu. Po ustawieniu pinu \texttt{CHARGE} na stan wysoki (rozpoczęciu ładowania bramki) rozpoczyna się pętla kolejnych odczytów pinu \texttt{MEASURE}. Zliczane są iteracje pętli. Pętla zostaje przerwana po odnotowaniu stanu wysokiego na pinie \texttt{MEASURE}.
-Na tym etapie w zmiennej \texttt{counter} jest już przechowywany wynik działania algorytmu, jednak w celu umożliwienia kolejnego pomiaru konieczne jest ponowne rozładowanie bramki czujnika. W tym celu pin \texttt{CHARGE} ustawiany jest do stanu niskiego, a następnie w kolejnej pętli oczekuje się rozproszenia ładunku kondensatora -- wykrywanego jako stan niski na pinie \texttt{MEASURE}.
-Pętla aktywnego oczekiwania na rozładowanie kondensatora nie jest koniecznym elementem programu o ile zachowana zostanie wystarczająco długa przerwa między kolejnymi odczytami.
+Na tym etapie w~zmiennej \texttt{counter} jest już przechowywany wynik działania algorytmu, jednak w~celu umożliwienia kolejnego pomiaru konieczne jest ponowne rozładowanie bramki czujnika. W~tym celu pin \texttt{CHARGE} ustawiany jest do stanu niskiego, a~następnie w~kolejnej pętli oczekuje się rozproszenia ładunku kondensatora -- wykrywanego jako stan niski na pinie \texttt{MEASURE}.
+Pętla aktywnego oczekiwania na rozładowanie kondensatora nie jest koniecznym elementem programu o~ile zachowana zostanie wystarczająco długa przerwa między kolejnymi odczytami.
 
 
-Narzędziem kompilacji i wgrywania programów zalecanym przy pracy we frameworku Arduino jest \textit{Arduino IDE} -- zintegrowane środowisko programistyczne łączące edytor kodu, kompilator, menadżer zewnętrznych bibliotek \cite{Arduino}.
-W niniejszej pracy wykorzystano jednak nowszą alternatywę -- \textit{PlatformIO}, zbiór narzędzi deweloperskich umożliwiający realizację tych samych zadań, a także zapewniający dodatkowe funkcjonalności \cite{PlatformIO}.
-Jest on dostępny nie jako osobny program, ale jako wtyczka do najpopularniejszych środowisk deweloperskich, co umożliwia użytkownikowi korzystanie z innych zaawansowanych funkcji dzisiejszych edytorów, jak np. zaawansowane dopełnianie składni w \textit{Visual Studio Code}.
-Opcje kompilacji i wgrywania programu ustawiane są w jednym pliku konfiguracyjnym projektu -- \texttt{platformio.ini}. Poniżej przedstawiona została konfiguracja stworzona na potrzeby realizowanego prototypu.
+Narzędziem kompilacji i~wgrywania programów zalecanym przy pracy we frameworku Arduino jest \textit{Arduino IDE} -- zintegrowane środowisko programistyczne łączące edytor kodu, kompilator, menadżer zewnętrznych bibliotek \cite{Arduino}.
+W niniejszej pracy wykorzystano jednak nowszą alternatywę -- \textit{PlatformIO}, zbiór narzędzi deweloperskich umożliwiający realizację tych samych zadań, a~także zapewniający dodatkowe funkcjonalności \cite{PlatformIO}.
+Jest on dostępny nie jako osobny program, ale jako wtyczka do najpopularniejszych środowisk deweloperskich, co umożliwia użytkownikowi korzystanie z~innych zaawansowanych funkcji dzisiejszych edytorów, jak np. zaawansowane dopełnianie składni w~\textit{Visual Studio Code}.
+Opcje kompilacji i~wgrywania programu ustawiane są w~jednym pliku konfiguracyjnym projektu -- \texttt{platformio.ini}. Poniżej przedstawiona została konfiguracja stworzona na potrzeby realizowanego prototypu.
 
 \vspace{2em}
 \vbox{
@@ -264,25 +264,25 @@ Opcje kompilacji i wgrywania programu ustawiane są w jednym pliku konfiguracyjn
 \vspace{2em}
 
 Ustawienie platformy \texttt{espressif32} oraz frameworku \texttt{arduino} sprawia, że do kompilacji projektu wykorzystane zostaną dedykowane ESP32 narzędzia oraz dołączone będą wymagane pliki nagłówkowe.
-Zdefiniowano również prędkość komunikacji monitora portu szeregowego (jednego z dostępnych w PlatformIO narzędzi) na wartość zgodną z wcześniej przedstawionym programem. Po odpowiednim skonfigurowaniu projektu możliwe było wgranie utworzonego oprogramowania na mikrokontroler, a następnie przetestowanie proponowanego rozwiązania.
+Zdefiniowano również prędkość komunikacji monitora portu szeregowego (jednego z~dostępnych w~PlatformIO narzędzi) na wartość zgodną z~wcześniej przedstawionym programem. Po odpowiednim skonfigurowaniu projektu możliwe było wgranie utworzonego oprogramowania na mikrokontroler, a~następnie przetestowanie proponowanego rozwiązania.
 
 
   \subsubsection{Testy} \label{sekcja:testy-prototypu}
   
 
-Po zakończeniu budowy prototypu przeprowadzony został test mający na celu weryfikację opracowanej metody wykrywania pszczoły w tunelu czujnika.
-Względy praktyczne wykluczyły wykorzystanie żywych pszczół podczas tego eksperymentu, konieczne było zatem znalezienie ciała, które będzie w stanie je odpowiednio zasymulować.
-Kluczowe było, by odpowiadało pszczole rozmiarem i kształtem, a także przenikalnością elektryczną (przez zawartość wody).
+Po zakończeniu budowy prototypu przeprowadzony został test mający na celu weryfikację opracowanej metody wykrywania pszczoły w~tunelu czujnika.
+Względy praktyczne wykluczyły wykorzystanie żywych pszczół podczas tego eksperymentu, konieczne było zatem znalezienie ciała, które będzie w~stanie je odpowiednio zasymulować.
+Kluczowe było, by odpowiadało pszczole rozmiarem i~kształtem, a~także przenikalnością elektryczną (przez zawartość wody).
 Wybrane zostały dwa potencjalne modele pszczoły:
 \begin{enumerate}[label=\textbf{(\alph*)}]
-    \item \textbf{Żelek miś} -- posiada odpowiedni kształt i rozmiar, oraz zawiera wodę. Zastosowanie go do symulowania pszczoły jest polecane w literaturze \cite{mathematastic};
-    \item \textbf{Wilgotna gąbka} -- została wprowadzona jako dodatkowy eksperyment w razie, gdyby żelek posiadał nieodpowiednie właściwości elektryczne. Z gąbki kuchennej wycięta została bryła o wymiarach zbliżonych do pszczoły, którą przed samym eksperymentem zanurzono w naczyniu z wodą. Właściwości elektryczne ciała powinny być zbliżone do pszczoły, której większość masy stanowi woda.
+    \item \textbf{Żelek miś} -- posiada odpowiedni kształt i~rozmiar, oraz zawiera wodę. Zastosowanie go do symulowania pszczoły jest polecane w~literaturze \cite{mathematastic};
+    \item \textbf{Wilgotna gąbka} -- została wprowadzona jako dodatkowy eksperyment w~razie, gdyby żelek posiadał nieodpowiednie właściwości elektryczne. Z~gąbki kuchennej wycięta została bryła o~wymiarach zbliżonych do pszczoły, którą przed samym eksperymentem zanurzono w~naczyniu z~wodą. Właściwości elektryczne ciała powinny być zbliżone do pszczoły, której większość masy stanowi woda.
 \end{enumerate}
-Każdy z obiektów został nawleczony na cienką żyłkę.
-W ramach każdego z dwóch przeprowadzonych eksperymentów żyłkę przeprowadzano przez tunel czujnika, po czym w ciągu kilkudziesięciu sekund kilkukrotnie przeciągano nią ciało.
+Każdy z~obiektów został nawleczony na cienką żyłkę.
+W ramach każdego z~dwóch przeprowadzonych eksperymentów żyłkę przeprowadzano przez tunel czujnika, po czym w~ciągu kilkudziesięciu sekund kilkukrotnie przeciągano nią ciało.
 Schemat doświadczenia przedstawiono na rysunku \ref{fig:prototyp-eksperyment-schemat}.
-Żelek został przeciągnięty przez bramkę czterokrotnie (dwa razy w każdym kierunku), natomiast gąbka jedenastokrotnie (po pięć razy w każdym kierunku i szósty raz tylko w jednym).
-Pomiary generowane przez czujnik były wysyłane do komputera i zapisywane do pliku.
+Żelek został przeciągnięty przez bramkę czterokrotnie (dwa razy w~każdym kierunku), natomiast gąbka jedenastokrotnie (po pięć razy w~każdym kierunku i~szósty raz tylko w~jednym).
+Pomiary generowane przez czujnik były wysyłane do komputera i~zapisywane do pliku.
 
 \begin{figure}[htb]
     \centering
@@ -293,14 +293,14 @@ Pomiary generowane przez czujnik były wysyłane do komputera i zapisywane do pl
 
 
 Uzyskane wyniki przedstawione zostały na rysunku \ref{fig:test-prototypu}.
-Przebieg zebrany podczas eksperymentu z wilgotną gąbką (rysunek \ref{fig:test-prototypu-gabka}) zawiera wyraźne skoki sygnału wyjściowego w liczbie odpowiadającej przejściom ciała przez bramkę czujnika.
-Obserwacja przebiegu sygnału na żywo w trakcie prowadzenia doświadczenia pozwoliła dodatkowo potwierdzić, że zmiany widoczne na wyjściu czujnika są spowodowane wprowadzaniem do bramki wilgotnej gąbki.
-Same wartości skoków są niewielkie w porównaniu do wielkości sygnału -- zmierzono ok. 435 iteracji przy pustej bramce, a podczas wykrycia skok o ok. 20 iteracji.
+Przebieg zebrany podczas eksperymentu z~wilgotną gąbką (rysunek \ref{fig:test-prototypu-gabka}) zawiera wyraźne skoki sygnału wyjściowego w~liczbie odpowiadającej przejściom ciała przez bramkę czujnika.
+Obserwacja przebiegu sygnału na żywo w~trakcie prowadzenia doświadczenia pozwoliła dodatkowo potwierdzić, że zmiany widoczne na wyjściu czujnika są spowodowane wprowadzaniem do bramki wilgotnej gąbki.
+Same wartości skoków są niewielkie w~porównaniu do wielkości sygnału -- zmierzono ok. 435 iteracji przy pustej bramce, a~podczas wykrycia skok o~ok. 20 iteracji.
 Mimo to, zmiany te są wyraźnie widoczne na wykresie przebiegu.
 
-W przypadku doświadczenia z żelkiem misiem (rysunek \ref{fig:test-prototypu-zelek}) czujnik również wygenerował skoki sygnału wyjściowego odpowiadające przejściom ciała przez bramkę.
-Na tym przebiegu można jednak zaobserwować, że amplituda powstałych szpilek jest znacząco mniejsza niż w przypadku mokrej gąbki (skok o niecałe 10 iteracji).
-Najprawdopodobniej wynika to z niższej zawartości wody w żelku.
+W przypadku doświadczenia z~żelkiem misiem (rysunek \ref{fig:test-prototypu-zelek}) czujnik również wygenerował skoki sygnału wyjściowego odpowiadające przejściom ciała przez bramkę.
+Na tym przebiegu można jednak zaobserwować, że amplituda powstałych szpilek jest znacząco mniejsza niż w~przypadku mokrej gąbki (skok o~niecałe 10 iteracji).
+Najprawdopodobniej wynika to z~niższej zawartości wody w~żelku.
 
 \begin{figure}[htb]
     \centering
@@ -308,7 +308,7 @@ Najprawdopodobniej wynika to z niższej zawartości wody w żelku.
     % Subfigure A
     \begin{subfigure}[b]{\textwidth}
         \centering
-        \caption{Sygnał wyjściowy czujnika podczas eksperymentu z żelkiem misiem}
+        \caption{Sygnał wyjściowy czujnika podczas eksperymentu z~żelkiem misiem}
         \includegraphics{tex/img/test-prototypu-żelek.pdf}
         \label{fig:test-prototypu-zelek}
         \vspace{2em}
@@ -316,7 +316,7 @@ Najprawdopodobniej wynika to z niższej zawartości wody w żelku.
     % Subfigure B
     \begin{subfigure}[b]{\textwidth}
         \centering
-        \caption{Sygnał wyjściowy czujnika podczas eksperymentu z wilgotną gąbką}
+        \caption{Sygnał wyjściowy czujnika podczas eksperymentu z~wilgotną gąbką}
         \includegraphics{tex/img/test-prototypu.pdf}
         \label{fig:test-prototypu-gabka}
     \end{subfigure}
@@ -324,53 +324,53 @@ Najprawdopodobniej wynika to z niższej zawartości wody w żelku.
     \label{fig:test-prototypu}
 \end{figure}
 
-Na podstawie przeprowadzonych eksperymentów można stwierdzić, że stworzony według przedstawionej metody czujnik może skutecznie wykrywać ciała pojawiające się w tunelu.
-Możliwe będzie wykorzystanie go do wykrywania pszczół wchodzących i wychodzących z ula.
-Obydwa ciała modelujące pszczołę w eksperymentach, pomimo wyraźnych różnic, dały zadowalające wyniki.
-Ponieważ nie można na tym etapie stwierdzić, które z nich stanowi lepszą symulację prawdziwego owada, w dalszych rozważaniach będą wykorzystywane oba z nich.
+Na podstawie przeprowadzonych eksperymentów można stwierdzić, że stworzony według przedstawionej metody czujnik może skutecznie wykrywać ciała pojawiające się w~tunelu.
+Możliwe będzie wykorzystanie go do wykrywania pszczół wchodzących i~wychodzących z~ula.
+Obydwa ciała modelujące pszczołę w~eksperymentach, pomimo wyraźnych różnic, dały zadowalające wyniki.
+Ponieważ nie można na tym etapie stwierdzić, które z~nich stanowi lepszą symulację prawdziwego owada, w~dalszych rozważaniach będą wykorzystywane oba z~nich.
 
 \subsection{Konstrukcja urządzenia}
 
 Pozytywny wynik testu prototypowego czujnika pojemnościowego pozwala kontynuować pracę.
 W następnym kroku zaprojektowany została konstrukcja pełnego systemu.
-Budowane urządzenie z założenia musi przechwycić cały ruch pszczół wchodzących i wychodzących z ula.
-Zadanie to jest dość proste w realizacji, ponieważ standardowo ule posiadają tylko jeden otwór, przez który mogą przedostawać się pszczoły: wąską szczelinę zwaną wylotkiem \cite{Skubida2007}. Jej wymiary typowo wynoszą 15 cm szerokości i 1.8 cm wysokości.
-Pełne zasłonięcie wylotka wymaga zastosowania szeregu tuneli z bramkami pojemnościowymi.
-Ustalono, że przy średnicy tunelu równej 15 mm i zachowaniu odstępów konieczne będzie 8 tuneli.
+Budowane urządzenie z~założenia musi przechwycić cały ruch pszczół wchodzących i~wychodzących z~ula.
+Zadanie to jest dość proste w~realizacji, ponieważ standardowo ule posiadają tylko jeden otwór, przez który mogą przedostawać się pszczoły: wąską szczelinę zwaną wylotkiem \cite{Skubida2007}. Jej wymiary typowo wynoszą 15 cm szerokości i~1.8 cm wysokości.
+Pełne zasłonięcie wylotka wymaga zastosowania szeregu tuneli z~bramkami pojemnościowymi.
+Ustalono, że przy średnicy tunelu równej 15 mm i~zachowaniu odstępów konieczne będzie 8~tuneli.
 Na rysunku \ref{fig:montaz} przedstawiona została wizualizacja urządzenia oraz miejsca jego montażu na ulu.
 Długość samych tuneli jest również ograniczona – powinny być krótkie by jak najmniej utrudniać wentylację ula oraz nie wpływać nadmiernie na ruch pszczół. 
 
 \begin{figure}[htb]
     \centering
     \includegraphics{tex/img/montaz.pdf}
-    \caption{Wizualizacja konstrukcji i sposobu mocowania urządzenia do ula.}
+    \caption{Wizualizacja konstrukcji i~sposobu mocowania urządzenia do ula.}
     \label{fig:montaz}
 \end{figure}
 
-W tabeli \ref{tab:tunele} przedstawione zostały opracowane wymiary konstrukcji, obrane na podstawie parametrów prototypu z następującymi modyfikacjami:
+W tabeli \ref{tab:tunele} przedstawione zostały opracowane wymiary konstrukcji, obrane na podstawie parametrów prototypu z~następującymi modyfikacjami:
 \begin{enumerate}
-    \item Tunele wykonane zostaną z rurki o średnicy mniejszej niż w prototypie -- prototyp bazował na urządzeniu stworzonym do zliczania owadów z rodzaju \textit{Bombus} \cite{Campbell2005}.
-    Konkretny gatunek nie został podany, ale najprawdopodobniej chodzi o któryś z gatunków trzmieli występujących także w Polsce.
-    Owady te są większe od pszczoły miodnej (\textit{Apis mellifera}), której populacje monitorowane mają być projektowanym urządzeniem. W literaturze traktującej o tym gatunku pojawiają się otwory o rozmiarze od 6 mm \cite{Jiang2016} do 10 mm \cite{Pesovic2017}.
-    W niniejszej pracy zastosowane zostały tunele z rurki o średnicy wewnętrznej 9 mm, a zewnętrznej 13 mm.
+    \item Tunele wykonane zostaną z~rurki o~średnicy mniejszej niż w~prototypie -- prototyp bazował na urządzeniu stworzonym do zliczania owadów z~rodzaju \textit{Bombus} \cite{Campbell2005}.
+    Konkretny gatunek nie został podany, ale najprawdopodobniej chodzi o~któryś z~gatunków trzmieli występujących także w~Polsce.
+    Owady te są większe od pszczoły miodnej (\textit{Apis mellifera}), której populacje monitorowane mają być projektowanym urządzeniem. W~literaturze traktującej o~tym gatunku pojawiają się otwory o~rozmiarze od 6~mm \cite{Jiang2016} do 10 mm \cite{Pesovic2017}.
+    W~niniejszej pracy zastosowane zostały tunele z~rurki o~średnicy wewnętrznej 9~mm, a~zewnętrznej 13 mm.
     Zwężenie tunelu względem prototypu teoretycznie powinno również zapewnić większą aplitudę odpowiedzi, ponieważ zmaleje średnica okładek, powodując wzrost pojemności elektrycznej bramek.
     \item Długość tunelu została skrócona do 70 mm, by pszczoły mogły swobodniej się przemieszczać.
-    \item Tunele zostały ułożone końcami naprzemiennie, w celu zminimalizowania możliwości wzajemnego zakłócania bramek na sąsiadujących tunelach. Dzięki takiemu ustawieniu wymagany dystans pomiędzy sąsiadującymi tunelami jest nieduży (rozstaw tuneli $r=18$ mm).
+    \item Tunele zostały ułożone końcami naprzemiennie, w~celu zminimalizowania możliwości wzajemnego zakłócania bramek na sąsiadujących tunelach. Dzięki takiemu ustawieniu wymagany dystans pomiędzy sąsiadującymi tunelami jest nieduży (rozstaw tuneli $r=18$ mm).
 \end{enumerate}
 
 \begin{figure}[H]
     \centering
     \includegraphics{tex/img/tunele-tech.pdf}
-    \caption{Rozmieszczenie tuneli w czujniku -- oznaczenia dla tabeli \ref{tab:tunele}}
+    \caption{Rozmieszczenie tuneli w~czujniku -- oznaczenia dla tabeli \ref{tab:tunele}}
 \end{figure}
 \begin{table}[H]
     \centering
-    \caption{Rozmieszczenie tuneli w czujniku}
+    \caption{Rozmieszczenie tuneli w~czujniku}
     \begin{tblr}{cl|r}
         \textbf{Oznaczenie} & \textbf{Opis} & \textbf{Wartość} [mm] \\
         \hline
        $\textbf{\textit{r}}$ & Rozstaw tuneli & 18 \\
-       $\textbf{\textit{D}}$ & Odległość do 1. okładki & 8 \\
+       $\textbf{\textit{D}}$ & Odległość do 1. okładki & 8~\\
        $\textbf{\textit{d}}$ & Rozstaw okładek & 8.45 \\
        $\textbf{\textit{g}}$ & Średnica drutu okładki & 1.5 \\
        $\textbf{\textit{S}}$ & Średnica zewn. tunelu & 13 \\
@@ -383,11 +383,11 @@ W tabeli \ref{tab:tunele} przedstawione zostały opracowane wymiary konstrukcji,
 \subsection{Układ elektroniczny}
 W niniejszej sekcji opisana została realizacja układu elektronicznego pozwalającego na obsługę wymaganej liczby czujników pojemnościowych oraz komunikacji ze światem zewnętrznym.
   \subsubsection{Dobór komponentów}
-Przedstawiony w poprzedniej części pracy układ akwizycji sygnału nie wymaga wielu elementów (rysunek \ref{fig:uklad-pomiarowy}).
-Serce urządzenia stanowi mikrokontroler, i to jego dobór ma kluczowe znaczenie dla działania systemu.
-W niniejszej pracy rozważono 3 popularne mikrokontrolery:
+Przedstawiony w~poprzedniej części pracy układ akwizycji sygnału nie wymaga wielu elementów (rysunek \ref{fig:uklad-pomiarowy}).
+Serce urządzenia stanowi mikrokontroler, i~to jego dobór ma kluczowe znaczenie dla działania systemu.
+W niniejszej pracy rozważono 3~popularne mikrokontrolery:
 ATmega32U4 (Arduino Micro Pro), STM32F401 (STM32 Blackpill), oraz ESP32-C3 (ESP32 Super Mini).
-Kryteria ich oceny oraz parametry poszczególnych propozycji przedstawione zostały w tabeli \ref{tab:wybor-mikrokontrolera}.
+Kryteria ich oceny oraz parametry poszczególnych propozycji przedstawione zostały w~tabeli \ref{tab:wybor-mikrokontrolera}.
 \begin{table}[H]
     \centering
     \caption{Porównanie mikrokontrolerów}
@@ -399,55 +399,55 @@ Kryteria ich oceny oraz parametry poszczególnych propozycji przedstawione zosta
         \hline
         \hline
         \makecell{\textbf{Taktowanie}} & 16 MHz & Do 84 MHz & Do 160 MHz \\
-        \makecell{\textbf{Pamięć Flash}} & 32 KB & 256 KB & 4 MB \\
+        \makecell{\textbf{Pamięć Flash}} & 32 KB & 256 KB & 4~MB \\
         \makecell{\textbf{Pamięć SRAM}} & 2.5 KB & 64 KB & 400 KB \\
-        \makecell{\textbf{Napięcie pracy}} & 5 V & 3.3 V & 3.3 V \\
+        \makecell{\textbf{Napięcie pracy}} & 5~V & 3.3 V~& 3.3 V~\\
         \makecell{\textbf{Liczba GPIO}} & 18 & 34 & 13  \\
-        \makecell{\textbf{Łączność} \\ \textbf{bezprzewodowa}} & --- & --- & Wi-Fi, Bluetooth 5 \\
+        \makecell{\textbf{Łączność} \\ \textbf{bezprzewodowa}} & --- & --- & Wi-Fi, Bluetooth 5~\\
         \hline
     \end{tabular}
 \end{table}
 Najważniejszymi kryteriami oceny są:
 \begin{itemize}
-    \item \textbf{Taktowanie} --- od szybkości pracy mikrokontrolera bezpośrednio zależy rozdzielczość, z jaką możliwy jest pomiar sygnału bramki. W tej kategorii najlepszym mikrokontrolerem jest ESP32-C3.
-    \item \textbf{Liczba pinów GPIO} --- do obsługi ośmiu bramek potrzebne są 24 wyprowadzenia mikrokontrolera. Płytki rozwojowe Arduino Micro Pro oraz ESP32 Super Mini posiadają znacznie mniej pinów, zatem jedynym mikrokontrolerem pozwalającym w pełni zrealizować założenie liczby tuneli jest STM32F401.
-    \item \textbf{Łączność bezprzewodowa} --- wymagana jest do wydajnej komunikacji ze światem zewnętrznym w praktycznym zastosowaniu urządzenia w pasiece. Jedynym mikrokontrolerem wyposażonym w tę funkcjonalność jest ESP32-C3.
+    \item \textbf{Taktowanie} --- od szybkości pracy mikrokontrolera bezpośrednio zależy rozdzielczość, z~jaką możliwy jest pomiar sygnału bramki. W~tej kategorii najlepszym mikrokontrolerem jest ESP32-C3.
+    \item \textbf{Liczba pinów GPIO} --- do obsługi ośmiu bramek potrzebne są 24 wyprowadzenia mikrokontrolera. Płytki rozwojowe Arduino Micro Pro oraz ESP32 Super Mini posiadają znacznie mniej pinów, zatem jedynym mikrokontrolerem pozwalającym w~pełni zrealizować założenie liczby tuneli jest STM32F401.
+    \item \textbf{Łączność bezprzewodowa} --- wymagana jest do wydajnej komunikacji ze światem zewnętrznym w~praktycznym zastosowaniu urządzenia w~pasiece. Jedynym mikrokontrolerem wyposażonym w~tę funkcjonalność jest ESP32-C3.
 \end{itemize}
-Na podstawie przeprowadzonego porównania wybrano do projektu mikrokontroler ESP32-C3 Super Mini. Znacząco przewyższa on pozostałe propozycje pod wszystkimi względami poza liczbą wyprowadzeń. Niewielka liczba pinów GPIO wynika bezpośrednio z bardzo małych wymiarów płytki rozwojowej, które również stanowią zaletę tego urządzenia w niniejszym projekcie, jako że jest on ograniczony wymiarami.
+Na podstawie przeprowadzonego porównania wybrano do projektu mikrokontroler ESP32-C3 Super Mini. Znacząco przewyższa on pozostałe propozycje pod wszystkimi względami poza liczbą wyprowadzeń. Niewielka liczba pinów GPIO wynika bezpośrednio z~bardzo małych wymiarów płytki rozwojowej, które również stanowią zaletę tego urządzenia w~niniejszym projekcie, jako że jest on ograniczony wymiarami.
 
-Niewystarczająca liczba wyprowadzeń mikrokontrolera nie uniemożliwia realizacji założeń projektu. W celu obsługi pełnej liczby bramek stworzono rozwiązanie wykorzystujące dwa ESP32-C3 współpracujące ze sobą. Schemat tego rozwiązania został przedstawiony na rysunku \ref{fig:system-schemat}. 
+Niewystarczająca liczba wyprowadzeń mikrokontrolera nie uniemożliwia realizacji założeń projektu. W~celu obsługi pełnej liczby bramek stworzono rozwiązanie wykorzystujące dwa ESP32-C3 współpracujące ze sobą. Schemat tego rozwiązania został przedstawiony na rysunku \ref{fig:system-schemat}. 
 \begin{figure}[htb]
     \centering
     \includegraphics{tex/img/system-schemat.pdf}
-    \caption{Schemat systemu z dwoma mikrokontrolerami do obsługi ośmiu bramek.}
+    \caption{Schemat systemu z~dwoma mikrokontrolerami do obsługi ośmiu bramek.}
     \label{fig:system-schemat}
 \end{figure}
-W jego skład wchodzą dwa układy, z których każdy obsługuje połowę tuneli dla pszczół -- wymagane jest po 12 pinów każdego z mikrokontrolerów.
+W jego skład wchodzą dwa układy, z~których każdy obsługuje połowę tuneli dla pszczół -- wymagane jest po 12 pinów każdego z~mikrokontrolerów.
 Pozostałe pojedyncze piny na płytkach rozwojowych wykorzystane są do zapewnienia komunikacji pomiędzy układami.
 Wyróżnione zostały:
 \begin{enumerate}
-    \item Mikrokontroler główny, którego zadaniem jest akwizycja sygnału z 4 bramek, integracja z danymi odebranymi od mikrokontrolera pomocniczego, a także komunikacja ze światem zewnętrznym (np. PC);
-    \item Mikrokontroler poboczny, którego zadaniem jest akwizycja sygnału z 4 bramek oraz przesłanie danych do mikrokontrolera głównego.
+    \item Mikrokontroler główny, którego zadaniem jest akwizycja sygnału z~4 bramek, integracja z~danymi odebranymi od mikrokontrolera pomocniczego, a~także komunikacja ze światem zewnętrznym (np. PC);
+    \item Mikrokontroler poboczny, którego zadaniem jest akwizycja sygnału z~4 bramek oraz przesłanie danych do mikrokontrolera głównego.
 \end{enumerate}
-Układy obu mikrokontrolerów mogą być identyczne, wymagane jest wyłącznie odpowiednie dostosowanie oprogramowania obu z nich -- zapewnia to systemowi modularność i uprości dalsze prototypowanie.
-Takie rozwiązanie posiada dodatkową zaletę: zastosowanie dwóch mikrokontrolerów pozwala na umieszczenie ich bliżej czujników pojemnościowych, dzięki czemu wyprowadzenia okładek kondensatorów będą mogły być krótsze, co zmniejszy podatność systemu na zakłócenia i pojemności pasożytnicze.
+Układy obu mikrokontrolerów mogą być identyczne, wymagane jest wyłącznie odpowiednie dostosowanie oprogramowania obu z~nich -- zapewnia to systemowi modularność i~uprości dalsze prototypowanie.
+Takie rozwiązanie posiada dodatkową zaletę: zastosowanie dwóch mikrokontrolerów pozwala na umieszczenie ich bliżej czujników pojemnościowych, dzięki czemu wyprowadzenia okładek kondensatorów będą mogły być krótsze, co zmniejszy podatność systemu na zakłócenia i~pojemności pasożytnicze.
 
 Dzięki prostocie opracowanego czujnika pojemnościowego, oprócz doboru mikrokontrolera pozostaje tylko wybrać odpowiednie rezystory.
-Aby sygnał różnicowy z bramek czujnika był zbalansowany, należy zadbać, by tory ładowania oby kondensatorów miały równą rezystancję.
-W niniejszej pracy zastosowane zostały rezystory o rezystancji 10 M$\Omega$ z rozrzutem produkcyjnym 1\%.
+Aby sygnał różnicowy z~bramek czujnika był zbalansowany, należy zadbać, by tory ładowania oby kondensatorów miały równą rezystancję.
+W niniejszej pracy zastosowane zostały rezystory o~rezystancji 10 M$\Omega$ z~rozrzutem produkcyjnym 1\%.
 
   \subsubsection{Realizacja płytki PCB} \label{pcb}
-Układ elektroniczny zrealizowany został w formie płytki PCB, co zapewnia powtarzalność wytwarzania modułów urządzenia, ułatwia montaż układu, a także przy odpowiednim projektowaniu zmniejsza podatność systemu na pojemności pasożytnicze.
+Układ elektroniczny zrealizowany został w~formie płytki PCB, co zapewnia powtarzalność wytwarzania modułów urządzenia, ułatwia montaż układu, a~także przy odpowiednim projektowaniu zmniejsza podatność systemu na pojemności pasożytnicze.
 
-W pierwszym kroku realizacji PCB zaprojektowany został schemat układu elektronicznego zgodny z omówionym dotychczas projektem.
-W jego skład weszły cztery podukłady bramek wykrywających pszczoły, połączone z odpowiednimi wyprowadzeniami mikrokontrolera ESP32-C3.
+W pierwszym kroku realizacji PCB zaprojektowany został schemat układu elektronicznego zgodny z~omówionym dotychczas projektem.
+W jego skład weszły cztery podukłady bramek wykrywających pszczoły, połączone z~odpowiednimi wyprowadzeniami mikrokontrolera ESP32-C3.
 Odpowiednie przypisanie pinów okładkom bramek okazało się mieć kluczowe znaczenie.
-Prezentowany na rysunku schemat stanowi drugą wersję -- w pierwszym podejściu w wyniku nieprawidłowego doboru pinów prawidłowo działały wyłącznie dwie bramki z czterech.
-Dogłębna analiza schematu płytki\cite{ESP32-C3-Schematic} ujawniła źródło problemów: niektóre piny GPIO mikrokontrolera mają w module ESP32-C3 SuperMini podłączone rezystory podciągające (o wartościach tysiąckrotnie niższych od rezystancji w torze ładowania -- 10 K$\Omega$).
-Elektrody \textit{L} lub \textit{R} podłączone do tych pinów były utrzymywane stale w stanie wysokim, a przez to mierzony czas ładowania wynosił zawsze zero.
-Konieczne było stworzenie zaktualizowanej wersji układu, w której piny z rezystorami podciągającymi wykorzystywane były wyłącznie do ładowania kondensatorów, nigdy do pomiaru.
-Piny z podciągnięciami to: GPIO2, GPIO8, GPIO9 \cite{ESP32-C3-Schematic}. Ostateczny sposób połączenia wyprowadzeń przedstawiony został w schemacie na rysunku \ref{fig:schemat}.
-Pin GPIO8 wybrany został do realizacji połączenia pomiędzy mikrokontrolerem głównym i pomocniczym.
+Prezentowany na rysunku schemat stanowi drugą wersję -- w~pierwszym podejściu w~wyniku nieprawidłowego doboru pinów prawidłowo działały wyłącznie dwie bramki z~czterech.
+Dogłębna analiza schematu płytki\cite{ESP32-C3-Schematic} ujawniła źródło problemów: niektóre piny GPIO mikrokontrolera mają w~module ESP32-C3 SuperMini podłączone rezystory podciągające (o wartościach tysiąckrotnie niższych od rezystancji w~torze ładowania -- 10 K$\Omega$).
+Elektrody \textit{L} lub \textit{R} podłączone do tych pinów były utrzymywane stale w~stanie wysokim, a~przez to mierzony czas ładowania wynosił zawsze zero.
+Konieczne było stworzenie zaktualizowanej wersji układu, w~której piny z~rezystorami podciągającymi wykorzystywane były wyłącznie do ładowania kondensatorów, nigdy do pomiaru.
+Piny z~podciągnięciami to: GPIO2, GPIO8, GPIO9 \cite{ESP32-C3-Schematic}. Ostateczny sposób połączenia wyprowadzeń przedstawiony został w~schemacie na rysunku \ref{fig:schemat}.
+Pin GPIO8 wybrany został do realizacji połączenia pomiędzy mikrokontrolerem głównym i~pomocniczym.
 
 
 \begin{figure}[htb]
@@ -458,7 +458,7 @@ Pin GPIO8 wybrany został do realizacji połączenia pomiędzy mikrokontrolerem 
 \end{figure}
 
 Zaprojektowany układ został przełożony na projekt płytki PCB, przedstawiony na rysunku \ref{fig:pcb}. Podstawowym elementem PCB są footprinty tuneli dla pszczół.
-Tunele montuje się w wyznaczonym miejscu poprzez przylutowanie pierścieni do odsłoniętych miedzianych padów znajdujących się na płytce (rysunek \ref{fig:montaz-tunelu}).
+Tunele montuje się w~wyznaczonym miejscu poprzez przylutowanie pierścieni do odsłoniętych miedzianych padów znajdujących się na płytce (rysunek \ref{fig:montaz-tunelu}).
 \begin{figure}[htb]
     \centering
     \includegraphics{tex/img/pcb.pdf}
@@ -471,22 +471,22 @@ Tunele montuje się w wyznaczonym miejscu poprzez przylutowanie pierścieni do o
     \caption{Montaż tunelu dla pszczół do płytki PCB.}
     \label{fig:montaz-tunelu}
 \end{figure}
-Rozmieszczenie footprintów tuneli dobrano tak, by zachować rozmieszczenie zdefiniowane w tabeli \ref{tab:tunele}. 
-W układach pomiarowych zastosowano rezystory w rozmiarze 0805, aby zapewnić względną łatwość lutowania przy zachowaniu małych wymiarów urządzenia.
-Po prawej stronie płytki znajduje się footprint modułu ESP32-C3 SuperMini, pozwalający wlutować bezpośrednio mikokontroler, a także, alternatywnie, szynę goldpin pozwalającą na wygodne wpinanie i wypinanie modułu w razie potrzeby.
+Rozmieszczenie footprintów tuneli dobrano tak, by zachować rozmieszczenie zdefiniowane w~tabeli \ref{tab:tunele}. 
+W układach pomiarowych zastosowano rezystory w~rozmiarze 0805, aby zapewnić względną łatwość lutowania przy zachowaniu małych wymiarów urządzenia.
+Po prawej stronie płytki znajduje się footprint modułu ESP32-C3 SuperMini, pozwalający wlutować bezpośrednio mikokontroler, a~także, alternatywnie, szynę goldpin pozwalającą na wygodne wpinanie i~wypinanie modułu w~razie potrzeby.
 Podczas projektu PCB najwięcej uwagi przyłożono planowaniu rozmieszczenia ścieżek. Mają one znaczenie, ponieważ ich parametry wpływają znacząco na pojemności pasożytnicze zakłócające działanie czujnika.
 Dla minimalizacji ich negatywnego wpływu zastosowano następujące reguły:
 \begin{enumerate}
-    \item Unikano równoległych ścieżek, a w przypadku ich wystąpienia zapewniono jak największą odległość między nimi;
-    \item Nie dodano płaszczyzny masy na odwrocie płytki -- jej zastosowanie jest w ogólności zalecane, jednak w przypadku niniejszego projektu mogłyby wystąpić stosunkowo duże pojemności między nią a ścieżkami;
+    \item Unikano równoległych ścieżek, a~w przypadku ich wystąpienia zapewniono jak największą odległość między nimi;
+    \item Nie dodano płaszczyzny masy na odwrocie płytki -- jej zastosowanie jest w~ogólności zalecane, jednak w~przypadku niniejszego projektu mogłyby wystąpić stosunkowo duże pojemności między nią a~ścieżkami;
     \item Minimalizowano liczbę przelotek (\textit{via}) na płytce -- możliwe okazała się realizacja układu bez zastosowania ani jednej;
-    \item Zastosowano najmniejszą możliwą szerokość ścieżki, co oprócz zmniejszenia pojemności pasożytniczej wpłynęło również na zwiększenie dystansu między ścieżkami względem ich szerokości, poprawiając kryterium 1. oraz zmniejszając sprzężenie krzyżowe w układzie \cite{OurPCB_Kapacytancje_pasozytnicze}. Została dobrana szerokość ścieżki równa 0.1 mm -- minimum oferowane przez producenta płytek drukowanych JLCPCB \cite{JLCPCB_PCBCapabilities}.
+    \item Zastosowano najmniejszą możliwą szerokość ścieżki, co oprócz zmniejszenia pojemności pasożytniczej wpłynęło również na zwiększenie dystansu między ścieżkami względem ich szerokości, poprawiając kryterium 1. oraz zmniejszając sprzężenie krzyżowe w~układzie \cite{OurPCB_Kapacytancje_pasozytnicze}. Została dobrana szerokość ścieżki równa 0.1 mm -- minimum oferowane przez producenta płytek drukowanych JLCPCB \cite{JLCPCB_PCBCapabilities}.
 \end{enumerate}
 Ostateczny projekt PCB przedstawiony został na rysunku \ref{fig:pcb}.
 Oprócz wymienionych elementów zawiera on również styki zasilania oraz otwory montażowe.
-Wykonanie płytek zostało zamówione u producenta JLCPCB\footnote{https://jlcpcb.com/}.
-Do skonstruowania całego urządzenia konieczne było złożenie dwóch egzemplarzy -- w pierwszej kolejności wlutowano rezystory ładowania bramek, a następnie przymocowane zostały tunele.
-W celu zapewnienia precyzji ich rozmieszczenia, w technologii druku 3D wykonany został specjalny wzornik utrzymujący płytki i tunele w odpowiedniej pozycji na czas lutowania.
+Wykonanie płytek zostało zamówione u~producenta JLCPCB\footnote{https://jlcpcb.com/}.
+Do skonstruowania całego urządzenia konieczne było złożenie dwóch egzemplarzy -- w~pierwszej kolejności wlutowano rezystory ładowania bramek, a~następnie przymocowane zostały tunele.
+W celu zapewnienia precyzji ich rozmieszczenia, w~technologii druku 3D wykonany został specjalny wzornik utrzymujący płytki i~tunele w~odpowiedniej pozycji na czas lutowania.
 Na samym końcu przymocowane zostały moduły mikrokontrolerów. Stworzone układy (rysunek \ref{fig:2pcb} były gotowe do programowania.
 
 \begin{figure}[htb]
@@ -503,64 +503,64 @@ Na samym końcu przymocowane zostały moduły mikrokontrolerów. Stworzone ukła
 Wyróżnione zostały cztery podstawowe zadania, które realizować musi program napisany na mikrokontrolery:
 
 \begin{enumerate}
-    \item Akwizycja pomiaru z bramek --- realizacja algorytmu umożliwiającego odczyt sygnału z kondensatorów w poszczególnych czujnikach, zgodnie z pseudokodem \ref{alg:akwizycja} opisanym w sekcji \ref{sekcja:alg-akwizycji};
-    \item Komunikacja między mikrokontrolerami --- przesył danych z układu pomocniczego do układu głównego;
+    \item Akwizycja pomiaru z~bramek --- realizacja algorytmu umożliwiającego odczyt sygnału z~kondensatorów w~poszczególnych czujnikach, zgodnie z~pseudokodem \ref{alg:akwizycja} opisanym w~sekcji \ref{sekcja:alg-akwizycji};
+    \item Komunikacja między mikrokontrolerami --- przesył danych z~układu pomocniczego do układu głównego;
     \item Komunikacja ze światem zewnętrznym --- docelowo komunikacja bezprzewodowa, jednak na tym etapie pracy dowolna metoda komunikacji, która umożliwi potwierdzenie prawidłowego działania systemu;
-    \item Przetwarzanie pomiaru (liczenie pszczół) --- konwersja surowego sygnału z bramek na informację o wchodzących i wychodzących pszczołach. Funkcjonalność ta nie jest realizowana na tym etapie pracy -- stanowi ona obiekt rodziału \ref{chapter:algorytm}.
+    \item Przetwarzanie pomiaru (liczenie pszczół) --- konwersja surowego sygnału z~bramek na informację o~wchodzących i~wychodzących pszczołach. Funkcjonalność ta nie jest realizowana na tym etapie pracy -- stanowi ona obiekt rodziału \ref{chapter:algorytm}.
 \end{enumerate}
-W kolejnych sekcjach zawarte zostały fragmenty kodu projektu. Wszystkie omawiane pliki znaleźć można w publicznym repozytorium git, dostępnym pod adresem \url{https://github.com/tototmek/bee-counter}.
+W kolejnych sekcjach zawarte zostały fragmenty kodu projektu. Wszystkie omawiane pliki znaleźć można w~publicznym repozytorium git, dostępnym pod adresem \url{https://github.com/tototmek/bee-counter}.
 
 
   \subsubsection{Algorytm akwizycji}
-% TODO: Tu można napisać o testach pomiaru równoległego i szeregowego
+% TODO: Tu można napisać o~testach pomiaru równoległego i~szeregowego
 
-Przedstawione na następnych fragmenty kodu zawierają implementację algorytmu akwizycji sygnału bramki, zgodną z pseudokodem \ref{alg:akwizycja} w sekcji \ref{sekcja:alg-akwizycji}.
-W ramach dobrej praktyki programistycznej w pliku \texttt{include/gate.h} zdefiniowano również abstrakcyjne reprezentacje struktur danych występujących w systemie.
-Struktura \texttt{GateConfig} zawiera wszystkie dane reprezentujące pojedynczą bramkę -- przypisania pinów GPIO, a także binarną flagę umożliwiającą odwrócić kierunek bramki.
-Zmiana kierunku zliczania części bramek na pewno będzie konieczna, ponieważ konstrukcja urządzenia zakłada bramki zorientowane naprzemiennie w obu kierunkach (rysunek \ref{fig:2pcb}).
-Struktura \texttt{GateReading} reprezentuje pojedynczy odczyt z czujnika (surowe sygnały obu kondensatorów w bramce), opisany dodatkowo numerem bramki, z której pochodzą dane.
+Przedstawione na następnych fragmenty kodu zawierają implementację algorytmu akwizycji sygnału bramki, zgodną z~pseudokodem \ref{alg:akwizycja} w~sekcji \ref{sekcja:alg-akwizycji}.
+W ramach dobrej praktyki programistycznej w~pliku \texttt{include/gate.h} zdefiniowano również abstrakcyjne reprezentacje struktur danych występujących w~systemie.
+Struktura \texttt{GateConfig} zawiera wszystkie dane reprezentujące pojedynczą bramkę -- przypisania pinów GPIO, a~także binarną flagę umożliwiającą odwrócić kierunek bramki.
+Zmiana kierunku zliczania części bramek na pewno będzie konieczna, ponieważ konstrukcja urządzenia zakłada bramki zorientowane naprzemiennie w~obu kierunkach (rysunek \ref{fig:2pcb}).
+Struktura \texttt{GateReading} reprezentuje pojedynczy odczyt z~czujnika (surowe sygnały obu kondensatorów w~bramce), opisany dodatkowo numerem bramki, z~której pochodzą dane.
 Czasy ładowania kondensatorów zapisywane są jako 32-bitowe dodatnie liczby całkowite, co daje wystarczająco duży zakres reprezentacji wyników na potrzeby tworzonego urządzenia.
-Największe znaczenie ma klasa \texttt{Gate}, która reprezentuje pojedynczą bramkę czujnika: opisywana jest przez konfigurację bramki i posiada metody \texttt{void initialize()} oraz \texttt{gate\_reading\_t measure()}. Służą one, odpowiednio, do inicjalizacji stanu początkowego bramki, oraz do akwizycji odczytu. 
+Największe znaczenie ma klasa \texttt{Gate}, która reprezentuje pojedynczą bramkę czujnika: opisywana jest przez konfigurację bramki i~posiada metody \texttt{void initialize()} oraz \texttt{gate\_reading\_t measure()}. Służą one, odpowiednio, do inicjalizacji stanu początkowego bramki, oraz do akwizycji odczytu. 
 
 
 \vspace{2em}
 \inputminted[label={include/gate.h}, linenos, frame=single, framesep=0.5em, fontsize=\footnotesize]{cpp}{code/gate.h}
 \vspace{2em}
 
-Implementacja metod klasy \texttt{Gate} zawarta jest w poniższym pliku \texttt{src/gate.cpp}.
-Inicjalizacja bramki w funkcji \texttt{void Gate::initialize()} opiera się głównie na odpowiedniej konfiguracji pinów GPIO mikrokontrolera i zapewnieniu rozładowania kondensatorów bramki.
-Konfigurowany jest parametr \texttt{drive\_capability} wszystkich pinów połączonych z bramką.
-Ustawiana jest jego maksymalna wartość \texttt{GPIO\_DRIVE\_CAP\_3}, co zapewnia najkrótszy możliwy czas narastania sygnału na pinie wyjściowym mikrokontrolera po ustawieniu go w programie na stan wysoki \cite{ESP-IDF_GPIO_v4.3}.
-Ma to znaczenie, ponieważ czas narastania napięcia na kondensatorze, który mierzymy jest bardzo krótki i należy unikać możliwych zakłóceń pomiaru, takich jak m.in. efekt slew-rate na wyjściu mikrokontrolera.
+Implementacja metod klasy \texttt{Gate} zawarta jest w~poniższym pliku \texttt{src/gate.cpp}.
+Inicjalizacja bramki w~funkcji \texttt{void Gate::initialize()} opiera się głównie na odpowiedniej konfiguracji pinów GPIO mikrokontrolera i~zapewnieniu rozładowania kondensatorów bramki.
+Konfigurowany jest parametr \texttt{drive\_capability} wszystkich pinów połączonych z~bramką.
+Ustawiana jest jego maksymalna wartość \texttt{GPIO\_DRIVE\_CAP\_3}, co zapewnia najkrótszy możliwy czas narastania sygnału na pinie wyjściowym mikrokontrolera po ustawieniu go w~programie na stan wysoki \cite{ESP-IDF_GPIO_v4.3}.
+Ma to znaczenie, ponieważ czas narastania napięcia na kondensatorze, który mierzymy jest bardzo krótki i~należy unikać możliwych zakłóceń pomiaru, takich jak m.in. efekt slew-rate na wyjściu mikrokontrolera.
 
 \vspace{2em}
 \inputminted[label={src/gate.cpp}, linenos, frame=single, framesep=0.5em, fontsize=\footnotesize]{cpp}{code/gate.cpp}
 \vspace{2em}
 
-Funkcja \texttt{gate\_reading\_t Gate::measure()} realizuje omawiany wcześniej algorytm akwizycji z dwoma nieznacznymi rozszerzeniami.
+Funkcja \texttt{gate\_reading\_t Gate::measure()} realizuje omawiany wcześniej algorytm akwizycji z~dwoma nieznacznymi rozszerzeniami.
 Po pierwsze, pętla zliczania iteracji ładowania kondensatorów poprzedzona została wywołaniem funkcji \texttt{noInterrupts()}.
-Funkcja ta wyłącza obsługę przerwań mikrokontrolera, których pojawienie się w trakcie akwizycji zakłócałoby sygnał poprzez zajmowanie czasu procesora.
+Funkcja ta wyłącza obsługę przerwań mikrokontrolera, których pojawienie się w~trakcie akwizycji zakłócałoby sygnał poprzez zajmowanie czasu procesora.
 Wyłączenie przerwań umożliwia niezakłócone zliczanie iteracji algorytmu.
-Po zakończeniu akwizycji sygnału przerwania są ponownie włączane -- ich obsługa jest konieczna do prawidłowej pracy systemu, w którym zrównoleglone zostanie wiele zadań.
+Po zakończeniu akwizycji sygnału przerwania są ponownie włączane -- ich obsługa jest konieczna do prawidłowej pracy systemu, w~którym zrównoleglone zostanie wiele zadań.
 Uruchomienie przerwań realizuje wywołanie funkcji \texttt{interrupts()}.
 
 Kolejnym rozszerzeniem względem najprostszej wersji algorytmu jest wprowadzony parametr \texttt{kChargeTimeout}, czyli suma zliczonych iteracji, przy której pętla jest przerywana pomimo braku wykrycia naładowania kondensatora. 
-Podczas testów urządzenia zaobserwowano, że zdarzały się sytuacje (np. przy dotknięciu okładek), w których pojemność bramki i czas jej ładowania rosły na tyle, że licznik iteracji przepełniał się, a sama akwizycja trwała zbyt długo.
+Podczas testów urządzenia zaobserwowano, że zdarzały się sytuacje (np. przy dotknięciu okładek), w~których pojemność bramki i~czas jej ładowania rosły na tyle, że licznik iteracji przepełniał się, a~sama akwizycja trwała zbyt długo.
 Sytuacje takie oczywiście stanowią anomalię, pomimo to dla zapewnienia stabilności systemu wprowadzono mechanizm, który przerywa pomiar jeśli trwa on zbyt długo.
 Domyślnie skonfigurowane maksimum to \texttt{0xffff}, czyli zarazem maksymalna wartość licznika iteracji, po której następowałoby przepełnienie.
 Implementacja tego zachowania wymagała dodanie dodatkowych poleceń do głównej pętli algorytmu, której czas wykonania ma krytyczne znaczenie, natomiast nie będzie ona miała zauważalnego negatywnego wpływu -- czas wykonania porównania dwóch zmiennych typu \texttt{uint16\_t} wynosi pojedyncze cykle zegara procesora.
 
-Na koniec, wartości liczników iteracji wpisywane są do struktury wynikowej jako czasy ładowania poszczególnych kondensatorów w bramce. Struktura ta stanowi wyjście funkcji.
+Na koniec, wartości liczników iteracji wpisywane są do struktury wynikowej jako czasy ładowania poszczególnych kondensatorów w~bramce. Struktura ta stanowi wyjście funkcji.
 
 
 
   
   \subsubsection{Komunikacja między mikrokontrolerami}
   
-Ze względu na kompromisy podjęte podczas doboru sprzętu, system składa się z dwóch podukładów sterowanych przez osobne mikrokontrolery.
-Konieczne jest zapewnienie komunikacji pomiędzy nimi, w celu zebrania pełnych danych o stanie bramek.
-Problem ten stanowi wyzwanie, ponieważ każdy z mikrokontrolerów posiada tylko jeden wolny pin, możliwy do wykorzystania w tym celu. 
-W ramach niniejszej pracy zaprojektowano protokół przesyłu danych z mikrokontrolera pomocniczego do mikrokontrolera głównego wykorzystujący tylko jeden przewód, oparty na protokole UART.
+Ze względu na kompromisy podjęte podczas doboru sprzętu, system składa się z~dwóch podukładów sterowanych przez osobne mikrokontrolery.
+Konieczne jest zapewnienie komunikacji pomiędzy nimi, w~celu zebrania pełnych danych o~stanie bramek.
+Problem ten stanowi wyzwanie, ponieważ każdy z~mikrokontrolerów posiada tylko jeden wolny pin, możliwy do wykorzystania w~tym celu. 
+W ramach niniejszej pracy zaprojektowano protokół przesyłu danych z~mikrokontrolera pomocniczego do mikrokontrolera głównego wykorzystujący tylko jeden przewód, oparty na protokole UART.
 Na rysunku \ref{fig:uart-connection} przedstawione zostało połączenie elektryczne pomiędzy układami.
 \begin{figure}[htb]
     \centering
@@ -571,14 +571,14 @@ Na rysunku \ref{fig:uart-connection} przedstawione zostało połączenie elektry
 
 Jaką podstawę komunikacji wybrano protokół UART (ang. \textit{Universal Asynchronous Receiver-Transmitter}).
 Jego przewagą nad innymi podobnymi protokołami (np. SPI, I$^2$C) jest asynchroniczność -- czyli nie wymaga on używania sygnału zegarowego.
-Komunikujące się urządzenia znają zakładaną prędkość komunikacji (\textit{baudrate}) i taktują kolejne bity we własnym zakresie \cite{uart}.
+Komunikujące się urządzenia znają zakładaną prędkość komunikacji (\textit{baudrate}) i~taktują kolejne bity we własnym zakresie \cite{uart}.
 Standardowo, UART wykorzystuje dwie linie danych, RX oraz TX, dla dwóch kierunków komunikacji.
-W przypadku projektowanego systemu konieczne (i możliwe) jest przesyłanie danych tylko w jednym kierunku -- od układu pomocniczego do głównego.
-W ten sposób, wymagana jest tylko jedna linia asynchronicznej wymiany informacji: RX dla układu pomocniczego i TX dla układu głównego (rysunek \ref{fig:uart-connection}).
+W przypadku projektowanego systemu konieczne (i możliwe) jest przesyłanie danych tylko w~jednym kierunku -- od układu pomocniczego do głównego.
+W ten sposób, wymagana jest tylko jedna linia asynchronicznej wymiany informacji: RX dla układu pomocniczego i~TX dla układu głównego (rysunek \ref{fig:uart-connection}).
 
 Wykorzystywany mikrokontroler ESP32-C3 posiada wbudowany kontroler UART, pozwalający na prostą implementację podstawowej komunikacji przez programistę \cite{ESP32C3Datasheet}.
-Układ ten realizuje kolejkowanie wysyłanych i odbieranych ramek, sprawdzanie bitów startu i bitów parzystości, umożliwiając wymianę pojedynczych bajtów informacji w sposób bezbłędny i łatwy w obsłudze.
-Pojedyncze bajty nie wystarczają jednak do zapisu pełnej informacji zwrotnej z czujników pojemnościowych: pełna informacja (struktura \texttt{GateReading}) składa się z 9 bajtów.
+Układ ten realizuje kolejkowanie wysyłanych i~odbieranych ramek, sprawdzanie bitów startu i~bitów parzystości, umożliwiając wymianę pojedynczych bajtów informacji w~sposób bezbłędny i~łatwy w~obsłudze.
+Pojedyncze bajty nie wystarczają jednak do zapisu pełnej informacji zwrotnej z~czujników pojemnościowych: pełna informacja (struktura \texttt{GateReading}) składa się z~9 bajtów.
 Z tej przyczyny zdefiniowano 11-bajtową ramkę UART reprezentującą pojedynczy pomiar bramki, której struktura przedstawiona została na rysunku \ref{fig:uart-ramka}.
 \begin{figure}[htb]
     \centering
@@ -587,31 +587,31 @@ Z tej przyczyny zdefiniowano 11-bajtową ramkę UART reprezentującą pojedynczy
     \label{fig:uart-ramka}
 \end{figure}
 Jej dwa pierwsze bajty stanowi ustalona sekwencja startowa, która umożliwia odbiorcy potoku danych zlokalizowanie początków poszczególnych ramek.
-Dziewięć ostatnich bajtów stanowią dane odczytu, zapisywane w sposób zgodny z reprezentacją struktury \texttt{GateReading} w pamięci mikrokontrolera, co pozwala uniknąć konwersji podczas nadawania i odbioru.
+Dziewięć ostatnich bajtów stanowią dane odczytu, zapisywane w~sposób zgodny z~reprezentacją struktury \texttt{GateReading} w~pamięci mikrokontrolera, co pozwala uniknąć konwersji podczas nadawania i~odbioru.
 Ze względu na konieczność implementacji komunikacji po wyłącznie jednej linii, zdecydowano się na dość nietypowy model wymiany informacji, przedstawiony na rysunku \ref{fig:uart-algorytmy}.
-Nie zastosowano najpopularniejszego w podobnych sytuacjach modelu zapytanie-odpowiedź, w którym układ główny wysyła do pomocniczego zapytanie o dane, a tamten odsyła przechowywane w pamięci wyniki.
-Takie rozwiązanie w prosty sposób zapewnia synchronizację przesyłanych ramek, natomiast wymaga dwukierunkowej komunikacji.
-Implementacja połączenia half-duplex pozwoliłaby na zastoswanie tego modelu, jednak w niniejszej pracy zastosowano alternatywne rozwiązanie -- prostsze, dokładające jednak pewien narzut w postaci dodatkowych sekwencji startowych przesyłanych przez mikrokontroler pomocniczy.
+Nie zastosowano najpopularniejszego w~podobnych sytuacjach modelu zapytanie-odpowiedź, w~którym układ główny wysyła do pomocniczego zapytanie o~dane, a~tamten odsyła przechowywane w~pamięci wyniki.
+Takie rozwiązanie w~prosty sposób zapewnia synchronizację przesyłanych ramek, natomiast wymaga dwukierunkowej komunikacji.
+Implementacja połączenia half-duplex pozwoliłaby na zastoswanie tego modelu, jednak w~niniejszej pracy zastosowano alternatywne rozwiązanie -- prostsze, dokładające jednak pewien narzut w~postaci dodatkowych sekwencji startowych przesyłanych przez mikrokontroler pomocniczy.
 Ponieważ ilość przesyłanych danych nie jest szczególnie duża, aspekt ten nie ma negatywnego wpływu na działanie systemu. 
 
-Mikrokontroler w układzie pomocniczym pracuje w nieskończonej pętli, w której dokonuje akwizycji kolejnych bramek, a następnie przesyła ramki z wynikami.
-Dane przesyłane są sekwencyjnie, a wykrycie początków poszczególnych ramek jest możliwe dzięki występowaniu w nich sekwencji startowej \texttt{0xfefd}.
-Mikrokontroler główny pracuje w analogicznej pętli, na przemian dokonując akwizycji jednej z bramek, oraz odbierając jedną ramkę od układu pomocniczego.
+Mikrokontroler w~układzie pomocniczym pracuje w~nieskończonej pętli, w~której dokonuje akwizycji kolejnych bramek, a~następnie przesyła ramki z~wynikami.
+Dane przesyłane są sekwencyjnie, a~wykrycie początków poszczególnych ramek jest możliwe dzięki występowaniu w~nich sekwencji startowej \texttt{0xfefd}.
+Mikrokontroler główny pracuje w~analogicznej pętli, na przemian dokonując akwizycji jednej z~bramek, oraz odbierając jedną ramkę od układu pomocniczego.
 Dane zapisywane są wyłącznie przez mikrokontroler główny, który przekazuje je później do algorytmu detekcji pszczół.
 
 
 
 Ważne dla skutecznej wymiany informacji jest wykrywanie sekwencji startu ramki.
 Zostało to zrealizowane poprzez implementację automatu stanowego przedstawionego na rysunku \ref{fig:uart-fsm}.
-Przejścia między jego stanami odbywają się w wyniku odebrania przez kontroler UART kolejnego bajtu. 
-Po skutecznym odbiorze sekwencji startowej następujące dalej bajty zapisywane są do tablicy wynikowej, i inkrementowany jest ich licznik.
+Przejścia między jego stanami odbywają się w~wyniku odebrania przez kontroler UART kolejnego bajtu. 
+Po skutecznym odbiorze sekwencji startowej następujące dalej bajty zapisywane są do tablicy wynikowej, i~inkrementowany jest ich licznik.
 Zapełnienie tablicy wynikowej jest warunkiem zakończenia pracy automatu stanowego -- odebrana została pełna ramka.
-Implementacja omawianego automatu zawarta jest funkcji \texttt{Receiver::receiveReading} z pliku \texttt{src/connection.cpp}, którego odpowiedni fragment zawarto w przedstawionym dalej fragmencie kodu.
+Implementacja omawianego automatu zawarta jest funkcji \texttt{Receiver::receiveReading} z~pliku \texttt{src/connection.cpp}, którego odpowiedni fragment zawarto w~przedstawionym dalej fragmencie kodu.
 
 \begin{figure}[htb]
     \centering
     \includegraphics{tex/img/uart-algorytmy.pdf}
-    \caption{Algorytmy pracy mikrokontrolera głównego i pomocniczego.}
+    \caption{Algorytmy pracy mikrokontrolera głównego i~pomocniczego.}
     \label{fig:uart-algorytmy}
 \end{figure}
 \begin{figure}[htb]
@@ -636,10 +636,10 @@ bool Receiver::receiveReading(gate_reading_t* reading, uint32_t timeoutMs) {
     uint32_t timeoutTime = millis() + timeoutMs;
     uint8_t state = 0;
     int data_idx = 0;
-    int b = 0;
+    int b~= 0;
     while (millis() < timeoutTime) {
         if (!Serial1.available()) continue;
-        b = Serial1.read();
+        b~= Serial1.read();
         if (b == -1) continue; // No bytes received, continue spinning
         switch (state) {
           case 0:
@@ -685,26 +685,26 @@ void Transmitter::transmitReading(const gate_reading_t* reading) {
 }
 \vspace{1em}
 
-Działanie utworzonego sposobu komunikacji przetestowano z wykorzystaniem przykładowych, arbitralnych danych przesyłanych między mikrokontrolerami.
-System działał prawidłowo i umożliwi przetwarzanie sygnałów ze wszystkich ośmiu tuneli na mikrokontrolerze głównym.
+Działanie utworzonego sposobu komunikacji przetestowano z~wykorzystaniem przykładowych, arbitralnych danych przesyłanych między mikrokontrolerami.
+System działał prawidłowo i~umożliwi przetwarzanie sygnałów ze wszystkich ośmiu tuneli na mikrokontrolerze głównym.
 
 
   \subsubsection{Komunikacja ze światem zewnętrznym}
 
-Docelowo, tworzone urządzenie ma komunikować się bezprzewodowo z serwerem agregującym dane, jednak na bieżącym etapie pracy zostanie wykorzystana jedynie prostsza w implementacji komunikacja przewodowa.
-Wystarczy ona do zbadania jakości działania urządzenia, a także do eksperymentów pozwalających rozwijać algorytmy przetwarzające dane.
-Do komunikacji z komputerem wykorzystane zostało złącze USB typu C na urządzeniu oraz kontroler protokołu USB wpudowany w ESP32-C3.
-Osiem próbek pobranych ze wszystkich tuneli urządzenia przesyłane jest łączem szeregowym po uprzednim zakodowaniu do postaci napisu z dziesiętną reprezentacją tych liczb, poprzedzielanych przecinkami, wszystko w kodowaniu znaków ASCII.
+Docelowo, tworzone urządzenie ma komunikować się bezprzewodowo z~serwerem agregującym dane, jednak na bieżącym etapie pracy zostanie wykorzystana jedynie prostsza w~implementacji komunikacja przewodowa.
+Wystarczy ona do zbadania jakości działania urządzenia, a~także do eksperymentów pozwalających rozwijać algorytmy przetwarzające dane.
+Do komunikacji z~komputerem wykorzystane zostało złącze USB typu C~na urządzeniu oraz kontroler protokołu USB wpudowany w~ESP32-C3.
+Osiem próbek pobranych ze wszystkich tuneli urządzenia przesyłane jest łączem szeregowym po uprzednim zakodowaniu do postaci napisu z~dziesiętną reprezentacją tych liczb, poprzedzielanych przecinkami, wszystko w~kodowaniu znaków ASCII.
 Kolejne rekordy oddzielane są od siebie znakiem nowej linii.
-Taka reprezentacja danych oczywiście nie jest optymalna, jednak wydajność transmisji nie ma wpływu na działanie urządzenia, wybrano więc to rozwiązanie jako najbardziej intuicyjne w późniejszej interpretacji danych.
-Znaki odbierane z urządzenia mogą być zapisywane bezpośrednio do pliku w formacie CSV z zapisem przebiegów.
+Taka reprezentacja danych oczywiście nie jest optymalna, jednak wydajność transmisji nie ma wpływu na działanie urządzenia, wybrano więc to rozwiązanie jako najbardziej intuicyjne w~późniejszej interpretacji danych.
+Znaki odbierane z~urządzenia mogą być zapisywane bezpośrednio do pliku w~formacie CSV z~zapisem przebiegów.
 
-Do zakodowania danych w odpowiedni napis wykorzystana została biblioteka \texttt{fmt} dla języka C++ \cite{fmt}, a w szczególności oferowana w jej ramach funkcja \texttt{fmt::format}.
-Wysłanie danych w protokole USB zrealizowane zostało za pomocą funkcji \texttt{Serial.print}, stanowiącej element frameworka Arduino.
+Do zakodowania danych w~odpowiedni napis wykorzystana została biblioteka \texttt{fmt} dla języka C++ \cite{fmt}, a~w szczególności oferowana w~jej ramach funkcja \texttt{fmt::format}.
+Wysłanie danych w~protokole USB zrealizowane zostało za pomocą funkcji \texttt{Serial.print}, stanowiącej element frameworka Arduino.
 Pełen kod pętli programu został przedstawiony na fragmencie kodu poniżej (plik \texttt{src/main.cpp}, funkcja \texttt{primaryMcuLoop}).
 
-Pomiędzy akwizycją danych, a ich przesyłem do komputera użytkownika, wykonywany jest dodatkowy krok obliczenia sygnałów różnicowych oraz odpowiedniego przyporządkowania numeracji bramek.
-Przemapowanie kolejności zapewnia, że kolejność sygnałów w zwracacych przez urządzenie danych odpowiada fizycznej kolejności tuneli w obudowie urządzenia.
+Pomiędzy akwizycją danych, a~ich przesyłem do komputera użytkownika, wykonywany jest dodatkowy krok obliczenia sygnałów różnicowych oraz odpowiedniego przyporządkowania numeracji bramek.
+Przemapowanie kolejności zapewnia, że kolejność sygnałów w~zwracacych przez urządzenie danych odpowiada fizycznej kolejności tuneli w~obudowie urządzenia.
 
 \vspace{1em}
 \vbox{
@@ -716,14 +716,14 @@ Przemapowanie kolejności zapewnia, że kolejność sygnałów w zwracacych prze
     framesep=0.5em, 
     fontsize=\footnotesize
 ]{cpp}
-void primaryMcuLoop() { // Kod wykonywany w pętli na mikrokontrolerze głównym
-    // Pomiar bramek 0-3 i odbiór bramek 4-7
-    for (int i = 0; i < bee_counter::kNumGates; ++i) {
+void primaryMcuLoop() { // Kod wykonywany w~pętli na mikrokontrolerze głównym
+    // Pomiar bramek 0-3 i~odbiór bramek 4-7
+    for (int i~= 0; i~< bee_counter::kNumGates; ++i) {
         gate_reading[i] = gate[i].measure();
         receiver.receiveReading(&single_reading, 5);
         gate_reading[single_reading.gateId] = single_reading;
     }
-    // Obliczenie sygnałów różnicowych i dostosowanie numeracji tuneli
+    // Obliczenie sygnałów różnicowych i~dostosowanie numeracji tuneli
     delta[0] = gate_reading[7].timeRawR - gate_reading[7].timeRawL;
     delta[1] = gate_reading[6].timeRawR - gate_reading[6].timeRawL;
     delta[2] = gate_reading[5].timeRawR - gate_reading[5].timeRawL;
@@ -752,9 +752,9 @@ void primaryMcuLoop() { // Kod wykonywany w pętli na mikrokontrolerze głównym
     framesep=0.5em, 
     fontsize=\footnotesize
 ]{cpp}
-void secondaryMcuLoop() { // Kod wykonywany w pętli na kontrolerze pobocznym
-    // Pomiar bramek 0-3 i przesłanie do układu głównego jako bramki 4-7
-    for (int i = 0; i < bee_counter::kNumGates; ++i) {
+void secondaryMcuLoop() { // Kod wykonywany w~pętli na kontrolerze pobocznym
+    // Pomiar bramek 0-3 i~przesłanie do układu głównego jako bramki 4-7
+    for (int i~= 0; i~< bee_counter::kNumGates; ++i) {
         single_reading = gate[i].measure();
         single_reading.gateId = i+bee_counter::kNumGates;
         transmitter.transmitReading(&single_reading);
@@ -764,26 +764,26 @@ void secondaryMcuLoop() { // Kod wykonywany w pętli na kontrolerze pobocznym
 }
 \vspace{1em}
 
-Powyżej przytoczona została również treść fukcji \texttt{secondaryMcuLoop}, która wykonywana jest w pętli na mikrokontrolerze pomocniczym.
-Realizuje ona wyłącznie pobranie pomiarów i ich transmisję do mikrokontrolera głównego.
-Wybór, który z dwóch mikrokontrolerów urządzenia wykonuje zadania pętli głównej odbywa się poprzez ustawienie pierwszego bajtu pamięci EEPROM.
+Powyżej przytoczona została również treść fukcji \texttt{secondaryMcuLoop}, która wykonywana jest w~pętli na mikrokontrolerze pomocniczym.
+Realizuje ona wyłącznie pobranie pomiarów i~ich transmisję do mikrokontrolera głównego.
+Wybór, który z~dwóch mikrokontrolerów urządzenia wykonuje zadania pętli głównej odbywa się poprzez ustawienie pierwszego bajtu pamięci EEPROM.
 Wartość \texttt{0x00} oznacza mikrokontroler główny, natomiast \texttt{0x01} mikrokontroler poboczny.
-Dzięki takiemu podejściu istnieje możliwość wgrywania tego samego programu na oba mikrokontrolery, a zaprogramowany tryb pozostaje zapamiętany również po aktualizacji programu.
-Wystarczy jedynie sprawdzać w programie wartość pierwszego pola pamięci i wykonywać odpowiednią funkcję z przedstawionych powyżej.
-Z implementacją tego mechanizmu można się zapoznać w kodzie źródłowym projektu -- w plikach \texttt{include/connection.h}, \texttt{src/connection.cpp} oraz \texttt{src/main.cpp}. 
+Dzięki takiemu podejściu istnieje możliwość wgrywania tego samego programu na oba mikrokontrolery, a~zaprogramowany tryb pozostaje zapamiętany również po aktualizacji programu.
+Wystarczy jedynie sprawdzać w~programie wartość pierwszego pola pamięci i~wykonywać odpowiednią funkcję z~przedstawionych powyżej.
+Z implementacją tego mechanizmu można się zapoznać w~kodzie źródłowym projektu -- w~plikach \texttt{include/connection.h}, \texttt{src/connection.cpp} oraz \texttt{src/main.cpp}. 
 
 \subsection{Testy}
 
 Przeprowadzony został szereg testów mających na celu weryfikację sprawnego działania całego urządzenia.
-W pierwszej kolejności zweryfikowano, czy sygnał różnicowy generowany przez bramkę czujnika zawiera impulsy wywołane przejściem pszczoły przez tunel zbliżone do teoretycznych idealnych przebiegów z rysunku \ref{fig:campbell-symulacja-wynik}.
-Zasada eksperymentu była zbliżona do działań opisanych w sekcji \ref{sekcja:testy-prototypu}, z następującymi modyfikacjami:
+W pierwszej kolejności zweryfikowano, czy sygnał różnicowy generowany przez bramkę czujnika zawiera impulsy wywołane przejściem pszczoły przez tunel zbliżone do teoretycznych idealnych przebiegów z~rysunku \ref{fig:campbell-symulacja-wynik}.
+Zasada eksperymentu była zbliżona do działań opisanych w~sekcji \ref{sekcja:testy-prototypu}, z~następującymi modyfikacjami:
 \begin{enumerate}
-\item W celu zasymulowania przejścia owada przez czujnik wykorzystana została prawdziwa pszczoła -- martwy osobnik zebrany z dna ula\footnote{Pojawianie się martwych osobników na dennicy ula jest naturalnym elementem życia kolonii. Pszczoły umierają wewnątrz gniazda i osypują się na jego dno, skąd zazwyczaj od razu wynoszone są na zewnątrz przez robotnice -- jednak zimą lub w okresie złej pogody pozostają tam dłużej.}.
-Po jego pobraniu zadbano o niezwłoczne przeprowadzenie eksperymentu w celu uniknięcia wysuszenia organizmu.
+\item W~celu zasymulowania przejścia owada przez czujnik wykorzystana została prawdziwa pszczoła -- martwy osobnik zebrany z~dna ula\footnote{Pojawianie się martwych osobników na dennicy ula jest naturalnym elementem życia kolonii. Pszczoły umierają wewnątrz gniazda i~osypują się na jego dno, skąd zazwyczaj od razu wynoszone są na zewnątrz przez robotnice -- jednak zimą lub w~okresie złej pogody pozostają tam dłużej.}.
+Po jego pobraniu zadbano o~niezwłoczne przeprowadzenie eksperymentu w~celu uniknięcia wysuszenia organizmu.
 Wykorzystanie prawdziwej pszczoły zapewnia bliższy żywemu osobnikowi model właściwości elektrycznych;
-\item Zbierane były dane różnicowe z bramki jednego z czujników.
+\item Zbierane były dane różnicowe z~bramki jednego z~czujników.
 \end{enumerate}
-Test został wykonany na tunelu o numerze 0. Pszczołę przeprowadzono przez bramkę kilkukrotnie w obu kierunkach.
+Test został wykonany na tunelu o~numerze 0. Pszczołę przeprowadzono przez bramkę kilkukrotnie w~obu kierunkach.
 Wynikowy przebieg sygnału wyjściowego został przedstawiony na rysunku \ref{fig:test-dead-bee}. Dane zostały przefiltrowane filtrem średniej kroczącej na oknie 30 próbek.
 \begin{figure}[htb]
     \centering
@@ -792,17 +792,17 @@ Wynikowy przebieg sygnału wyjściowego został przedstawiony na rysunku \ref{fi
     \label{fig:test-dead-bee}
 \end{figure}
 Na prezentowanym zakresie przebiegu wyraźnie widoczne jest pięć podwójnych asymetrycznych impulsów odpowiadających kolejnym przejściom obiektu przez czujnik. Ich polaryzacja zmienia się naprzemiennie -- odpowiada to kierunkowi ruchu pszczoły.
-Należy zwrócić uwagę na cechy sygnału, którymi odbiega on od przebiegów idealnych. Po pierwsze, widoczne są drobne wahania poziomu sygnału o czasie trwania zbliżonym do analizowanych impulsów.
-Dodatkowo, widoczny jest wyraźny trend w sygnale -- poziom zerowy sygnału różnicowego mocno przesuwa się w czasie.
+Należy zwrócić uwagę na cechy sygnału, którymi odbiega on od przebiegów idealnych. Po pierwsze, widoczne są drobne wahania poziomu sygnału o~czasie trwania zbliżonym do analizowanych impulsów.
+Dodatkowo, widoczny jest wyraźny trend w~sygnale -- poziom zerowy sygnału różnicowego mocno przesuwa się w~czasie.
 Konieczne okaże się opracowanie metody przetwarzania sygnału, która pozwoli zminimalizować wpływ tych efektów na działanie algorytmów detekcji pszczoły.
-Pomimo tych wad, pojawiające się impulsy są bardzo wyraźne, ich wykrycie będzie zatem możliwe z pomocą dość prostych algorytmów mogących działać na mikrokontrolerze o ograniczonych zasobach.
+Pomimo tych wad, pojawiające się impulsy są bardzo wyraźne, ich wykrycie będzie zatem możliwe z~pomocą dość prostych algorytmów mogących działać na mikrokontrolerze o~ograniczonych zasobach.
 
-Przeprowadzono kolejny eksperyment weryfikujący działanie całości urządzenia. Badanie analogiczne jak poprzednio przeprowadzono dla wszystkich ośmiu tuneli, przeprowadzając martwą pszczołę czterokrotnie kolejno przez każdy z nich.
+Przeprowadzono kolejny eksperyment weryfikujący działanie całości urządzenia. Badanie analogiczne jak poprzednio przeprowadzono dla wszystkich ośmiu tuneli, przeprowadzając martwą pszczołę czterokrotnie kolejno przez każdy z~nich.
 Sygnał wyjściowy bramek zbierano przez cały czas trwania eksperymentu.
 Przeprowadzone badanie miało udowodnić, że stworzony system czujników nadaje się do zastosowania jeżeli:
 \begin{enumerate}[label=(\alph*)]
-    \item Na przebiegu sygnału każdego z czujników pojawią się impulsy w momentach odpowiadających pojawianiu się pszczoły w odpowiedniej bramce, 
-    \item Impulsy widoczne na każdym z sygnałów będą miały kształt wystarczająco podobny, by w ramach dalszego rozwoju umożliwić wykrywanie ich jednym uniwersalnym algorytmem.
+    \item Na przebiegu sygnału każdego z~czujników pojawią się impulsy w~momentach odpowiadających pojawianiu się pszczoły w~odpowiedniej bramce, 
+    \item Impulsy widoczne na każdym z~sygnałów będą miały kształt wystarczająco podobny, by w~ramach dalszego rozwoju umożliwić wykrywanie ich jednym uniwersalnym algorytmem.
 \end{enumerate}
 Dane zebrane podczas niniejszego eksperymentu zostały przedstawione na rysunkach \ref{fig:test-zlozenia} oraz \ref{fig:test-zlozenia2}.
 \begin{figure}[htb]
@@ -817,44 +817,44 @@ Dane zebrane podczas niniejszego eksperymentu zostały przedstawione na rysunkac
     \includegraphics{tex/img/test-zlozenia2.pdf}
     \label{fig:test-zlozenia2}
 \end{figure}
-Na ich podstawie można jednoznacznie stwierdzić, że każda z bramek reaguje prawidłowo na pojawienie się pszczoły w tunelu.
+Na ich podstawie można jednoznacznie stwierdzić, że każda z~bramek reaguje prawidłowo na pojawienie się pszczoły w~tunelu.
 Na sygnałach wyjściowych kolejno pojawiały się serie szpilek jasno odpowiadających przejściom obiektu przez tunel.
-Impulsy zebrane przez urządzenie nie były idealne: wyraźnie widoczne są wspomniane wcześniej efekty spontanicznych wychyleń sygnału oraz pojawianie się trendu -- ponownie jednakże stwierdzono że jakość sygnału nada się do wykorzystania w dalszym przetwarzaniu sygnału.
+Impulsy zebrane przez urządzenie nie były idealne: wyraźnie widoczne są wspomniane wcześniej efekty spontanicznych wychyleń sygnału oraz pojawianie się trendu -- ponownie jednakże stwierdzono że jakość sygnału nada się do wykorzystania w~dalszym przetwarzaniu sygnału.
 
 
 Przeprowadzone eksperymenty pozwoliły stwierdzić, że skonstruowane urządzenie działa prawidłowo.
-Możliwe było rozpoczęcia dalszych prac, aby umożliwić przetestowanie urządzenia na żywych pszczołach w pasiece.
+Możliwe było rozpoczęcia dalszych prac, aby umożliwić przetestowanie urządzenia na żywych pszczołach w~pasiece.
 
 \FloatBarrier
 
 \subsection{Montaż urządzenia}
 
-Aby możliwe było wykorzystanie stworzonego systemu w warunkach rzeczywistych konieczne jest umieszczenie urządzenia w obudowie, która odizoluje je od zmiennych warunków otoczenia, oraz ograniczy ruch pszczół do wnętrza tuneli czujników.
+Aby możliwe było wykorzystanie stworzonego systemu w~warunkach rzeczywistych konieczne jest umieszczenie urządzenia w~obudowie, która odizoluje je od zmiennych warunków otoczenia, oraz ograniczy ruch pszczół do wnętrza tuneli czujników.
 Przyjęto nastepujące dodatkowe założenia dla jej projektu:
 \begin{enumerate}
     \item Technologia wykonania: druk 3D, materiał PLA;
-    \item Jak największa kompaktowość, w celu ułatwienia montażu na ulu dowolnego rodzaju;
-    \item Zapewnienie izolacji mechanicznej (uniemożliwienie dostania się owadów do środka, a także zanieczyszczenia wnętrza pyłkiem), oraz elektrostatycznej.
+    \item Jak największa kompaktowość, w~celu ułatwienia montażu na ulu dowolnego rodzaju;
+    \item Zapewnienie izolacji mechanicznej (uniemożliwienie dostania się owadów do środka, a~także zanieczyszczenia wnętrza pyłkiem), oraz elektrostatycznej.
 \end{enumerate}
 Do stworzenia projektu obudowy wykorzystano oprogramowanie \textit{Onshape}\footnote{\url{https://cad.onshape.com}} służące do parametrycznego modelowania 3D.
-Zaprojektowane części, pozostałe elementy, a także sposób ich złożenia zostały przedstawione na rysunku \ref{fig:exploded}.
+Zaprojektowane części, pozostałe elementy, a~także sposób ich złożenia zostały przedstawione na rysunku \ref{fig:exploded}.
 \begin{figure}[htb]
     \centering
     \includegraphics{tex/img/exploded.pdf}
     \caption{Schemat złożenia obudowy urządzenia}
     \label{fig:exploded}
 \end{figure}
-Drukowana obudowa składa się z czterech fragmentów, oznaczonych A., B. i dwukrotnie C.
+Drukowana obudowa składa się z~czterech fragmentów, oznaczonych A., B. i~dwukrotnie C.
 Panele boczne (C.) posiadają kilkumilimetrowe kołnierze nachodzące na końce tuneli czujnika, zapewniając szczelne połączenie.
-Wchodzą one w dopasowane wpusty w dolnej i górnej części obudowy (A., B.), również zapobiegając występowaniu szczelin.
+Wchodzą one w~dopasowane wpusty w~dolnej i~górnej części obudowy (A., B.), również zapobiegając występowaniu szczelin.
 Płytki PCB czujnika przykręcane są przez otwory montażowe sześcioma śrubami M2, po uprzednim ekranowaniu warstwą materiałów: izolującego (arkusz papieru do pieczenia), oraz ekranującego (folia aluminiowa).
-Piny komunikacyjne i zasilające obu podukładów łączone są ze sobą przewodami, a w ostatnim kroku złożenia obie połowy obudowy skręcane są ze sobą śrubami M3.
-Dolna część obudowy wyposażona jest dodatkowo w otwory montażowe, z których użytkownik urządzenia może skorzystać, aby przymocować całość do półki przy wylotku ula.
-Na rysunku \ref{fig:zlozenie-zdjecia} przedstawiona została dokumentacja fotograficzna kolejnych kroków montażu płytek PCB w obudowie.
+Piny komunikacyjne i~zasilające obu podukładów łączone są ze sobą przewodami, a~w ostatnim kroku złożenia obie połowy obudowy skręcane są ze sobą śrubami M3.
+Dolna część obudowy wyposażona jest dodatkowo w~otwory montażowe, z~których użytkownik urządzenia może skorzystać, aby przymocować całość do półki przy wylotku ula.
+Na rysunku \ref{fig:zlozenie-zdjecia} przedstawiona została dokumentacja fotograficzna kolejnych kroków montażu płytek PCB w~obudowie.
 \begin{figure}[htb]
     \centering
     \includegraphics{tex/img/dokumentacja-zlozenia.pdf}
-    \caption{Zdjęcia z kolejnych etapów montażu urządzenia w obudowie}
+    \caption{Zdjęcia z~kolejnych etapów montażu urządzenia w~obudowie}
     \label{fig:zlozenie-zdjecia}
 \end{figure}
 
