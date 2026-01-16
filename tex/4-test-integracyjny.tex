@@ -8,7 +8,7 @@ Ostatnim, co pozostało do wykonania przed jego przeprowadzeniem jest implementa
 
 Ograniczenia narzucane przez wykorzystywany mikrokontroler wymagają przeanalizowania etapów algorytmu pod kątem złożoności obliczeniowej i rozważenia optymalizacji implementacji niektórych z nich.
 Przytoczone poniżej wartości w notacji \textit{big O} zostały wyznaczone dla wykonania danej procedury w pojedynczej pętli urządzenia -- czyli dla jednej przychodzącej próbki sygnału wejściowego.
-Ponadto, założona została implementacja bezpośrednio wynikająca z przedstawionych wcześniej wzorów matematycznych, bez dodatkowych optymalizacji.
+Ponadto, analizowana jest podstawowa implementacja oparta bezpośrednio na przedstawionych wzorach matematycznych, bez żadnych wstępnych optymalizacji.
 
 Automat stanowy ma złożoność obliczeniową $O(1)$. Jest niezwykle prosty i nadaje się świetnie do pracy w ograniczonych zasobach.
 Problematycznym krokiem algorytmu jest natomiast progowanie adaptacyjne.
@@ -143,7 +143,7 @@ Wąskim gardłem procesu jest wyznaczanie wartości $\hat{Q}_y(q,\,K,\,k)$ ($q$-
 Zastosowano analogiczną optymalizację jak w przypadku mediany -- jedyną różnicą jest pozycja wartości pobieranej z BST.
 W tym przypadku, zamiast na pozycji środkowej, interesująca próbka leży na pozycji $q\cdot K$.
 
-Dalsza optymalizacja implementacji algorytmu detekcji, jednak dla elegancji rozwiązania zmodyfikowano kod filtra średniej kroczącej w sposób analogiczny do przedstawionych uprzednio usprawnień.
+Dalsza optymalizacja implementacji algorytmu detekcji nie jest konieczna, jednak dla elegancji rozwiązania zmodyfikowano kod filtra średniej kroczącej w sposób analogiczny do przedstawionych uprzednio usprawnień.
 Zamiast w każdej pętli programu uśredniać całe okno na nowo, całkowita wartość średniej jest jedynie aktualizowana o różnice między usuwaną, najstarszą próbką, a dodawaną -- najnowszą.
 W ten sposób z pracy w czasie $O(n)$ usprawniono ten krok algorytmu do $O(1)$.
 

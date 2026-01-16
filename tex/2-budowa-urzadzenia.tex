@@ -2,7 +2,7 @@
 \section{Budowa urządzenia}
 \subsection{Założenia projektu}
 Aby możliwe było wykorzystanie urządzenia zliczającego pszczoły do diagnostyki ula, musi ono spełniać szereg kryteriów.
-Po pierwsze, naturalne funkcjonowanie kolonii nie może zostać w znaczącym stopniu zakłócone. Należy zadbać, by ruch pszczół został zaburzony w minimalnym stopniu, a~wentylacja gniazda nie była zbytnio ograniczona.
+Po pierwsze, naturalne funkcjonowanie kolonii nie może zostać znacząco zakłócone. Należy zadbać, by ruch pszczół został zaburzony w minimalnym stopniu, a~wentylacja gniazda nie była zbytnio ograniczona.
 Ponadto, istotna jest odporność systemu na warunki atmosferyczne i~aktywność pszczół: m.in. na zmiany nasłonecznienia, wilgotności, zbieranie się pyłku.
 
 Urządzenie ma dostarczać informację o chwilach wejścia/wyjścia, a także kierunku poruszania się pszczoły.
@@ -29,7 +29,8 @@ Wprowadzenie pszczoły pomiędzy okładki kondensatora spowoduje zatem wzrost ś
     \label{fig:bee-in-capacitor}
 \end{figure}
 
-Przedstawiony układ nie umożliwia natomiast określenia kierunku poruszania się pszczoły w czujniku. Aby zapewnić tę funkcję układ rozszerzony jest o drugi kondensator. Schemat takiego układu został przedstawiony na rysunku \ref{fig:bee-in-c2}. Wyjście czujnika stanowi sygnał $C_1 - C_2$. Założono, że kondensatory są identyczne, a więc gdy nie znajduje się w nich pszczoła, to $C_1 - C_2 = 0$. Ruch pszczoły między okładkami generuje na wyjściu bipolarny, środkowosymetryczny impuls, który  daje się zidentyfikować na podstawie kształtu, pozwalając na wykrycie pszczół w czujniku, oraz pozwala określić kierunek ruchu pszczoły na podstawie kolejności występowania piku dodatniego i ujemnego. Na rysunku \ref{fig:bee-in-minus-c2} przedstawiono sytuację, w której pszczoła porusza się w odwrotnym kierunku.
+Przedstawiony układ nie umożliwia natomiast określenia kierunku poruszania się pszczoły w czujniku.
+Aby zapewnić tę funkcję, układ rozszerzony jest o drugi kondensator. Schemat takiego układu został przedstawiony na rysunku \ref{fig:bee-in-c2}. Wyjście czujnika stanowi sygnał $C_1 - C_2$. Założono, że kondensatory są identyczne, a więc gdy nie znajduje się w nich pszczoła, to $C_1 - C_2 = 0$. Ruch pszczoły między okładkami generuje na wyjściu bipolarny, środkowosymetryczny impuls, który  daje się zidentyfikować na podstawie kształtu, pozwalając na wykrycie pszczół w czujniku, oraz pozwala określić kierunek ruchu pszczoły na podstawie kolejności występowania piku dodatniego i ujemnego. Na rysunku \ref{fig:bee-in-minus-c2} przedstawiono sytuację, w której pszczoła porusza się w odwrotnym kierunku.
 
 \begin{figure}[htb]
     \centering
@@ -47,11 +48,11 @@ Przedstawiony układ nie umożliwia natomiast określenia kierunku poruszania si
 
 Przedstawione ilustracje mają na celu wyłącznie prezentację podstawowej zasady działania czujnika pojemnościowego, a podczas ich tworzenia pominięte zostało wiele zjawisk fizycznych.
 W praktyce, kondensatory o płaskich okładkach nie sprawdzają się takim zastosowaniu -- są podatne na zewnętrzne zakłócenia, a także muszą być znacznie oddalone od siebie by uniknąć wzajemnego zakłócania \cite{Campbell2005}.
-Mimo to, rozwiązania znalazły wykorzystanie w pracach naukowych, na przykład urządzenie \textit{BeeCheck} \cite{Bermig2020}, kompensujące wady płaskich okładek wykorzystaniem 7 kondensatorów w czujniku.
+Mimo to, wykorzystujące je rozwiązania znalazły wykorzystanie w pracach naukowych, na przykład urządzenie \textit{BeeCheck} \cite{Bermig2020}, kompensujące wady płaskich okładek wykorzystaniem 7 kondensatorów w czujniku.
 
 Znacznie skuteczniejszym podejściem jest wykorzystanie okładek pierścieniowych. Na rysunku \ref{fig:tunnel-concept} przedstawiona została ogólna idea tego rozwiązania. Na czujnik składa się rurka z izolatora, przez którą przechodzi owad, oraz trzy pierścienie z przewodnika.
 Konstrukcja ta realizuje taki sam układ elektryczny jak analizowano poprzednio, przy czym kondensatory $C_1$ i $C_2$ mają wspólną okładkę (środkowy pierścień – wyprowadzenie $C$). Kondensator $C_1$ znajduje się między wyprowadzeniami $L$ i $C$, natomiast kondensator $C_2$ między $R$ i $C$.
-Ułożenie to, pozwalając na równoczesne ładowanie obu kondensatorów, umożliwi pomiar różnicy pojemności $C_1 - C_2$.
+Ułożenie to, pozwalając na równoczesne ładowanie obu kondensatorów, umożliwi łatwy pomiar różnicy pojemności $C_1 - C_2$.
 
 \begin{figure}[htb]
     \centering
@@ -90,10 +91,10 @@ Następnie następuje demodulacja i wzmocnienie sygnału. W efekcie, wyjście uk
 Taki sposób pomiaru został z powodzeniem zastosowany w urządzeniach zliczających pszczoły, jednak jest bardzo kosztowny. Konieczne jest użycie układów scalonych o wysokiej precyzji – szacunkowy koszt układów scalonych potrzebnych do obsłużenia jednej pary kondensatorów to 231 zł\footnote{Ceny na dzień 09.10.2025 za: ICL8038, AD620, AD630, LF411.}. Całe urządzenie ma się składać z ośmiu równoległych tuneli, łączna cena układów scalonych wyniosłaby 1848 zł znacznie przekraczając limit kosztu całego urządzenia.
 
 Alternatywnym podejściem jest zastosowanie dedykowanego scalonego układu przetwornika pojemnościowo-napięciowego.
-Przykładem takiego układu odpowiedniego do małych pojemności jest AD7746, zastosowany w pracyn Perraulta \cite{Perrault2016}.
+Przykładem takiego układu odpowiedniego do małych pojemności jest AD7746, zastosowany w pracy Perraulta \cite{Perrault2016}.
 Jest on przetwornikiem dwukanałowym, wystarczy zatem jeden na oba kondensatory w pojedynczym czujniku \cite{ad7746}. Koszt zakupu jednego układu scalonego to 67 zł (sumarycznie 536 zł na 8~tuneli), co jednak wciąż przekracza zakładany budżet.\newline
 
-W ramach niniejszej pracy opracowany został prosty i niezwykle tani sposób akwizycji sygnału z czujnika pojemnościowego. Jakość pomiaru jest znacznie niższa niż w opisanych wcześniej rozwiązaniach, lecz uzyskane przebiegi czasowe pozwalają skutecznie wykrywać ruch pszczół i określać jego kierunek.
+W ramach niniejszej pracy opracowany został prosty i niezwykle tani sposób akwizycji sygnału z czujnika pojemnościowego. Jakość pomiaru jest znacznie niższa niż w opisanych wcześniej rozwiązaniach, lecz uzyskane przebiegi czasowe wciąż pozwalają skutecznie wykrywać ruch pszczół i określać jego kierunek.
 Schemat proponowanego układu przedstawiony jest na rysunku \ref{fig:uklad-pomiarowy}.
 Jego działanie opiera się na różnicy czasu ładowania kondensatorów o różnych pojemnościach.
 
@@ -115,7 +116,7 @@ Odpowiedni dobór $U_\mathrm{prog}$ ma wpływ na jakość działania systemu: pr
     \label{fig:ladowanie kondensatora}
 \end{figure}
 
-W układzie czujnika każdy z kondensatorów ładowany jest przez taką samą rezystancję –-stałe czasowe podukładów zależą wyłącznie od pojemności elektrycznej samych kondensatorów. Metoda wykrywania pszczół stworzona w ramach niniejszej pracy nie została zatem oparta bezpośrednio na różnicy pojemności kondensatorów, tylko na różnicy w czasie ich ładowania.
+W układzie czujnika każdy z kondensatorów ładowany jest przez taką samą rezystancję –- stałe czasowe podukładów zależą wyłącznie od pojemności elektrycznej samych kondensatorów. Metoda wykrywania pszczół stworzona w ramach niniejszej pracy nie została zatem oparta bezpośrednio na różnicy pojemności kondensatorów, tylko na różnicy w czasie ich ładowania.
 
 Wyzwaniem technicznym jest sam pomiar czasu ładowania kondensatora o tak niewielkiej pojemności. Przyjmując, jak wcześniej, orientacyjną pojemność kondensatora równą 0,5 pF, wyznaczyć można szacowaną stałą czasową układu (z rezystorem 1M$\Omega$):
 \begin{equation}
@@ -173,7 +174,7 @@ Należy jednak pamiętać, aby na kolejnych etapach projektu wprowadzić ogranic
 Zaprezentowany algorytm akwizycji oferuje rozdzielczość pomiaru zależną od czasu wykonania instrukcji znajdujących się wewnątrz pętli \textit{while}.
 Najdłuższą operacją jest odczyt stanu pinu (\texttt{read\_gpio}) – dla zastosowanego mikrokontrolera ESP32-C3 może on trwać $0.05 - 0.17\,\mu\mathrm{s}$ (w zależności od implementacji) \cite{ESP32C3Datasheet}\cite{microcontroller-benchmarks}. Nawet przy konieczności dwukrotnego wykonania instrukcji, rozdzielczość taka jest wystarczająca na potrzeby tworzonego urządzenia.
 
-Alternatywnym podejściem, niewykorzystanym w niniejszej pracy z braku wyraźnej potrzeby, jednak zapewniającym znacznie wyższą rozdzielczość byłoby wykorzystanie zewnętrznych przerwań mikrokontrolera. Modyfikacja przedstawionego algorytmu polega na usunięciu odczytu GPIO z pętli \textit{while}, zamiast czego $s_L$ oraz $s_R$ ustawiane są na wartość 1 w ramach obsługi przerwań EXTI wynikających z wykrycia zboczy narastających na pinach $L$ i $R$.
+Alternatywnym podejściem, niewykorzystanym w niniejszej pracy z braku wyraźnej potrzeby, jednak mogącym zapewnić wyższą rozdzielczość byłoby wykorzystanie zewnętrznych przerwań mikrokontrolera. Modyfikacja przedstawionego algorytmu polega na usunięciu odczytu GPIO z pętli \textit{while}, zamiast czego $s_L$ oraz $s_R$ ustawiane są na wartość 1 w ramach obsługi przerwań EXTI wynikających z wykrycia zboczy narastających na pinach $L$ i $R$.
 
   
   \subsubsection{Realizacja sprzętowa}
@@ -248,7 +249,7 @@ Kolejne pomiary wykonywane są cyklicznie co ok. 100 ms (funkcja \texttt{loop()}
 W funkcji \texttt{measureChargeTime()} zaimplementowany jest proponowany w niniejszej pracy algorytm akwizycji sygnału.
 Zmienna \texttt{counter} stanowi licznik iteracji algorytmu. Po ustawieniu pinu \texttt{CHARGE} na stan wysoki (rozpoczęciu ładowania bramki) rozpoczyna się pętla kolejnych odczytów pinu \texttt{MEASURE}. Zliczane są iteracje pętli. Pętla zostaje przerwana po odnotowaniu stanu wysokiego na pinie \texttt{MEASURE}.
 Na tym etapie w zmiennej \texttt{counter} jest już przechowywany wynik działania algorytmu, jednak w celu umożliwienia kolejnego pomiaru konieczne jest ponowne rozładowanie bramki czujnika. W tym celu pin \texttt{CHARGE} ustawiany jest do stanu niskiego, a następnie w kolejnej pętli oczekuje się rozproszenia ładunku kondensatora -- wykrywanego jako stan niski na pinie \texttt{MEASURE}.
-Pętla aktywnego oczekiwania na rozładowanie kondensatora nie jest koniecznym elementem programu o ile w ramach programu zachowana zostanie wystarczająco długa przerwa między kolejnymi odczytami.
+Pętla aktywnego oczekiwania na rozładowanie kondensatora nie jest koniecznym elementem programu o ile zachowana zostanie wystarczająco długa przerwa między kolejnymi odczytami.
 
 
 Narzędziem kompilacji i wgrywania programów zalecanym przy pracy we frameworku Arduino jest \textit{Arduino IDE} -- zintegrowane środowisko programistyczne łączące edytor kodu, kompilator, menadżer zewnętrznych bibliotek \cite{Arduino}.
@@ -263,8 +264,7 @@ Opcje kompilacji i wgrywania programu ustawiane są w jednym pliku konfiguracyjn
 \vspace{2em}
 
 Ustawienie platformy \texttt{espressif32} oraz frameworku \texttt{arduino} sprawia, że do kompilacji projektu wykorzystane zostaną dedykowane ESP32 narzędzia oraz dołączone będą wymagane pliki nagłówkowe.
-Dodatkowo, ustawione flagi \texttt{build\_flags} umożliwiają programowanie mikrokontrolera bez wciskania przycisków \textit{Boot} i \textit{Reset}, co zwiększa wygodę prototypowania.
-Ustawiono również prędkość komunikacji monitora portu szeregowego (jednego z dostępnych w PlatformIO narzędzi) na wartość zgodną z wcześniej przedstawionym programem. Po odpowiednim skonfigurowaniu projektu możliwe było wgranie utworzonego oprogramowania na mikrokontroler, a następnie przetestowanie proponowanego rozwiązania.
+Zdefiniowano również prędkość komunikacji monitora portu szeregowego (jednego z dostępnych w PlatformIO narzędzi) na wartość zgodną z wcześniej przedstawionym programem. Po odpowiednim skonfigurowaniu projektu możliwe było wgranie utworzonego oprogramowania na mikrokontroler, a następnie przetestowanie proponowanego rozwiązania.
 
 
   \subsubsection{Testy} \label{sekcja:testy-prototypu}
@@ -273,12 +273,12 @@ Ustawiono również prędkość komunikacji monitora portu szeregowego (jednego 
 Po zakończeniu budowy prototypu przeprowadzony został test mający na celu weryfikację opracowanej metody wykrywania pszczoły w tunelu czujnika.
 Względy praktyczne wykluczyły wykorzystanie żywych pszczół podczas tego eksperymentu, konieczne było zatem znalezienie ciała, które będzie w stanie je odpowiednio zasymulować.
 Kluczowe było, by odpowiadało pszczole rozmiarem i kształtem, a także przenikalnością elektryczną (przez zawartość wody).
-Wybrane zostały dwa potencjalne odpowiedniki pszczoły:
+Wybrane zostały dwa potencjalne modele pszczoły:
 \begin{enumerate}[label=\textbf{(\alph*)}]
     \item \textbf{Żelek miś} -- posiada odpowiedni kształt i rozmiar, oraz zawiera wodę. Zastosowanie go do symulowania pszczoły jest polecane w literaturze \cite{mathematastic};
     \item \textbf{Wilgotna gąbka} -- została wprowadzona jako dodatkowy eksperyment w razie, gdyby żelek posiadał nieodpowiednie właściwości elektryczne. Z gąbki kuchennej wycięta została bryła o wymiarach zbliżonych do pszczoły, którą przed samym eksperymentem zanurzono w naczyniu z wodą. Właściwości elektryczne ciała powinny być zbliżone do pszczoły, której większość masy stanowi woda.
 \end{enumerate}
-Każde z ciał zostało nawleczone na cienką żyłkę.
+Każdy z obiektów został nawleczony na cienką żyłkę.
 W ramach każdego z dwóch przeprowadzonych eksperymentów żyłkę przeprowadzano przez tunel czujnika, po czym w ciągu kilkudziesięciu sekund kilkukrotnie przeciągano nią ciało.
 Schemat doświadczenia przedstawiono na rysunku \ref{fig:prototyp-eksperyment-schemat}.
 Żelek został przeciągnięty przez bramkę czterokrotnie (dwa razy w każdym kierunku), natomiast gąbka jedenastokrotnie (po pięć razy w każdym kierunku i szósty raz tylko w jednym).
@@ -443,7 +443,7 @@ W pierwszym kroku realizacji PCB zaprojektowany został schemat układu elektron
 W jego skład weszły cztery podukłady bramek wykrywających pszczoły, połączone z odpowiednimi wyprowadzeniami mikrokontrolera ESP32-C3.
 Odpowiednie przypisanie pinów okładkom bramek okazało się mieć kluczowe znaczenie.
 Prezentowany na rysunku schemat stanowi drugą wersję -- w pierwszym podejściu w wyniku nieprawidłowego doboru pinów prawidłowo działały wyłącznie dwie bramki z czterech.
-Dogłębna analiza schematu płytki\cite{ESP32-C3-Schematic} ujawniła źródło problemów: niektóre piny GPIO mikrokontrolera mają w podule ESP32-C3 SuperMini podłączone rezystory podciągające (o wartościach tysiąckrotnie niższych od rezystancji w torze ładowania -- 10 K$\Omega$).
+Dogłębna analiza schematu płytki\cite{ESP32-C3-Schematic} ujawniła źródło problemów: niektóre piny GPIO mikrokontrolera mają w module ESP32-C3 SuperMini podłączone rezystory podciągające (o wartościach tysiąckrotnie niższych od rezystancji w torze ładowania -- 10 K$\Omega$).
 Elektrody \textit{L} lub \textit{R} podłączone do tych pinów były utrzymywane stale w stanie wysokim, a przez to mierzony czas ładowania wynosił zawsze zero.
 Konieczne było stworzenie zaktualizowanej wersji układu, w której piny z rezystorami podciągającymi wykorzystywane były wyłącznie do ładowania kondensatorów, nigdy do pomiaru.
 Piny z podciągnięciami to: GPIO2, GPIO8, GPIO9 \cite{ESP32-C3-Schematic}. Ostateczny sposób połączenia wyprowadzeń przedstawiony został w schemacie na rysunku \ref{fig:schemat}.
@@ -478,15 +478,15 @@ Podczas projektu PCB najwięcej uwagi przyłożono planowaniu rozmieszczenia śc
 Dla minimalizacji ich negatywnego wpływu zastosowano następujące reguły:
 \begin{enumerate}
     \item Unikano równoległych ścieżek, a w przypadku ich wystąpienia zapewniono jak największą odległość między nimi;
-    \item Nie dodano płaszczyzny uziemienia na odwrocie płytki -- jej zastosowanie jest w ogólności zalecane, jednak w przypadku niniejszego projektu mogłyby wystąpić stosunkowo duże pojemności między nią a ścieżkami;
+    \item Nie dodano płaszczyzny masy na odwrocie płytki -- jej zastosowanie jest w ogólności zalecane, jednak w przypadku niniejszego projektu mogłyby wystąpić stosunkowo duże pojemności między nią a ścieżkami;
     \item Minimalizowano liczbę przelotek (\textit{via}) na płytce -- możliwe okazała się realizacja układu bez zastosowania ani jednej;
-    \item Zastosowano najmniejszą możliwość szerokość ścieżki, co oprócz zmniejszenia pojemności pasożytniczej wpłynęło również na zwiększenie dystansu między ścieżkami względem ich szerokości, poprawiając kryterium 1. oraz zmniejszając sprzężenie krzyżowe w układzie \cite{OurPCB_Kapacytancje_pasozytnicze}. Została dobrana szerokość ścieżki równa 0.1 mm -- minimum oferowane przez producenta płytek drukowanych JLCPCB \cite{JLCPCB_PCBCapabilities}.
+    \item Zastosowano najmniejszą możliwą szerokość ścieżki, co oprócz zmniejszenia pojemności pasożytniczej wpłynęło również na zwiększenie dystansu między ścieżkami względem ich szerokości, poprawiając kryterium 1. oraz zmniejszając sprzężenie krzyżowe w układzie \cite{OurPCB_Kapacytancje_pasozytnicze}. Została dobrana szerokość ścieżki równa 0.1 mm -- minimum oferowane przez producenta płytek drukowanych JLCPCB \cite{JLCPCB_PCBCapabilities}.
 \end{enumerate}
 Ostateczny projekt PCB przedstawiony został na rysunku \ref{fig:pcb}.
 Oprócz wymienionych elementów zawiera on również styki zasilania oraz otwory montażowe.
 Wykonanie płytek zostało zamówione u producenta JLCPCB\footnote{https://jlcpcb.com/}.
 Do skonstruowania całego urządzenia konieczne było złożenie dwóch egzemplarzy -- w pierwszej kolejności wlutowano rezystory ładowania bramek, a następnie przymocowane zostały tunele.
-W celu zapewnienia precyzji ich rozmieszczenia, w technologii druku 3D zaprojektowany został specjalny wzornik utrzymujący płytki i tunele w odpowiedniej pozycji na czas lutowania.
+W celu zapewnienia precyzji ich rozmieszczenia, w technologii druku 3D wykonany został specjalny wzornik utrzymujący płytki i tunele w odpowiedniej pozycji na czas lutowania.
 Na samym końcu przymocowane zostały moduły mikrokontrolerów. Stworzone układy (rysunek \ref{fig:2pcb} były gotowe do programowania.
 
 \begin{figure}[htb]
@@ -519,7 +519,7 @@ W ramach dobrej praktyki programistycznej w pliku \texttt{include/gate.h} zdefin
 Struktura \texttt{GateConfig} zawiera wszystkie dane reprezentujące pojedynczą bramkę -- przypisania pinów GPIO, a także binarną flagę umożliwiającą odwrócić kierunek bramki.
 Zmiana kierunku zliczania części bramek na pewno będzie konieczna, ponieważ konstrukcja urządzenia zakłada bramki zorientowane naprzemiennie w obu kierunkach (rysunek \ref{fig:2pcb}).
 Struktura \texttt{GateReading} reprezentuje pojedynczy odczyt z czujnika (surowe sygnały obu kondensatorów w bramce), opisany dodatkowo numerem bramki, z której pochodzą dane.
-Czasy ładowania kondensatorów zapisywane są przez 32-bitowe dodatnie liczby całkowite, co daje wystarczająco duży zakres reprezentacji wyników na potrzeby tworzonego urządzenia.
+Czasy ładowania kondensatorów zapisywane są jako 32-bitowe dodatnie liczby całkowite, co daje wystarczająco duży zakres reprezentacji wyników na potrzeby tworzonego urządzenia.
 Największe znaczenie ma klasa \texttt{Gate}, która reprezentuje pojedynczą bramkę czujnika: opisywana jest przez konfigurację bramki i posiada metody \texttt{void initialize()} oraz \texttt{gate\_reading\_t measure()}. Służą one, odpowiednio, do inicjalizacji stanu początkowego bramki, oraz do akwizycji odczytu. 
 
 
@@ -527,7 +527,7 @@ Największe znaczenie ma klasa \texttt{Gate}, która reprezentuje pojedynczą br
 \inputminted[label={include/gate.h}, linenos, frame=single, framesep=0.5em, fontsize=\footnotesize]{cpp}{code/gate.h}
 \vspace{2em}
 
-Implementacja metod klasy \texttt{Gate} zawarta jest w poniższym pliku \texttt{src/gate.cpp}
+Implementacja metod klasy \texttt{Gate} zawarta jest w poniższym pliku \texttt{src/gate.cpp}.
 Inicjalizacja bramki w funkcji \texttt{void Gate::initialize()} opiera się głównie na odpowiedniej konfiguracji pinów GPIO mikrokontrolera i zapewnieniu rozładowania kondensatorów bramki.
 Konfigurowany jest parametr \texttt{drive\_capability} wszystkich pinów połączonych z bramką.
 Ustawiana jest jego maksymalna wartość \texttt{GPIO\_DRIVE\_CAP\_3}, co zapewnia najkrótszy możliwy czas narastania sygnału na pinie wyjściowym mikrokontrolera po ustawieniu go w programie na stan wysoki \cite{ESP-IDF_GPIO_v4.3}.
@@ -539,7 +539,7 @@ Ma to znaczenie, ponieważ czas narastania napięcia na kondensatorze, który mi
 
 Funkcja \texttt{gate\_reading\_t Gate::measure()} realizuje omawiany wcześniej algorytm akwizycji z dwoma nieznacznymi rozszerzeniami.
 Po pierwsze, pętla zliczania iteracji ładowania kondensatorów poprzedzona została wywołaniem funkcji \texttt{noInterrupts()}.
-Funkcja ta wyłącza obsługę przerwań mikrokontrolera, których pojawienie się w trakcie akwizycji zakłócałoby sygnał, poprzez zajmowanie czas procesora.
+Funkcja ta wyłącza obsługę przerwań mikrokontrolera, których pojawienie się w trakcie akwizycji zakłócałoby sygnał poprzez zajmowanie czasu procesora.
 Wyłączenie przerwań umożliwia niezakłócone zliczanie iteracji algorytmu.
 Po zakończeniu akwizycji sygnału przerwania są ponownie włączane -- ich obsługa jest konieczna do prawidłowej pracy systemu, w którym zrównoleglone zostanie wiele zadań.
 Uruchomienie przerwań realizuje wywołanie funkcji \texttt{interrupts()}.
@@ -547,7 +547,7 @@ Uruchomienie przerwań realizuje wywołanie funkcji \texttt{interrupts()}.
 Kolejnym rozszerzeniem względem najprostszej wersji algorytmu jest wprowadzony parametr \texttt{kChargeTimeout}, czyli suma zliczonych iteracji, przy której pętla jest przerywana pomimo braku wykrycia naładowania kondensatora. 
 Podczas testów urządzenia zaobserwowano, że zdarzały się sytuacje (np. przy dotknięciu okładek), w których pojemność bramki i czas jej ładowania rosły na tyle, że licznik iteracji przepełniał się, a sama akwizycja trwała zbyt długo.
 Sytuacje takie oczywiście stanowią anomalię, pomimo to dla zapewnienia stabilności systemu wprowadzono mechanizm, który przerywa pomiar jeśli trwa on zbyt długo.
-Domyślnie skonfigurowane maksimum to 0xffff, czyli zarazem maksymalna wartość licznika iteracji, po której następowałoby przepełnienie.
+Domyślnie skonfigurowane maksimum to \texttt{0xffff}, czyli zarazem maksymalna wartość licznika iteracji, po której następowałoby przepełnienie.
 Implementacja tego zachowania wymagała dodanie dodatkowych poleceń do głównej pętli algorytmu, której czas wykonania ma krytyczne znaczenie, natomiast nie będzie ona miała zauważalnego negatywnego wpływu -- czas wykonania porównania dwóch zmiennych typu \texttt{uint16\_t} wynosi pojedyncze cykle zegara procesora.
 
 Na koniec, wartości liczników iteracji wpisywane są do struktury wynikowej jako czasy ładowania poszczególnych kondensatorów w bramce. Struktura ta stanowi wyjście funkcji.
@@ -569,16 +569,16 @@ Na rysunku \ref{fig:uart-connection} przedstawione zostało połączenie elektry
     \label{fig:uart-connection}
 \end{figure}
 
-Jaką podstawę komunikacji wybrano protokół UART (ang. \textit{Universal Asynchronous Receiver-Transmitter}.
-Jego przewagą w tej sytuacji nad innymi podobnymi protokołami (np. SPI, I$^2$C) jest asynchroniczność -- czyli nie wymaga on używania sygnału zegarowego.
+Jaką podstawę komunikacji wybrano protokół UART (ang. \textit{Universal Asynchronous Receiver-Transmitter}).
+Jego przewagą nad innymi podobnymi protokołami (np. SPI, I$^2$C) jest asynchroniczność -- czyli nie wymaga on używania sygnału zegarowego.
 Komunikujące się urządzenia znają zakładaną prędkość komunikacji (\textit{baudrate}) i taktują kolejne bity we własnym zakresie \cite{uart}.
 Standardowo, UART wykorzystuje dwie linie danych, RX oraz TX, dla dwóch kierunków komunikacji.
-W przypadku projektowanego systemu konieczne (i, na szczęście, możliwe) jest przesyłanie danych tylko w jednym kierunku -- od układu pomocniczego do głównego.
+W przypadku projektowanego systemu konieczne (i możliwe) jest przesyłanie danych tylko w jednym kierunku -- od układu pomocniczego do głównego.
 W ten sposób, wymagana jest tylko jedna linia asynchronicznej wymiany informacji: RX dla układu pomocniczego i TX dla układu głównego (rysunek \ref{fig:uart-connection}).
 
 Wykorzystywany mikrokontroler ESP32-C3 posiada wbudowany kontroler UART, pozwalający na prostą implementację podstawowej komunikacji przez programistę \cite{ESP32C3Datasheet}.
-Układ ten realizuje kolejkowanie wysyłanych i odbieranych bajtów, sprawdzanie bitów startu i bitów parzystości, umożliwiając wymianę pojedynczych bajtów informacji w sposób bezbłędny i łatwy w obsłudze.
-Pojedyncze bajty nie wystarczają jednak do zapisu pełnej informacji zwrotnej z czujników pojemnościowych: pełna informacja (struktura \texttt{GateReading}) wymaga 9 bajtów.
+Układ ten realizuje kolejkowanie wysyłanych i odbieranych ramek, sprawdzanie bitów startu i bitów parzystości, umożliwiając wymianę pojedynczych bajtów informacji w sposób bezbłędny i łatwy w obsłudze.
+Pojedyncze bajty nie wystarczają jednak do zapisu pełnej informacji zwrotnej z czujników pojemnościowych: pełna informacja (struktura \texttt{GateReading}) składa się z 9 bajtów.
 Z tej przyczyny zdefiniowano 11-bajtową ramkę UART reprezentującą pojedynczy pomiar bramki, której struktura przedstawiona została na rysunku \ref{fig:uart-ramka}.
 \begin{figure}[htb]
     \centering
@@ -597,14 +597,14 @@ Ponieważ ilość przesyłanych danych nie jest szczególnie duża, aspekt ten n
 Mikrokontroler w układzie pomocniczym pracuje w nieskończonej pętli, w której dokonuje akwizycji kolejnych bramek, a następnie przesyła ramki z wynikami.
 Dane przesyłane są sekwencyjnie, a wykrycie początków poszczególnych ramek jest możliwe dzięki występowaniu w nich sekwencji startowej \texttt{0xfefd}.
 Mikrokontroler główny pracuje w analogicznej pętli, na przemian dokonując akwizycji jednej z bramek, oraz odbierając jedną ramkę od układu pomocniczego.
-Dane zapisywane są wyłącznie przez mikrokontroler główny, który wykorzystuje je później do algorytmu detekcji pszczół.
+Dane zapisywane są wyłącznie przez mikrokontroler główny, który przekazuje je później do algorytmu detekcji pszczół.
 
 
 
 Ważne dla skutecznej wymiany informacji jest wykrywanie sekwencji startu ramki.
 Zostało to zrealizowane poprzez implementację automatu stanowego przedstawionego na rysunku \ref{fig:uart-fsm}.
-Przejścia między kolejnymi stanami odbywają się w wyniku odebrania przez kontroler UART kolejnego bajtu. 
-Po skutecznym odbiorze sekwencji startowej kolejne bajty zapisywane są do tablicy wynikowej, i inkrementowany jest ich licznik.
+Przejścia między jego stanami odbywają się w wyniku odebrania przez kontroler UART kolejnego bajtu. 
+Po skutecznym odbiorze sekwencji startowej następujące dalej bajty zapisywane są do tablicy wynikowej, i inkrementowany jest ich licznik.
 Zapełnienie tablicy wynikowej jest warunkiem zakończenia pracy automatu stanowego -- odebrana została pełna ramka.
 Implementacja omawianego automatu zawarta jest funkcji \texttt{Receiver::receiveReading} z pliku \texttt{src/connection.cpp}, którego odpowiedni fragment zawarto w przedstawionym dalej fragmencie kodu.
 
@@ -778,13 +778,13 @@ Przeprowadzony został szereg testów mających na celu weryfikację sprawnego d
 W pierwszej kolejności zweryfikowano, czy sygnał różnicowy generowany przez bramkę czujnika zawiera impulsy wywołane przejściem pszczoły przez tunel zbliżone do teoretycznych idealnych przebiegów z rysunku \ref{fig:campbell-symulacja-wynik}.
 Zasada eksperymentu była zbliżona do działań opisanych w sekcji \ref{sekcja:testy-prototypu}, z następującymi modyfikacjami:
 \begin{enumerate}
-\item W celu zasymulowania przejścia owada przez czujnik wykorzystana została prawdziwa pszczoła -- martwy osobnik zebrany z dna ula \footnote{Pojawianie się martwych osobników na dennicy ula jest naturalnym elementem życia kolonii. Pszczoły umierają wewnątrz gniazda i osypują się na jego dno, skąd zazwyczaj od razu wynoszone są na zewnątrz przez robotnice -- jednak zimą lub w okresie złej pogody pozostają tam dłużej.}.
+\item W celu zasymulowania przejścia owada przez czujnik wykorzystana została prawdziwa pszczoła -- martwy osobnik zebrany z dna ula\footnote{Pojawianie się martwych osobników na dennicy ula jest naturalnym elementem życia kolonii. Pszczoły umierają wewnątrz gniazda i osypują się na jego dno, skąd zazwyczaj od razu wynoszone są na zewnątrz przez robotnice -- jednak zimą lub w okresie złej pogody pozostają tam dłużej.}.
 Po jego pobraniu zadbano o niezwłoczne przeprowadzenie eksperymentu w celu uniknięcia wysuszenia organizmu.
 Wykorzystanie prawdziwej pszczoły zapewnia bliższy żywemu osobnikowi model właściwości elektrycznych;
 \item Zbierane były dane różnicowe z bramki jednego z czujników.
 \end{enumerate}
 Test został wykonany na tunelu o numerze 0. Pszczołę przeprowadzono przez bramkę kilkukrotnie w obu kierunkach.
-Wynikowy przebieg sygnału wyjściowego został przedstawiony na rysunku \ref{fig:test-dead-bee}. Dane zostały przefiltrowane średnią kroczącą na oknie 30 próbek.
+Wynikowy przebieg sygnału wyjściowego został przedstawiony na rysunku \ref{fig:test-dead-bee}. Dane zostały przefiltrowane filtrem średniej kroczącej na oknie 30 próbek.
 \begin{figure}[htb]
     \centering
     \caption{Przebieg sygnału wyjściowego bramki podczas przeprowadzonego testu.}
@@ -817,12 +817,12 @@ Dane zebrane podczas niniejszego eksperymentu zostały przedstawione na rysunkac
     \includegraphics{tex/img/test-zlozenia2.pdf}
     \label{fig:test-zlozenia2}
 \end{figure}
-Na ich podstawie jednoznacznie można stwierdzić, że każda z bramek reaguje prawidłowo na pojawienie się pszczoły w tunelu.
+Na ich podstawie można jednoznacznie stwierdzić, że każda z bramek reaguje prawidłowo na pojawienie się pszczoły w tunelu.
 Na sygnałach wyjściowych kolejno pojawiały się serie szpilek jasno odpowiadających przejściom obiektu przez tunel.
 Impulsy zebrane przez urządzenie nie były idealne: wyraźnie widoczne są wspomniane wcześniej efekty spontanicznych wychyleń sygnału oraz pojawianie się trendu -- ponownie jednakże stwierdzono że jakość sygnału nada się do wykorzystania w dalszym przetwarzaniu sygnału.
 
 
-Przeprowadzone eksperymenty pozwoliły jednoznacznie stwierdzić, że skonstruowane urządzenie działa prawidłowo.
+Przeprowadzone eksperymenty pozwoliły stwierdzić, że skonstruowane urządzenie działa prawidłowo.
 Możliwe było rozpoczęcia dalszych prac, aby umożliwić przetestowanie urządzenia na żywych pszczołach w pasiece.
 
 \FloatBarrier
@@ -849,7 +849,7 @@ Panele boczne (C.) posiadają kilkumilimetrowe kołnierze nachodzące na końce 
 Wchodzą one w dopasowane wpusty w dolnej i górnej części obudowy (A., B.), również zapobiegając występowaniu szczelin.
 Płytki PCB czujnika przykręcane są przez otwory montażowe sześcioma śrubami M2, po uprzednim ekranowaniu warstwą materiałów: izolującego (arkusz papieru do pieczenia), oraz ekranującego (folia aluminiowa).
 Piny komunikacyjne i zasilające obu podukładów łączone są ze sobą przewodami, a w ostatnim kroku złożenia obie połowy obudowy skręcane są ze sobą śrubami M3.
-Dolna część obudowy wyposażona jest dodatkowo w otwory montażowe, z których użytkownik urządzenia może skorzystać, aby przyczepić je do półki przy wylotku ula.
+Dolna część obudowy wyposażona jest dodatkowo w otwory montażowe, z których użytkownik urządzenia może skorzystać, aby przymocować całość do półki przy wylotku ula.
 Na rysunku \ref{fig:zlozenie-zdjecia} przedstawiona została dokumentacja fotograficzna kolejnych kroków montażu płytek PCB w obudowie.
 \begin{figure}[htb]
     \centering

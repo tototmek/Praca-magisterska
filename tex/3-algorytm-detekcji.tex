@@ -15,7 +15,7 @@ Przyjęte zostały następujące założenia:
 \subsection{Zbiór danych przykładowych}
 
 Pierwszym krokiem, zanim rozpoczęto pracę nad projektem algorytmu, było zebranie dużej ilości przykładowych danych z pracy urządzenia w warunkach rzeczywistych.
-Są one niezwykle ważne, pozwolą bowiem do oceny proponowanych w kolejnych sekcjach algorytmów i ich konfiguracji -- posłużą do przeprowadzenia testów \textit{off line}.
+Są one niezwykle ważne, posłużą bowiem do oceny proponowanych w kolejnych sekcjach algorytmów i ich konfiguracji -- posłużą do przeprowadzenia testów \textit{off line}.
 
   \subsubsection{Testy urządzenia w pasiece}
 
@@ -28,7 +28,7 @@ Testy prowadzono według następującej metody:
     Wszelkie szczeliny pozostające między urządzeniem a ścianami ula zatkano, aby uniemożliwić pszczołom ominięcie tuneli czujnika.
     \item W obu eksperymentach odczekano około 30 minut, aby pszczoły poruszone zamieszaniem przy montażu urządzenia uspokoiły się, a następnie aby przyzwyczaiły się do nowego obiektu na wylotku.
     \item Na statywie przed ulem umieszczono kamerę wideo, nagrywającą obraz urządzenia. Kadr dobrany został tak, by wyraźnie widoczne były wloty wszystkich tuneli urządzenia.
-    Nagranie to będzie później wykorzystane do anotacji danych -- ręczne opisu chwil, w których pszczoły wchodziły i wychodziły.
+    Nagranie to będzie później wykorzystane do anotacji danych -- ręcznego opisu chwil, w których pszczoły wchodziły i wychodziły.
     \item Urządzenie łączono z portem USB laptopa, aby zapewnić przesył kolejnych próbek sygnałów wyjściowych każdego z czujników pojemnościowych.
     Uruchamiano stworzony uprzednio skrypt Python (plik \texttt{scripts/collect\_data.py} w repozytorium projektu), zapisujący otrzymywane dane do pliku CSV.
     \item W chwili uruchomienia w komputerze akwizycji sygnału, wykonywano przed kamerą klaśnięcie, co pozwoli na późniejszą synchronizację nagrania z zebranymi danymi.
@@ -116,7 +116,7 @@ W ogólności, jest to dość dobre przybliżenie chwili jej przejścia przez cz
 Niestety, mogą wystąpić sytuacje szczególne czterech rodzajów:
 \begin{enumerate}
     \item Pszczoła spoza ula wlatuje do tunelu, zatrzymuje się przed dotarciem do czujnika, czeka dłuższy czas, i dopiero przelatuje przez bramkę czujnika. W tym przypadku generowana jest etykieta wejścia znacznie wyprzedzająca moment faktycznego pojawienia się impulsu na sygnale bramki;
-    \item Pszczoła spoza ula wlatuje do tunelu, a następnie zawraca przed dotarcie do czujnika i opuszcza tunel. W tym przypadku generowane są dwie etykiety: wejście i wyjście, pomimo braku faktycznego wykrycia pszczoły przez bramkę;
+    \item Pszczoła spoza ula wlatuje do tunelu, a następnie zawraca przed dotarciem do czujnika i opuszcza tunel. W tym przypadku generowane są dwie etykiety: wejście i wyjście, pomimo braku faktycznego wykrycia pszczoły przez bramkę;
     \item Sytuacja symetryczna dla 1: pszczoła z wewnątrz ula przechodzi przez bramkę czujnika, i odczekuje dłuższy czas przed opuszczeniem tunelu. W tym przypadku generowana jest etykieta wyjścia znacznie opóźniona względem faktycznego wykrycia;
     \item Sytuacja symetryczna dla 2: pszczoła z wewnątrz ula przechodzi przez bramkę czujnika, a następnie zawraca przed dotarciem do końca tunelu, i przechodząc ponownie przez czujnik wraca do ula. W tym przypadku nie zostanie wygenerowana żadna etykieta, a na sygnale wyjściowym bramki pojawiają się dwa impulsy: wyjście i wejście.
 \end{enumerate}
@@ -170,7 +170,7 @@ Widoczne są pożądane efekty pracy filtra:
     \item Po pierwsze, zlikwidował on prawie zupełnie sumy obecne w oryginalnych danych;
     \item Ponadto, dzięki uśrednieniu próbek, zbiór wartości sygnału znacznie się powiększył, poprawiona została znacząco również jego rozdzielczość.
 \end{itemize}
-W wyniku obu tych zjawisk, przebieg wyjścia czujnika stał się znacznie łagodny, a impuls wygenerowany przez ruch pszczoły w tunelu jest bardzo wyraźnie widoczny.
+W wyniku obu tych zjawisk, przebieg wyjścia czujnika stał się łagodny, a impuls wygenerowany przez ruch pszczoły w tunelu jest bardzo wyraźnie widoczny.
 Można stwierdzić, że zaprojektowana metoda filtrowania danych sprawdza się w przypadku niniejszego zastosowania.
 Warto zwrócić uwagę, że filtrowanie sygnału wpłynęło na znaczące zmniejszenie amplitudy prezentowanego impulsu -- stanowi to pewien koszt filtrowania.
 Dopóki jednak redukcja amplitudy nie zrównuje jej z pozostającym po filtrowaniu szumem, wzory generowane przez pszczoły pozostaną odróżnialne i będzie możliwe ich wykrycie.
@@ -261,7 +261,7 @@ Stosownym wydało się, z tego względu, przetestowanie pewnej modyfikacji przed
 Metryka ta posiada podobne właściwości, jest jednak mniej obciążająca obliczeniowo.
 Powtórzono eksperyment, zastępując w równaniu~\ref{eqn:mediana1} składnik $x_\mathrm{m}(k)$ sygnałem $x_\mathrm{a}(k)$, danym jako: 
 \begin{equation}
-    x_\mathrm{a}(k) = \frac{1}{M}\sum^M_{i=0}{x(k-i)}.
+    x_\mathrm{a}(k) = \frac{1}{M}\sum^{M-1}_{i=0}{x(k-i)}.
 \end{equation}
 Otrzymane przebiegi zostały przedstawione na rysunku \ref{fig:detrending-average}.
 Jak widać, zmodyfikowana metoda zachowała tę cechę, że skutecznie usuwa przesunięcie sygnału względem zera (chwile $k$ od 0 do ok. 2000 oraz po $k\approx7000$).
@@ -382,7 +382,7 @@ Oznaczono próg górny i dolny.
 Na ostatnim panelu rysunku zawarto wykres skwantowanego sygnału wejściowego $Y(k)$, a na jego tle wygenerowane przez algorytm momenty inkrementacji lub dekrementacji licznika $bee$ (oznaczone \textit{Detekcja}).
 
 Widać, że progowanie statyczne pozwoliło skutecznie wykryć skoki $y(k)$, generując prawidłowy sygnał $Y(k)$. Automat stanowy również działa na niniejszym przykładzie poprawnie -- każdy z impulsów w $y(k)$ został wykryty, a ich typy zostały sklasyfikowane poprawnie.
-Zastosowana struktura automatu poradziła sobie z nieidealnym sygnałem Y(k) (1. i 3. impuls nie składają się z pojedynczych szpilek).
+Zastosowana struktura automatu poradziła sobie z nieidealnym sygnałem Y(k) (pierwszy i trzeci impuls nie składają się z pojedynczych szpilek).
 
 Na rysunku \ref{fig:fsm-adaptive} przedstawione zostały analogiczne przebiegi uzyskane z wykorzystaniem adaptacyjnego progowania sygnału $y(k)$.
 Należy zwrócić uwagę na kształt linii oznaczających poziomy progu $\gamma$ (środkowy panel). Zmieniają się one w czasie, dostosowując się do szumów i skoków $y(k)$.
@@ -390,7 +390,7 @@ Można wyciągnąć analogiczne wnioski, jak dla poprzedniej metody: progowanie 
 
 Na podstawie wykonanych doświadczeń możnaby wybrać metodę ze stałym $\gamma(k)$ jako lepszą, ze względu na mniejszą złożoność obliczeniową wyznaczania wartości progowych.
 Wykonane zostały jednak dodatkowe eksperymenty, na przykładzie innego fragmentu danych eksperymentalnych, z wadliwym fragmentem przebiegu.
-Przebieg ten, przedstawiony m.in. na rysunku \ref{fig:fsm-static-bad}, zawiera szum dorównujący amplitudą typowe impulsy pszczół.
+Przebieg ten, przedstawiony m.in. na rysunku \ref{fig:fsm-static-bad}, zawiera szum dorównujący amplitudą typowym impulsom pszczół.
 Ten chaotyczny wzór został, najprawdopodobniej, spowodowany przez pszczołę, która zatrzymała się w środku bramki czujnika. 
 Zdarzenie to, choć rzadkie (znaleziono tylko jeden taki fragment w całości zebranych danych), może potencjalnie mieć znaczny negatywny wpływ na estymację bilansu pszczół.
 Oba warianty algorytmu uruchomiono na omawianym fragmencie przebiegu.
@@ -419,7 +419,7 @@ Na ten moment utrzymać można hipotezę, że algorytm adaptacyjny będzie chara
   
   \subsubsection{Korelacja wzajemna z wzorcem} \label{sekcja:korelacja}
 
-Kolejna z opracowanych metod opiera się na wykorzystaniu korelacji krzyżowej sygnału $y(k)$ z opracowanym wzorcem idealnego impulsu pszczoły $w(m)$.
+Kolejna z proponowanych metod opiera się na wykorzystaniu korelacji krzyżowej sygnału $y(k)$ z opracowanym wzorcem idealnego impulsu pszczoły $w(m)$.
 Korelacja krzyżowa stanowi miarę podobieństwa sygnałów, w funkcji ich przesunięcia względem siebie -- nadaje się zatem idealnie do wykrycia chwil, w których w sygnale wejściowym występuje zadany wzorzec.
 
 Na rysunku \ref{fig:kernels} zostały przedstawione dwa przykładowe wzorce zastosowane w ramach przeprowadzonych z niniejszym algorytmem eksperymentów.
@@ -434,7 +434,7 @@ Drugi, oznaczony (b), jest wzorcem syntetycznym, będącym fragmentem sinusoidy 
 
 Sygnał korelacji krzyżowej $y(k)$ z wzorcem $w(m)$ o długości $M$ dany jest jako:
 \begin{equation}
-r_{wy}(k) = \sum^M_{m=0}w(m)\,y(k+m).
+r_{wy}(k) = \sum^{M-1}_{m=0}w(m)\,y(k+m).
 \end{equation}
 Zgodnie z właściwościami korelacji krzyżowej, na przebiegu $r_{wy}(k)$ występować będzie dodatni skok wartości na fragmentach, w których przebieg $y(k)$ jest podobny do wzorca $w(m)$.
 Ponadto, pojawiać będzie się ujemny skok $r_{wy}(k)$, kiedy na przebiegu $y(k)$ wystąpi wzorzec $w(m)$ o odwróconej polaryzacji.
@@ -447,9 +447,9 @@ R(k) = \begin{cases}
     -1 & \text{jeśli\quad} r_{wy}(k) < -\gamma(k),
 \end{cases}
 \end{equation}
-przy czym $\gamma(k)$ (poziom progowania), podobnie jak w przypadku automatu stanowego, może przyjąć stałą wartość, lub być dynamicznie dostosowywany -- do sygnału $r_{wy}(k)$.
+przy czym $\gamma(k)$ (poziom progowania), podobnie jak w przypadku automatu stanowego, może przyjąć stałą wartość, lub być dynamicznie dostosowywany -- do właściwości sygnału $r_{wy}(k)$.
 Na podstawie wartości progowanej, dla każdej chwili $k$, wyznaczany jest inkrement licznika pszczół $bee$, oznaczony jako $B(k)$.
-By każda pszczoła została zliczona dokładnie raz, $B(k)$ wynosi 1 lub $-1$ tylko w chwili pojawienia się zbocza narastającego $R(k)$ do wartości 1, lub zbocza opadającego $R(k)$ do wartości $-1$ -- zgodnie z poniższym wzorem.
+By każda pszczoła została zliczona dokładnie raz, $B(k)$ wynosi 1 lub $-1$ tylko w chwili pojawienia się zbocza narastającego $R(k)$ do wartości 1, lub zbocza opadającego $R(k)$ do wartości $-1$, zgodnie z poniższym wzorem.
 \begin{equation}
 B(k) = \begin{cases}
 1 & \text{jeśli\quad} R(k) = 1 \land R(k-1) \neq 1 \\
@@ -524,9 +524,9 @@ W celu wyboru najlepszego z algorytmów, a także jego zestawu parametrów, nale
 Każdy wariant algorytmu uruchamiano na całości zebranych danych rzeczywistych ze wszystkich tuneli urządzenia.
 Jakość jego działania oceniano według metryki $E$ zdefiniowanej jako:
 \begin{equation}
-    E = \frac{1}{2} (F_1^\mathrm{wejście} + F_1^\mathrm{wyjście}),
+    E = \frac{1}{2} \left(F_1^\mathrm{wejście} + F_1^\mathrm{wyjście}\right),
 \end{equation}
-gdzie norma $F_1$ typu zdarzenia $t$ (wejście lub wyjście z ula) dana jest jako:
+gdzie norma $F_1^t$ typu zdarzenia $t$ (wejście lub wyjście z ula) dana jest jako:
 \begin{equation}
     F_1^{\mathrm{t}} = 2\cdot\frac{\text{precyzja}^t\cdot\text{czułość}^t}{\text{precyzja}^t+\text{czułość}^t},
 \end{equation}
@@ -651,8 +651,9 @@ Na podstawie zebranych obserwacji można wnioskować co następuje:
 
 Uzyskany najlepszy wynik, równy $E=0.9044$, jest niestety poniżej optymistycznych oczekiwań przyjętych przed wykonaniem eksperymentów.
 Taki poziom dokładności uniemożliwia skuteczne szacowanie łącznego bilansu pszczół, który przemieścił się tunelami urządzenia; niemożliwa jest zatem ocena całkowitej populacji ula.
-Błędy generowane przez system akumulowałyby się w bardzo szybkim tempie, błyskawicznie prowadząc do bardzo błędnych wyników.
+Błędy generowane przez system akumulowałyby się w bardzo szybkim tempie, błyskawicznie prowadząc do błędnych wyników.
 Nie mniej jednak, precyzja stworzonego rozwiązania jest wystarczająca do szacowania chwilowego natężenia ruchu owadów na wejściu ula, co również stanowi bardzo przydatną informację dla pszczelarzy.
+
 Przeanalizowano znaczną część przebiegów wygenerowanych podczas testu najlepszego z algorytmów w celu wyszukania źródeł tak znacznych błędów.
 Za część z nich odpowiadają błędne etykiety danych, stanowią one jednak mniejszość.
 Więcej przeanalizowanych błędów stanowią faktyczne błędy algorytmu detekcji, występujące głównie w przypadku próby wykrycia impulsów o nietypowych kształtach -- jak na rysunku \ref{fig:error-real}.
@@ -665,12 +666,12 @@ Więcej przeanalizowanych błędów stanowią faktyczne błędy algorytmu detekc
 Mimo to, okazuje się, że większość pojawiających się błędów nie wynika bezpośrednio z niedostatecznej jakości algorytmu: ich źródłem, w głównej mierze, są nietypowe zachowania pszczół poruszających się wewnątrz bramki czujnika.
 Przebiegi odpowiadające takim sytuacjom przedstawione zostały na rysunku \ref{fig:errors}.
 Pierwszy z wykresów (\ref{fig:error1}) zawiera błąd spowodowany najprawdopodobniej przez pszczołę zawracającą wewnątrz bramki czujnika.
-W wyniku tego zachowania wygenerowany został impuls o zupełnie innym kształcie, na podstawie którego niemożliwe jest wnioskowanie o ruchu owada w tunelu.
+W wyniku tego zachowania wygenerowany został impuls o zupełnie innym kształcie, na podstawie którego niemożliwe jest wnioskowanie o sposobie ruchu owada w tunelu.
 Podobny przypadek występuje na wykresie \ref{fig:error2}, gdzie dwie pszczoły mijające się w bramce czujnika wygenerowały jeden wspólny zdeformowany impuls.
 Na ostatnim rysunku (\ref{fig:error3}) prezentowany jest błąd detekcji wywołany grupowaniem pszczół: dwa osobniki poruszające się tuż obok siebie przeszły przez czujnik tuż po sobie, generując sygnał, na podstawie którego również bardzo trudno wnioskować o ich faktycznym ruchu.
 Na podstawie przeprowadzonej analizy stwierdzono, że uzyskany poziom błędu nie świadczy o niedostatecznie dobrym algorytmie detekcji, ale raczej prezentuje wadę opracowanego rozwiązania wykorzystującego pojedynczą parę czujników pojemnościowych.
-Najlepszym sposobem rozwiązania tego problemu wydaje się na ten moment zastosowanie większej liczby bramek w każdym z tuneli urządzenia, tak jak zrobiono w urządzeniu BeeCheck \cite{Bermig2020} -- co jednak znacząco powiększa złożoność całości projektu.
-Alternatywnie, poprawę mogłoby przynieść zastosowanie innych, bardziej zaawansowanych metod detekcji impulsów, przystosowanych również do radzenia sobie ze znanymi sytuacjami granicznymi -- te jednak wymusiłyby wykorzystanie platformy sprzętowej o większych możliwościach i koszcie.
+Najlepszym sposobem rozwiązania tego problemu wydaje się na ten moment zastosowanie większej liczby bramek w każdym z tuneli urządzenia, tak jak zrobiono w projekcie BeeCheck \cite{Bermig2020} -- co jednak znacząco powiększa złożoność całości systemu.
+Alternatywnie, poprawę mogłoby przynieść zastosowanie innych, bardziej zaawansowanych metod detekcji impulsów, przystosowanych również do radzenia sobie ze znanymi sytuacjami granicznymi -- te jednak wymusiłyby wykorzystanie platformy sprzętowej o większych możliwościach.
 
 
 
@@ -702,7 +703,7 @@ Alternatywnie, poprawę mogłoby przynieść zastosowanie innych, bardziej zaawa
 
 
 \subsection{Wybór algorytmu}
-Na podstawie przedstawionych dotychczas wyników łatwo zdecydować, że w niniejszym projekcie należy wykorzystać metodę detekcji pszczół opierającą się na automacie stanowym.
-Dała ona lepsze wyniki w przeprowadzonych eksperymentach ($E=0.9044$), a przy tym jest prostsza w implementacji na mikrokontrolerze: jest bowiem mniej wymagająca obliczeniowo i pamięciowo.
+Na podstawie przedstawionych dotychczas wyników łatwo zdecydować, że w niniejszym projekcie należy wykorzystać metodę detekcji pszczół opierającą się na automacie stanowym z progowaniem adaptacyjnym.
+Dała ona lepsze wyniki w przeprowadzonych eksperymentach ($E=0.9044$), a przy tym jest prostsza w implementacji na mikrokontrolerze niż korelacja krzyżowa: jest bowiem mniej wymagająca obliczeniowo i pamięciowo.
 W kolejnym rozdziale opisana została zrealizowana implementacja sprzętowa niniejszego algorytmu, a także jego test \textit{on line}, ostatecznie weryfikujący działanie całego systemu.
 

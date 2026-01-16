@@ -17,11 +17,11 @@ Zliczanie pszczół ma również znaczenie podczas prowadzenia badań naukowych,
 
 Potrzeba liczenia pszczół prowadziła przez lata do rozwoju metod automatyzujących to zadanie.
 Przegląd kolejnych pojawiających się rozwiązań \cite{Odemer2021} otwiera ponad stuletnia praca Lundiego z 1925 roku -- urządzenie elektromechaniczne, w którym owady przechodzące przez system zapadek aktywowały styki, wysyłając tym samym sygnał do licznika.
-Podejście to było awaryjne i wymagało częstego czyszczenia z nanoszonego pyłku, jednak pozwoliło autorowi na realizację badań życia pszczół, i położyło podwaliny pod dalszy rozwój podobnych technik \cite{Lundie1925}.
+Podejście to było awaryjne i wymagało częstego czyszczenia z nanoszonego pyłku, jednak pozwoliło autorowi na realizację badań o życiu pszczół, i położyło podwaliny pod dalszy rozwój podobnych technik \cite{Lundie1925}.
 W późniejszych latach powstawały systemy zliczania pszczół oparte na układach optycznych. 
 Wykorzystywano fotokomórki na światło podczerwone, którego promień, niewidzialny dla pszczół, był przez nie przecinany, co generowało sygnał.
 Do pierwszych prac bazujących na tej technice należy dzieło Ericksona wraz z zespołem z roku 1975 \cite{Erickson1975}.
-Globalny rozwój technologii umożliwił dalsze rozpowszechnianie rozwiązań opartych na optyce: systemy wykorzystujące technologię LED zaprezentowali Pešović \cite{Pesovic2017} i Jiang \cite{Jiang2016} wraz z zespołami, a także, w ostatnich latach, Cunha z zespołem \cite{Cunha2020}.
+Globalny rozwój technologii umożliwił dalsze rozpowszechnianie rozwiązań opartych na optyce: systemy wykorzystujące technologię LED zaprezentowali m.in. Pešović \cite{Pesovic2017} i Jiang \cite{Jiang2016} wraz z zespołami, a także, w ostatnich latach, Cunha z zespołem \cite{Cunha2020}.
 Autorzy zwrócili uwagę na znaczącą wadę takiego podejścia -- zbierający się w torze optycznym pyłek po pewnym czasie uniemożliwiał poprawne działanie systemu, wymuszając regularne czyszczenie wnętrz urządzeń.
 Pomimo tego ograniczenia, urządzenia zliczające pszczoły oparte na technologii LED są dzisiaj dostępne komercyjnie \cite{sklep}.
 
@@ -31,10 +31,9 @@ Takie rozwiązania są znacznie bardziej wymagające obliczeniowo, jednak mogą 
 
 Podejściem, które, mimo swej prostoty, wciąż nie zostało szeroko przyjęte jest zastosowanie do wykrywania pszczół czujników pojemnościowych.
 Wykorzystanie różnicy pojemności elektrycznej kondensatora wywołanej ruchem pszczoły zostało pierwszy raz zastosowane w pracy Campbell wraz z zespołem \cite{Campbell2005}, która zaprojektowała czujnik składający się z pierścieniowych okładek, między którymi poruszają się owady.
-Zmodyfikowana wersja podobnego systemu została zaprezentowana przez Perraulta i Teachmana \cite{Perrault2016}, którzy zwrócili uwagę na szereg zalet tego rozwiązania: czujnik pojemnościowy nie jest podatny na zabrudzenia i nie wymaga częstego czyszczenia.
-Ponadto, jest całkowicie nieszkodliwy dla pszczół.
+Zmodyfikowana wersja podobnego systemu została zaprezentowana przez Perraulta i Teachmana \cite{Perrault2016}, którzy zwrócili uwagę na szereg zalet tego rozwiązania: czujnik pojemnościowy nie jest podatny na zabrudzenia i nie wymaga częstego czyszczenia; ponadto, jest całkowicie nieszkodliwy dla pszczół.
 Zwrócono uwagę na podatność systemu na błąd wynikający z grupowania się pszczół.
-Problem ten zaadresował Bermig wraz z zespołem \cite{Bermig2020}, konstruując urządzenie \textit{BeeCheck} posiadające po siedem bramek pojemnościowych w torze ruchu pszczół.
+Problem ten zaadresował Bermig wraz z zespołem \cite{Bermig2020}, konstruując urządzenie \textit{BeeCheck} posiadające siedem bramek pojemnościowych w torze ruchu pszczół.
 W ostatnim czasie popularność pojemnościowych liczników pszczół zaczęła rosnąć, pojawił się nawet internetowy artykuł instruktażowy opisujący, jak wykonać podobne urządzenie samodzielnie \cite{mathematastic}.
 
 
@@ -49,4 +48,4 @@ Na pracę składać się będą rozwiązania dwóch głównych problemów:
     \item zaprojektowanie czujników pojemnościowych i metody akwizycji ich sygnałów, a także konstrukcja urządzenia wyposażonego w ich szereg,
     \item opracowanie algorytmu detekcji, umożliwiającego wykrywanie pszczół na podstawie wyjść poszczególnych czujników pojemnościowych, a także jego implementacja na platformie sprzętowej urządzenia.
 \end{enumerate}
-Tworzony system zostanie kompleksowo przetestowany, zarówno w warunkach laboratoryjnych, jak i w pracy w środowisku rzeczywistym, by zweryfikować skuteczność zliczania pszczół i sprawdzić podatność na błędy.
+Tworzony system zostanie kompleksowo przetestowany, zarówno w warunkach laboratoryjnych, jak i w pracy w środowisku rzeczywistym, by zweryfikować skuteczność zliczania pszczół i sprawdzić jego podatność na błędy.
