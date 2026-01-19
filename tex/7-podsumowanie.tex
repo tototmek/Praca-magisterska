@@ -17,9 +17,11 @@ Kolejnym krokiem w~pracy była realizacja sprzętowa urządzenia wykorzystujące
 Dobrano mikrokontroler, a~następnie zaprojektowano płytkę PCB z~układem ośmiu czujników.
 Po iteracji projektu, układ działał w~pełni poprawnie, co potwierdzono kolejnym badaniem laboratoryjnym na modelu pszczoły.
 Uzyskiwane przebiegi wyjść czujników były bardzo podobne do literaturowych, uzyskanych przez symulację elektrostatyczną.
+
 Przed przejściem do etapu tworzenia algorytmu detekcji pszczół, konieczne było zebranie dużej ilości danych przykładowych, które miały umożliwić ocenę jakości działania kolejnych rozwiązań.
 W tym celu, przeprowadzone zostały pierwsze testy pracy urządzenia w~warunkach rzeczywistych: odwiedzono dwie różne pasieki, w~których zebrano dane generowane przez urządzenie działające z~żywymi pszczołami, wraz z~referencyjnym nagraniem wideo.
 Kilka godzin uzyskanych danych zostało poddane ręcznej anotacji, w~ramach której oznaczono chwile przechodzenia pszczół przez tunele czujników.
+
 Z obszernym zbiorem oetykietowanych danych, można było przejść do projektu algorytmu detekcji.
 W ramach niniejszej pracy zaproponowane zostały dwa rozwiązania, które wykazywały duży potencjał, zachowując przy tym niską złożoność obliczeniową: wykrywanie sekwencji progowanego sygnału automatem stanowym, oraz korelacja krzyżowa z~wzorcem wykrywanego impulsu.
 Liczne konfiguracje obu algorytmów zostały uruchomione dla zbioru danych przykładowych, a~ich wyjścia porównano z~ręcznie oznaczonymi etykietami.
@@ -58,4 +60,6 @@ Możliwe kierunki rozwoju to:
     Połączenie danych z~dwóch źródeł: prostego zliczania wejść i~wyjść, wraz z~częstotliwością ruchu na wlotku mogłoby zapewnić estymację stanu populacji znacznie mniej podatną na akumulację występujących w~systemie błędnych zliczeń.
 \end{enumerate}
 
-Dziękuję dr Jakubowi Gąbce za podzielenie się ekspercką wiedzą dotyczącą pszczół, oraz Andrzejowi Bielackiemu za udostepnienie swoich uli do eksperymentów.
+
+\section*{Podziękowania}
+Dziękuję dr. Jakubowi Gąbce za podzielenie się ekspercką wiedzą dotyczącą pszczół, oraz p. Andrzejowi Bielackiemu i p. Wojciechowi Sokołowi za udostepnienie swoich uli do eksperymentów.

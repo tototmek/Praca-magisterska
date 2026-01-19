@@ -53,6 +53,7 @@
 \title{
     Urządzenie zliczające pszczoły w ulu oparte o zestaw czujników pojemnościowych
 }
+\engtitle{Bee hive monitoring device based on capacitive sensors}
 \author{Tomasz Żebrowski}
 \album{310371}
 \promotor{prof. dr hab. inż. Paweł D. Domański}
@@ -66,10 +67,10 @@
 \cleardoublepage % Zaczynamy od nieparzystej strony
 \abstract
 
-W niniejszej pracy przedstawiony został system automatycznego zliczania pszczół na wejściu ula, wykorzystujący szereg czujników pojemnościowych.
-Wzrost pojemności elektrycznej kondensatorów, wywołany wysokim współczynnikiem przenikalności elektrycznej owadów, mierzony jest z wykorzystaniem nowatorskiej metody akwizycji, ograniczającej do maksimum złożoność i koszt systemu, zapewniając przy tym jego satysfakcjonującą czułość.
+W niniejszej pracy przedstawiony został system automatycznego zliczania pszczół na wejściu ula, który wykorzystuje szereg czujników pojemnościowych.
+Wzrost pojemności elektrycznej kondensatorów, wywołany wysokim współczynnikiem przenikalności elektrycznej owadów, mierzony jest z wykorzystaniem nowatorskiej metody pomiarowej, ograniczającej do maksimum złożoność i koszt systemu, zapewniając przy tym satysfakcjonującą czułość.
 Opracowane zostały metody przetwarzania zebranych danych pozwalające precyzyjnie określić chwile pojawiania się pszczół w czujniku, a także kierunek ich ruchu.
-Zaprezentowane zostały dwa algorytmy detekcji: oparty na automacie stanowym wykrywającym sekwencje skoków sygnału, oraz wykorzystujący korelację krzyżową sygnału z wzorcem.
+Zaprezentowano i przeanalizowano dwa algorytmy detekcji: oparty na automacie stanowym wykrywającym sekwencje skoków sygnału, oraz wykorzystujący korelację krzyżową sygnału z wzorcem.
 Walidacja rozwiązania, składająca się z testów laboratoryjnych wykorzystujących modele pszczół, a także testów w warunkach rzeczywistych z wykorzystaniem ręcznie anotowanych danych, pozwoliła potwierdzić poprawne działanie stworzonego systemu.
 Nadaje się on do szacowania natężenia ruchu zbieraczek na wylotku ula, natomiast stosowalność do aproksymacji rozmiaru kolonii pozostaje ograniczona ze względu na występujące błędy zliczania.
 Zbudowane urządzenie stanowi dowód skuteczności opracowanych metod, które w wyniku przyszłego rozwoju mogą przynieść jeszcze lepsze efekty.
@@ -81,9 +82,14 @@ Zbudowane urządzenie stanowi dowód skuteczności opracowanych metod, które w 
 % % Streszczenie po angielsku dla \langpol
 % % Polish abstract if \langeng is set
 % %----------------------------------------
-% \clearpage
-% \secondabstract \kant[1-3]
-% \secondkeywords XXX, XXX, XXX
+\clearpage
+\secondabstract
+
+This thesis presents an automated bee-counting system situated at the hive entrance, utilizing an array of capacitive sensors. The increase in electrical capacitance, induced by the high relative permittivity of the insects, is measured using a novel methodology designed to minimize system complexity and cost while ensuring satisfactory sensitivity.
+Data processing methods were developed to precisely determine the instances of bee arrival within the sensor, as well as their direction of movement. Two detection algorithms are presented and analyzed: the first based on a finite-state machine detecting signal step sequences, and the second utilizing cross-correlation between the signal and a reference template.
+Validation of the proposed solution -- comprising laboratory tests using bee models and field trials utilizing manually annotated data -- confirmed the functional efficacy of the developed system. The device is suitable for estimating the traffic intensity of foragers at the hive entrance; however, its applicability for approximating total colony size remains limited due to inherent counting errors. The constructed prototype serves as a proof of concept for the developed methods, which, through further refinement, offer potential for enhanced performance.
+
+\secondkeywords bee counting, capacitive sensing, data analytics
 
 \pagestyle{plain}
 

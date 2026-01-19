@@ -93,7 +93,7 @@ Jest on konieczny do zachowania informacji o~kolejności próbek -- należy wied
 Powstaje dodatkowy narzut pamięciowy, ale ESP32-C3 posiada wystarczająco dużo adresów RAM, by nie stanowiło to problemu.
 Bufor reprezentowany jest przez strukturę \texttt{CircularBuffer}, zaimplementowaną na potrzeby niniejszej pracy.
 Jej celem jest przechowywanie buforu ostatnich próbek w~postaci, która nie wymaga przesuwania całej zawartości jego pamięci o~jedno pole w~momencie pojawiania się nowej próbki; zamiast tego przesuwany jest wskaźnik na najnowszy element.
-Implementacja klasy \texttt{CircularBuffer} została przedstawiona poniżej.
+Implementację klasy \texttt{CircularBuffer} przedstawiono poniżej.
 
 \vspace{1em}
 \vbox{

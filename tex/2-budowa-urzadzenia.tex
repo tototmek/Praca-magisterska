@@ -61,7 +61,7 @@ Ułożenie to, pozwalając na równoczesne ładowanie obu kondensatorów, umożl
     \label{fig:tunnel-concept}
 \end{figure}
 
-Działanie czujnika tego typu zostało zasymulowane numerycznie przez Campbell wraz z~zespołem \cite{Campbell2005}. Przyjęto: średnicę wewnętrzną tunelu 15 mm, okładki kondensatora wykonane z~drutu o~średnicy 1.7 mm, odległość między okładkami 7~mm. Pszczołę zamodelowano jako cylinder o~długości 12 mm i~średnicy 6mm. Wyniki tej symulacji przedstawione zostały na rysunkach \ref{fig:campbell-symulacja-model} i~\ref{fig:campbell-symulacja-wynik}.
+Działanie czujnika tego typu zostało zasymulowane numerycznie przez Campbell wraz z~zespołem \cite{Campbell2005}. Przyjęto: średnicę wewnętrzną tunelu 15 mm, okładki kondensatora wykonane z~drutu o~średnicy 1.7 mm, odległość między okładkami 7~mm. Pszczołę zamodelowano jako cylinder o~długości 12 mm i~średnicy 6 mm. Wyniki tej symulacji przedstawione zostały na rysunkach \ref{fig:campbell-symulacja-model} i~\ref{fig:campbell-symulacja-wynik}.
 Model czujnika zakładał dodatkowe obudowanie całości stalowym ekranem i~zastosowanie polistyrenowych zaślepek. Na rysunku \ref{fig:campbell-symulacja-model} widać, że pszczoła (symulowana jako cylinder o~$\varepsilon_r=50$) wchodząca do tunelu powoduje niesymetryczne rozłożenie pól elektrycznych w~kondensatorach.
 Przejście pszczoły skutkuje pojawieniem się na wyjściu czujnika asymetrycznych, bipolarnych impulsów (rysunek \ref{fig:campbell-symulacja-wynik}), podobnych do tych na przebiegach z~rozważań teoretycznych (rysunki \ref{fig:bee-in-c2}, \ref{fig:bee-in-minus-c2}). W~symulacji przetestowano dodatkowo odpowiedź układu na pszczoły różnych rozmiarów (impulsy $a$, $b$ na rysunku \ref{fig:campbell-symulacja-wynik}). Zaobserwować można pewną różnicę w~wyglądzie wygenerowanych przebiegów, jednak ogólny kształt nadal pozwala na rozpoznanie momentu oraz kierunku przejścia pszczoły.
 
@@ -174,7 +174,7 @@ Należy jednak pamiętać, aby na kolejnych etapach projektu wprowadzić ogranic
 Zaprezentowany algorytm akwizycji oferuje rozdzielczość pomiaru zależną od czasu wykonania instrukcji znajdujących się wewnątrz pętli \textit{while}.
 Najdłuższą operacją jest odczyt stanu pinu (\texttt{read\_gpio}) – dla zastosowanego mikrokontrolera ESP32-C3 może on trwać $0.05 - 0.17\,\mu\mathrm{s}$ (w zależności od implementacji) \cite{ESP32C3Datasheet}\cite{microcontroller-benchmarks}. Nawet przy konieczności dwukrotnego wykonania instrukcji, rozdzielczość taka jest wystarczająca na potrzeby tworzonego urządzenia.
 
-Alternatywnym podejściem, niewykorzystanym w~niniejszej pracy z~braku wyraźnej potrzeby, jednak mogącym zapewnić wyższą rozdzielczość byłoby wykorzystanie zewnętrznych przerwań mikrokontrolera. Modyfikacja przedstawionego algorytmu polega na usunięciu odczytu GPIO z~pętli \textit{while}, zamiast czego $s_L$ oraz $s_R$ ustawiane są na wartość 1~w ramach obsługi przerwań EXTI wynikających z~wykrycia zboczy narastających na pinach $L$ i~$R$.
+Alternatywnym podejściem, niewykorzystanym w~niniejszej pracy z~braku wyraźnej potrzeby, jednak mogącym zapewnić wyższą rozdzielczość byłoby wykorzystanie zewnętrznych przerwań mikrokontrolera. Modyfikacja przedstawionego algorytmu polega na usunięciu odczytu GPIO z~pętli \textit{while}, zamiast czego $s_L$ oraz $s_R$ ustawiane są na wartość 1~w ramach obsługi przerwań EXTI wynikających z~wykrycia pojawienia się zboczy narastających na pinach $L$~i~$R$.
 
   
   \subsubsection{Realizacja sprzętowa}
@@ -279,7 +279,7 @@ Wybrane zostały dwa potencjalne modele pszczoły:
     \item \textbf{Wilgotna gąbka} -- została wprowadzona jako dodatkowy eksperyment w~razie, gdyby żelek posiadał nieodpowiednie właściwości elektryczne. Z~gąbki kuchennej wycięta została bryła o~wymiarach zbliżonych do pszczoły, którą przed samym eksperymentem zanurzono w~naczyniu z~wodą. Właściwości elektryczne ciała powinny być zbliżone do pszczoły, której większość masy stanowi woda.
 \end{enumerate}
 Każdy z~obiektów został nawleczony na cienką żyłkę.
-W ramach każdego z~dwóch przeprowadzonych eksperymentów żyłkę przeprowadzano przez tunel czujnika, po czym w~ciągu kilkudziesięciu sekund kilkukrotnie przeciągano nią ciało.
+W ramach każdego z~dwóch przeprowadzonych eksperymentów żyłkę przeprowadzano przez tunel czujnika, po czym w~ciągu kilkudziesięciu sekund kilkukrotnie przeciągano nią model pszczoły.
 Schemat doświadczenia przedstawiono na rysunku \ref{fig:prototyp-eksperyment-schemat}.
 Żelek został przeciągnięty przez bramkę czterokrotnie (dwa razy w~każdym kierunku), natomiast gąbka jedenastokrotnie (po pięć razy w~każdym kierunku i~szósty raz tylko w~jednym).
 Pomiary generowane przez czujnik były wysyłane do komputera i~zapisywane do pliku.
@@ -557,7 +557,7 @@ Na koniec, wartości liczników iteracji wpisywane są do struktury wynikowej ja
   
   \subsubsection{Komunikacja między mikrokontrolerami}
   
-Ze względu na kompromisy podjęte podczas doboru sprzętu, system składa się z~dwóch podukładów sterowanych przez osobne mikrokontrolery.
+Ze względu na kompromisy podjęte podczas doboru sprzętu, system składa się z~dwóch analogicznych układów sterowanych przez osobne mikrokontrolery.
 Konieczne jest zapewnienie komunikacji pomiędzy nimi, w~celu zebrania pełnych danych o~stanie bramek.
 Problem ten stanowi wyzwanie, ponieważ każdy z~mikrokontrolerów posiada tylko jeden wolny pin, możliwy do wykorzystania w~tym celu. 
 W ramach niniejszej pracy zaprojektowano protokół przesyłu danych z~mikrokontrolera pomocniczego do mikrokontrolera głównego wykorzystujący tylko jeden przewód, oparty na protokole UART.
@@ -819,7 +819,7 @@ Dane zebrane podczas niniejszego eksperymentu zostały przedstawione na rysunkac
 \end{figure}
 Na ich podstawie można jednoznacznie stwierdzić, że każda z~bramek reaguje prawidłowo na pojawienie się pszczoły w~tunelu.
 Na sygnałach wyjściowych kolejno pojawiały się serie szpilek jasno odpowiadających przejściom obiektu przez tunel.
-Impulsy zebrane przez urządzenie nie były idealne: wyraźnie widoczne są wspomniane wcześniej efekty spontanicznych wychyleń sygnału oraz pojawianie się trendu -- ponownie jednakże stwierdzono że jakość sygnału nada się do wykorzystania w~dalszym przetwarzaniu sygnału.
+Impulsy zebrane przez urządzenie nie były idealne: wyraźnie widoczne są wspomniane wcześniej efekty spontanicznych wychyleń sygnału oraz pojawianie się trendu -- ponownie jednakże stwierdzono, że jakość sygnału jest wystarczająca do wykorzystania w~dalszym przetwarzaniu sygnału.
 
 
 Przeprowadzone eksperymenty pozwoliły stwierdzić, że skonstruowane urządzenie działa prawidłowo.

@@ -120,7 +120,7 @@ Niestety, mogą wystąpić sytuacje szczególne czterech rodzajów:
     \item Sytuacja symetryczna dla 1: pszczoła z~wewnątrz ula przechodzi przez bramkę czujnika, i~odczekuje dłuższy czas przed opuszczeniem tunelu. W~tym przypadku generowana jest etykieta wyjścia znacznie opóźniona względem faktycznego wykrycia;
     \item Sytuacja symetryczna dla 2: pszczoła z~wewnątrz ula przechodzi przez bramkę czujnika, a~następnie zawraca przed dotarciem do końca tunelu, i~przechodząc ponownie przez czujnik wraca do ula. W~tym przypadku nie zostanie wygenerowana żadna etykieta, a~na sygnale wyjściowym bramki pojawiają się dwa impulsy: wyjście i~wejście.
 \end{enumerate}
-Przeprowadzone zostało porównanie „na oko”, na podstawie którego stwierdzono, że błędy rodzajów 1, 3~oraz 4~nie występują często (nie natrafiono na ich ślady), natomiast czasem zdarzają się błędy rodzaju 2~(pszczoły zawracające przed dotarciem do bramki -- dwie nadmiarowe etykiety).
+Przeprowadzone zostało empiryczne porównanie, na podstawie którego stwierdzono, że błędy rodzajów 1, 3~oraz 4~nie występują często (nie natrafiono na ich ślady), natomiast czasem zdarzają się błędy rodzaju 2~(pszczoły zawracające przed dotarciem do bramki -- dwie nadmiarowe etykiety).
 Nie została wyznaczona konkretna częstotliwość pojawiania się błędów, jednak ustalono, że zachodzą one na tyle rzadko, że nie będą stanowić problemu przy zastosowaniu opracowanej anotacji do oceny działania rozwijanych algorytmów.
 Gdyby planowane było stosowanie metod opartych o~machine learning, nawet bardzo rzadkie występowanie błędnych etykiet mogłoby znacząco pogorszyć działanie algorytmów, natomiast w~przypadku niniejszej pracy, spowoduje ono jedynie lekkie pogorszenie oceny każdego z~proponowanych rozwiązań.
 Kara ta będzie jednak równa dla każdego z~testowanych algorytmów, ponieważ każdy z~nich otrzyma tyle samo przykładów testowych z~błędnie oznaczonymi rozwiązaniami.
@@ -167,8 +167,8 @@ Na rysunku \ref{fig:filtr} przedstawione zostało zestawienie oryginalnego, niep
 Widoczne są pożądane efekty pracy filtra:
 \begin{itemize}
     \renewcommand\labelitemi{---}
-    \item Po pierwsze, zlikwidował on prawie zupełnie sumy obecne w~oryginalnych danych;
-    \item Ponadto, dzięki uśrednieniu próbek, zbiór wartości sygnału znacznie się powiększył, poprawiona została znacząco również jego rozdzielczość.
+    \item po pierwsze, zlikwidował on prawie zupełnie sumy obecne w~oryginalnych danych;
+    \item ponadto, dzięki uśrednieniu próbek, zbiór wartości sygnału znacznie się powiększył, poprawiona została znacząco również jego rozdzielczość.
 \end{itemize}
 W wyniku obu tych zjawisk, przebieg wyjścia czujnika stał się łagodny, a~impuls wygenerowany przez ruch pszczoły w~tunelu jest bardzo wyraźnie widoczny.
 Można stwierdzić, że zaprojektowana metoda filtrowania danych sprawdza się w~przypadku niniejszego zastosowania.
